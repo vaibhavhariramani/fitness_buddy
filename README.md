@@ -89,11 +89,16 @@ Firestore is organized as per-user subcollections under `users/{uid}/...`, gated
 
 ## Getting started (local development)
 
+`lib/firebase_options.dart` and `android/app/google-services.json` are gitignored and not
+included in this repo — generate your own against your own Firebase project:
+
 ```bash
 flutter pub get
-flutterfire configure   # generates lib/firebase_options.dart for your own Firebase project
+flutterfire configure   # generates lib/firebase_options.dart + android/app/google-services.json
 flutter run -d chrome
 ```
+
+`lib/firebase_options.dart.example` shows the shape FlutterFire CLI produces, for reference.
 
 ## Testing
 
@@ -121,12 +126,23 @@ firebase deploy --only hosting:fitness-buddy --project expense-tracker-71917
 3. **Smoke test** — `flutter test` (unit tests covering BMI/TDEE calculations, streak logic, and PR detection)
 4. **Deploy** — deploys the built artifact to Firebase Hosting (`fitness-buddy` site), **only on pushes to `main`**, after scan/build/test all pass
 
-### One-time setup: Firebase deploy secret
+Since `lib/firebase_options.dart` isn't in the repo, each of the first three jobs reconstructs it
+from a repo secret before running any `flutter` command.
 
-The deploy stage needs a repo secret named `FIREBASE_SERVICE_ACCOUNT`:
+### One-time setup: repo secrets
 
-1. Firebase Console → Project Settings → Service Accounts → **Generate new private key** (for project `expense-tracker-71917`)
-2. GitHub repo → Settings → Secrets and variables → Actions → **New repository secret**
-3. Name: `FIREBASE_SERVICE_ACCOUNT`, value: the full contents of the downloaded JSON key
+| Secret | Used for | How to get it |
+|---|---|---|
+| `FIREBASE_OPTIONS_DART` | Reconstructing `lib/firebase_options.dart` in CI (scan/build/smoke-test) | Run `flutterfire configure` locally, then paste the full contents of the generated file |
+| `FIREBASE_SERVICE_ACCOUNT` | Deploying to Firebase Hosting | Firebase Console → Project Settings → Service Accounts → **Generate new private key** (for project `expense-tracker-71917`) |
 
-Until that secret is added, the `scan`/`build`/`smoke-test` stages will still run and pass — only the final `deploy` stage will fail.
+Add both under GitHub repo → Settings → Secrets and variables → Actions → **New repository secret**.
+Until `FIREBASE_SERVICE_ACCOUNT` is added, `scan`/`build`/`smoke-test` still pass — only `deploy` fails.
+
+## Security note
+
+`lib/firebase_options.dart` and `android/app/google-services.json` are intentionally excluded
+from this repo and from git history — see `.gitignore`. Firebase's own docs note that these
+client-side identifiers aren't secret in the traditional sense (access is enforced by
+`firestore.rules`/`storage.rules`, not by hiding the API key), but they're kept out of version
+control here anyway. Generate your own via `flutterfire configure`.

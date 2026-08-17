@@ -52,6 +52,8 @@ ui-debug.log
 
 # Local-only credentials — never commit
 tools/seed/service-account.json
+android/app/google-services.json
+lib/firebase_options.dart
 
 # Design-reference working files (third-party screenshots / brand teardown
 # notes used for inspiration only — not part of the shipped app)

@@ -17,6 +17,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # lib/firebase_options.dart is gitignored (not a secret itself, but
+      # kept out of the public repo) — reconstructed here from a repo
+      # secret so `flutter analyze` can resolve main.dart's import of it.
+      - name: Write firebase_options.dart
+        run: printf '%s' "$FIREBASE_OPTIONS_DART" > lib/firebase_options.dart
+        env:
+          FIREBASE_OPTIONS_DART: ${{ secrets.FIREBASE_OPTIONS_DART }}
+
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: ${{ env.FLUTTER_VERSION }}
@@ -43,6 +51,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Write firebase_options.dart
+        run: printf '%s' "$FIREBASE_OPTIONS_DART" > lib/firebase_options.dart
+        env:
+          FIREBASE_OPTIONS_DART: ${{ secrets.FIREBASE_OPTIONS_DART }}
+
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: ${{ env.FLUTTER_VERSION }}
@@ -65,6 +78,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
+      - name: Write firebase_options.dart
+        run: printf '%s' "$FIREBASE_OPTIONS_DART" > lib/firebase_options.dart
+        env:
+          FIREBASE_OPTIONS_DART: ${{ secrets.FIREBASE_OPTIONS_DART }}
 
       - uses: subosito/flutter-action@v2
         with:

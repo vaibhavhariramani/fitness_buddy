@@ -1,0 +1,15 @@
+{
+  "projects": {
+    "default": "expense-tracker-71917"
+  },
+  "targets": {
+    "expense-tracker-71917": {
+      "hosting": {
+        "fitness-buddy": [
+          "fitness-buddy"
+        ]
+      }
+    }
+  },
+  "etags": {}
+}

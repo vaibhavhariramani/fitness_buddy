@@ -1,0 +1,101 @@
+name: CI/CD
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+env:
+  FLUTTER_VERSION: '3.29.2'
+
+jobs:
+  scan:
+    name: Scan code
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+
+      - run: flutter pub get
+
+      - name: Static analysis (flutter analyze)
+        run: flutter analyze
+
+      - name: Format check
+        run: dart format --output=none --set-exit-if-changed .
+
+      # Free for public repos / individual accounts, no signup required.
+      - name: Secret scan (gitleaks)
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  build:
+    name: Build app
+    needs: scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+
+      - run: flutter pub get
+
+      - name: Build web release
+        run: flutter build web --release
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: web-build
+          path: build/web
+          retention-days: 7
+
+  smoke-test:
+    name: Smoke test
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+
+      - run: flutter pub get
+
+      - name: Run test suite
+        run: flutter test
+
+  deploy:
+    name: Deploy to Firebase Hosting
+    needs: [build, smoke-test]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: web-build
+          path: build/web
+
+      # Requires a repo secret named FIREBASE_SERVICE_ACCOUNT — see README.md
+      # "CI/CD" section for how to generate and add it.
+      - name: Deploy to Firebase Hosting (fitness-buddy site)
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: ${{ secrets.GITHUB_TOKEN }}
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          projectId: expense-tracker-71917
+          target: fitness-buddy
+          channelId: live

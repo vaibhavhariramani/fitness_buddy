@@ -1,0 +1,16 @@
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Meal photos aren't part of the friend-sharing model (only weight,
+    // workouts and streak are shareable — see PrivacySettings), so they stay
+    // owner-only rather than readable by any signed-in user.
+    match /users/{uid}/meals/{mealId} {
+      allow read, delete: if request.auth != null && request.auth.uid == uid;
+      allow write: if request.auth != null
+        && request.auth.uid == uid
+        && request.resource.size < 5 * 1024 * 1024
+        && request.resource.contentType.matches('image/.*');
+    }
+  }
+}

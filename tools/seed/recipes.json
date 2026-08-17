@@ -1,0 +1,62 @@
+[
+  {
+    "name": "Egg Fried Rice",
+    "ingredients": ["rice", "egg", "soy sauce", "spring onion", "garlic"],
+    "instructions": "Scramble eggs, set aside. Fry garlic, add cold rice, stir in soy sauce, fold in eggs and spring onion.",
+    "calories": 420,
+    "proteinG": 16,
+    "carbG": 60,
+    "fatG": 12,
+    "tags": ["quick", "budget"]
+  },
+  {
+    "name": "Chickpea Salad",
+    "ingredients": ["chickpeas", "cucumber", "tomato", "onion", "lemon", "olive oil"],
+    "instructions": "Drain chickpeas, dice vegetables, toss with lemon juice and olive oil, season to taste.",
+    "calories": 350,
+    "proteinG": 14,
+    "carbG": 40,
+    "fatG": 14,
+    "tags": ["no-cook", "vegetarian"]
+  },
+  {
+    "name": "Peanut Butter Banana Oats",
+    "ingredients": ["oats", "banana", "peanut butter", "milk"],
+    "instructions": "Cook oats with milk, mash in banana, swirl in peanut butter.",
+    "calories": 480,
+    "proteinG": 18,
+    "carbG": 65,
+    "fatG": 16,
+    "tags": ["breakfast", "quick"]
+  },
+  {
+    "name": "Chicken Stir Fry",
+    "ingredients": ["chicken breast", "broccoli", "bell pepper", "soy sauce", "garlic", "ginger"],
+    "instructions": "Sear diced chicken, add garlic and ginger, add vegetables, finish with soy sauce.",
+    "calories": 400,
+    "proteinG": 38,
+    "carbG": 18,
+    "fatG": 14,
+    "tags": ["high-protein"]
+  },
+  {
+    "name": "Lentil Soup",
+    "ingredients": ["lentils", "onion", "carrot", "garlic", "vegetable stock", "cumin"],
+    "instructions": "Saute onion, carrot and garlic, add lentils and stock, simmer until soft, season with cumin.",
+    "calories": 330,
+    "proteinG": 20,
+    "carbG": 50,
+    "fatG": 4,
+    "tags": ["budget", "vegetarian"]
+  },
+  {
+    "name": "Tuna Pasta",
+    "ingredients": ["pasta", "tuna", "olive oil", "garlic", "lemon"],
+    "instructions": "Cook pasta, toss with tuna, olive oil, garlic and a squeeze of lemon.",
+    "calories": 520,
+    "proteinG": 32,
+    "carbG": 60,
+    "fatG": 14,
+    "tags": ["quick", "budget"]
+  }
+]

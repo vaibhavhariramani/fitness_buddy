@@ -1,0 +1,2107 @@
+[
+  {
+    "id": "barbell-bench-press",
+    "name": "Barbell Bench Press",
+    "category": "Chest",
+    "primaryMuscles": [
+      "Chest"
+    ],
+    "secondaryMuscles": [
+      "Triceps",
+      "Front Delts"
+    ],
+    "equipment": [
+      "Barbell",
+      "Bench"
+    ],
+    "difficulty": "Intermediate",
+    "preparation": "Lie flat on the bench with eyes under the bar, feet planted firmly on the floor. Grip the bar just wider than shoulder-width and unrack it over your shoulders.",
+    "execution": "Lower the bar with control to mid-chest, keeping elbows at roughly a 45-degree angle from your torso. Press it back up in a straight line until your arms are fully extended.",
+    "formTips": [
+      "Keep your shoulder blades pinched together and your feet driving into the floor for a stable base.",
+      "Don't let the bar bounce off your chest — control the descent."
+    ],
+    "commonMistakes": [
+      "Bouncing the bar off the chest to generate momentum.",
+      "Flaring the elbows out to 90 degrees, which stresses the shoulders.",
+      "Lifting the hips off the bench to move more weight."
+    ],
+    "safetyNotes": [
+      "Always use a spotter or safety bars when pressing near your max -- a failed heavy rep with no bailout is a real risk with this exercise."
+    ],
+    "substitutes": [
+      "dumbbell-bench-press",
+      "incline-dumbbell-press",
+      "push-up"
+    ],
+    "wgerImageUrl": "https://wger.de/media/exercise-images/192/Bench-press-1.png.400x400_q85.png"
+  },
+  {
+    "id": "dumbbell-bench-press",
+    "name": "Dumbbell Bench Press",
+    "category": "Chest",
+    "primaryMuscles": [
+      "Chest"
+    ],
+    "secondaryMuscles": [
+      "Triceps",
+      "Front Delts"
+    ],
+    "equipment": [
+      "Dumbbell",
+      "Bench"
+    ],
+    "difficulty": "Intermediate",
+    "preparation": "Lie on a flat bench holding a dumbbell in each hand at chest level, palms facing forward, elbows bent.",
+    "execution": "Press both dumbbells up and slightly inward until your arms are extended, then lower them back to chest height under control.",
+    "formTips": [
+      "Dumbbells allow a deeper stretch than a barbell — don't drop your elbows below shoulder height if you feel any strain.",
+      "Keep the dumbbells moving in sync to avoid tipping."
+    ],
+    "commonMistakes": [],
+    "safetyNotes": [],
+    "substitutes": [
+      "barbell-bench-press",
+      "incline-barbell-bench-press",
+      "push-up"
+    ],
+    "wgerImageUrl": "https://wger.de/media/exercise-images/1353/138cb483-7d4d-4519-b029-63e4269810a6.webp.400x400_q85.png"
+  },
+  {
+    "id": "incline-barbell-bench-press",
+    "name": "Incline Barbell Bench Press",
+    "category": "Chest",
+    "primaryMuscles": [
+      "Chest"
+    ],
+    "secondaryMuscles": [
+      "Front Delts",
+      "Triceps"
+    ],
+    "equipment": [
+      "Barbell",
+      "Bench"
+    ],
+    "difficulty": "Intermediate",
+    "preparation": "Set a bench to a 30-45 degree incline. Unrack the bar with a grip just wider than shoulder-width.",
+    "execution": "Lower the bar to your upper chest, then press it back up in a straight line, emphasizing the upper chest and front shoulders.",
+    "formTips": [
+      "A steeper incline shifts more work to the shoulders — 30-45 degrees keeps the emphasis on the upper chest.",
+      "Keep your wrists stacked directly over your elbows at the bottom."
+    ],
+    "commonMistakes": [],
+    "safetyNotes": [],
+    "substitutes": [
+      "dumbbell-bench-press",
+      "incline-dumbbell-press",
+      "push-up"
+    ],
+    "wgerImageUrl": "https://wger.de/media/exercise-images/41/Incline-bench-press-1.png.400x400_q85.jpg"
+  },
+  {
+    "id": "incline-dumbbell-press",
+    "name": "Incline Dumbbell Press",
+    "category": "Chest",
+    "primaryMuscles": [
+      "Chest"
+    ],
+    "secondaryMuscles": [
+      "Front Delts",
+      "Triceps"
+    ],
+    "equipment": [
+      "Dumbbell",
+      "Bench"
+    ],
+    "difficulty": "Intermediate",
+    "preparation": "On an inclined bench, bring two dumbbells to shoulder level with palms facing forward.",
+    "execution": "Press the dumbbells up and slightly inward until arms are extended, then lower with control back to shoulder level.",
+    "formTips": [
+      "Avoid flaring your elbows out to 90 degrees — a slight tuck protects your shoulders.",
+      "Pause briefly at the top to avoid using momentum."
+    ],
+    "commonMistakes": [],
+    "safetyNotes": [],
+    "substitutes": [
+      "barbell-bench-press",
+      "incline-barbell-bench-press",
+      "push-up"
+    ],
+    "wgerImageUrl": "https://wger.de/media/exercise-images/16/Incline-press-1.png.400x400_q85.png"
+  },
+  {
+    "id": "push-up",
+    "name": "Push-Up",
+    "category": "Chest",
+    "primaryMuscles": [
+      "Chest"
+    ],
+    "secondaryMuscles": [
+      "Triceps",
+      "Core"
+    ],
+    "equipment": [
+      "Bodyweight"
+    ],
+    "difficulty": "Beginner",
+    "preparation": "Place your hands slightly wider than shoulder-width on the floor, body in a straight line from head to heels.",
+    "execution": "Lower your chest toward the floor by bending your elbows, then push back up to the starting position.",
+    "formTips": [
+      "Keep your core braced so your hips don't sag or pike.",
+      "If it's too hard, drop to your knees rather than sacrificing form."
+    ],
+    "commonMistakes": [
+      "Letting the hips sag or pike instead of keeping a straight body line.",
+      "Flaring the elbows out to 90 degrees instead of a moderate tuck."
+    ],
+    "safetyNotes": [],
+    "substitutes": [
+      "barbell-bench-press",
+      "dumbbell-bench-press",
+      "incline-barbell-bench-press"
+    ],
+    "wgerImageUrl": "https://wger.de/media/exercise-images/1551/a6a9e561-3965-45c6-9f2b-ee671e1a3a45.png.400x400_q85.jpg"
+  },
+  {
+    "id": "chest-dip",
+    "name": "Chest Dip",
+    "category": "Chest",
+    "primaryMuscles": [
+      "Chest"
+    ],
+    "secondaryMuscles": [
+      "Triceps"
+    ],
+    "equipment": [
+      "Bodyweight"
+    ],
+    "difficulty": "Intermediate",
+    "preparation": "Support yourself on parallel bars with arms extended, and lean your torso slightly forward.",
+    "execution": "Lower yourself until your shoulders drop just below your elbows, then press back up to full extension.",
+    "formTips": [
+      "Leaning forward shifts the emphasis onto the chest rather than the triceps.",
+      "Avoid going too deep if you feel shoulder discomfort."
+    ],
+    "commonMistakes": [],
+    "safetyNotes": [],
+    "substitutes": [
+      "barbell-bench-press",
+      "dumbbell-bench-press",
+      "incline-barbell-bench-press"
+    ],
+    "wgerImageUrl": "https://wger.de/media/exercise-images/194/34600351-8b0b-4cb0-8daa-583537be15b0.png.400x400_q85.png"
+  },
+  {
+    "id": "cable-chest-fly",
+    "name": "Cable Chest Fly",
+    "category": "Chest",
+    "primaryMuscles": [
+      "Chest"
+    ],
+    "secondaryMuscles": [
+      "Front Delts"
+    ],
+    "equipment": [
+      "Cable"
+    ],
+    "difficulty": "Beginner",
+    "preparation": "Set both pulleys to chest height and step forward with a slight forward lean, one foot ahead of the other.",
+    "execution": "Sweep the handles in a wide arc until they meet in front of your chest, keeping a slight bend in the elbows, then return under control.",
+    "formTips": [
+      "Focus on squeezing your chest at the point where the handles meet.",
+      "Keep the motion smooth — don't let the weight stack slam on the return."
+    ],
+    "commonMistakes": [],
+    "safetyNotes": [],
+    "substitutes": [
+      "barbell-bench-press",
+      "dumbbell-bench-press",
+      "incline-barbell-bench-press"
+    ],
+    "wgerImageUrl": "https://wger.de/media/exercise-images/1922/eb750ee5-3220-4128-aef1-5e2f1ccff40a.webp.400x400_q85.jpg"
+  },
+  {
+    "id": "dumbbell-fly",
+    "name": "Dumbbell Fly",
+    "category": "Chest",
+    "primaryMuscles": [
+      "Chest"
+    ],
+    "secondaryMuscles": [
+      "Front Delts"
+    ],
+    "equipment": [
+      "Dumbbell",
+      "Bench"
+    ],
+    "difficulty": "Intermediate",
+    "preparation": "Lie on a flat bench holding a dumbbell in each hand directly above your chest, palms facing each other.",
+    "execution": "Lower the dumbbells out to the sides in a wide arc with a slight elbow bend, then bring them back together over your chest.",
+    "formTips": [
+      "Keep the elbow bend constant throughout — don't turn it into a press.",
+      "Use a lighter weight than you'd press; this is a stretch-focused movement."
+    ],
+    "commonMistakes": [],
+    "safetyNotes": [],
+    "substitutes": [
+      "barbell-bench-press",
+      "incline-barbell-bench-press",
+      "push-up"
+    ],
+    "wgerImageUrl": "https://wger.de/media/exercise-images/238/2fc242d3-5bdd-4f97-99bd-678adb8c96fc.png.400x400_q85.jpg"
+  },
+  {
+    "id": "machine-chest-press",
+    "name": "Machine Chest Press",
+    "category": "Chest",
+    "primaryMuscles": [
+      "Chest"
+    ],
+    "secondaryMuscles": [
+      "Triceps"
+    ],
+    "equipment": [
+      "Machine"
+    ],
+    "difficulty": "Beginner",
+    "preparation": "Adjust the seat height so the handles line up with the middle of your chest.",
+    "execution": "Press the handles forward until your arms are extended, then return to the start under control.",
+    "formTips": [
+      "A fixed path makes this a good option for beginners still building pressing technique.",
+      "Don't lock your elbows out hard at the top."
+    ],
+    "commonMistakes": [],
+    "safetyNotes": [],
+    "substitutes": [
+      "barbell-bench-press",
+      "dumbbell-bench-press",
+      "incline-barbell-bench-press"
+    ],
+    "wgerImageUrl": "https://wger.de/media/exercise-images/129/b263c968-e067-4750-916a-d8758a7df23e.webp.400x400_q85.jpg"
+  },
+  {
+    "id": "pec-deck-fly",
+    "name": "Pec Deck Machine Fly",
+    "category": "Chest",
+    "primaryMuscles": [
+      "Chest"
+    ],
+    "secondaryMuscles": [],
+    "equipment": [
+      "Machine"
+    ],
+    "difficulty": "Beginner",
+    "preparation": "Sit with your back flat against the pad and forearms resting on the levers or handles.",
+    "execution": "Bring your arms together in front of your chest, squeeze, then return slowly to the starting position.",
+    "formTips": [
+      "Keep a slight bend in the elbows throughout to protect the joint.",
+      "Control the negative rather than letting the pads snap back."
+    ],
+    "commonMistakes": [],
+    "safetyNotes": [],
+    "substitutes": [
+      "barbell-bench-press",
+      "dumbbell-bench-press",
+      "incline-barbell-bench-press"
+    ],
+    "wgerImageUrl": "https://wger.de/media/exercise-images/926/ae9deb5d-a1e9-4c30-b1e3-c128ba5d4969.png.400x400_q85.png"
+  },
+  {
+    "id": "deadlift",
+    "name": "Barbell Deadlift",
+    "category": "Back",
+    "primaryMuscles": [
+      "Back"
+    ],
+    "secondaryMuscles": [
+      "Glutes",
+      "Hamstrings",
+      "Core"
+    ],
+    "equipment": [
+      "Barbell"
+    ],
+    "difficulty": "Advanced",
+    "preparation": "Stand with the bar over mid-foot, feet hip-width apart. Hinge down and grip the bar just outside your shins.",
+    "execution": "Drive through your heels to stand up tall, keeping the bar close to your body and your back flat throughout the pull.",
+    "formTips": [
+      "Brace your core hard before you pull, like you're about to be punched in the stomach.",
+      "Keep the bar in contact with your legs the whole way up to avoid it drifting forward."
+    ],
+    "commonMistakes": [
+      "Rounding the lower back to reach the bar instead of hinging with a flat back.",
+      "Letting the bar drift away from the shins/thighs during the pull.",
+      "Hyperextending the lower back at lockout."
+    ],
+    "safetyNotes": [
+      "Keep the bar in contact with your legs throughout -- a bar that drifts forward dramatically increases lower-back stress.",
+      "Stop and reset your setup if you lose a flat back partway through the pull rather than grinding through it."
+    ],
+    "substitutes": [
+      "pull-up",
+      "lat-pulldown",
+      "dumbbell-row"
+    ],
+    "wgerImageUrl": "https://wger.de/media/exercise-images/184/1709c405-620a-4d07-9658-fade2b66a2df.jpeg.400x400_q85.jpg"
+  },
+  {
+    "id": "pull-up",
+    "name": "Pull-Up",
+    "category": "Back",
+    "primaryMuscles": [
+      "Back"
+    ],
+    "secondaryMuscles": [
+      "Biceps"
+    ],
+    "equipment": [
+      "Bodyweight"
+    ],
+    "difficulty": "Advanced",
+    "preparation": "Hang from a bar with an overhand grip, slightly wider than shoulder-width, arms fully extended.",
+    "execution": "Pull yourself up until your chin clears the bar, leading with your chest, then lower back down with control.",
+    "formTips": [
+      "Avoid kipping or swinging — a controlled pull builds more back strength.",
+      "If you can't do a full rep yet, use an assisted machine or resistance band."
+    ],
+    "commonMistakes": [
+      "Using momentum/kipping instead of a controlled pull.",
+      "Not achieving a full range of motion (partial reps from a bent-arm start)."
+    ],
+    "safetyNotes": [
+      "Lower yourself under control on every rep -- dropping suddenly from the top stresses the shoulders and elbows."
+    ],
+    "substitutes": [
+      "deadlift",
+      "lat-pulldown",
+      "barbell-bent-over-row"
+    ],
+    "wgerImageUrl": "https://wger.de/media/exercise-images/475/b0554016-16fd-4dbe-be47-a2a17d16ae0e.jpg.400x400_q85.jpg"
+  },
+  {
+    "id": "lat-pulldown",
+    "name": "Lat Pulldown",
+    "category": "Back",
+    "primaryMuscles": [
+      "Back"
+    ],
+    "secondaryMuscles": [
+      "Biceps"
+    ],
+    "equipment": [
+      "Cable",
+      "Machine"
+    ],
+    "difficulty": "Beginner",
+    "preparation": "Sit with your thighs secured under the pad, and grip the bar wider than shoulder-width.",
+    "execution": "Pull the bar down to your upper chest while keeping your torso upright, then let it rise back under control.",
+    "formTips": [
+      "Lead with your elbows, not your hands.",
+      "Avoid leaning back excessively to cheat the weight down."
+    ],
+    "commonMistakes": [],
+    "safetyNotes": [],
+    "substitutes": [
+      "deadlift",
+      "pull-up",
+      "barbell-bent-over-row"
+    ],
+    "wgerImageUrl": "https://wger.de/media/exercise-images/158/0d51a0f2-622f-434b-beb8-1a003c54712a.png.400x400_q85.jpg"
+  },
+  {
+    "id": "barbell-bent-over-row",
+    "name": "Barbell Bent-Over Row",
+    "category": "Back",
+    "primaryMuscles": [
+      "Back"
+    ],
+    "secondaryMuscles": [
+      "Biceps",
+      "Rear Delts"
+    ],
+    "equipment": [
+      "Barbell"
+    ],
+    "difficulty": "Intermediate",
+    "preparation": "Hinge forward at the hips to roughly a 45-degree torso angle with a flat back, holding the bar with an overhand grip.",
+    "execution": "Pull the bar toward your lower ribs while keeping your elbows close to your body, then lower with control.",
+    "formTips": [
+      "Keep your core braced to protect your lower back throughout the set.",
+      "Avoid jerking the weight up with your hips."
+    ],
+    "commonMistakes": [
+      "Standing too upright, which turns the row into a shrug instead of a back exercise.",
+      "Using momentum from the hips (\"body English\") instead of pulling with the back."
+    ],
+    "safetyNotes": [
+      "Keep your core braced and back flat throughout -- this is a common spot for lower-back strain when fatigued."
+    ],
+    "substitutes": [
+      "pull-up",
+      "lat-pulldown",
+      "dumbbell-row"
+    ],
+    "wgerImageUrl": null
+  },
+  {
+    "id": "dumbbell-row",
+    "name": "Single-Arm Dumbbell Row",
+    "category": "Back",
+    "primaryMuscles": [
+      "Back"
+    ],
+    "secondaryMuscles": [
+      "Biceps"
+    ],
+    "equipment": [
+      "Dumbbell",
+      "Bench"
+    ],
+    "difficulty": "Beginner",
+    "preparation": "Place one knee and hand on a bench for support, with the other foot planted on the floor.",
+    "execution": "Pull the dumbbell up toward your hip with the free arm, squeezing your shoulder blade, then lower under control.",
+    "formTips": [
+      "Keep your torso roughly parallel to the floor and avoid rotating as you pull.",
+      "Let the shoulder blade protract fully at the bottom for a full range of motion."
+    ],
+    "commonMistakes": [],
+    "safetyNotes": [],
+    "substitutes": [
+      "deadlift",
+      "pull-up",
+      "lat-pulldown"
+    ],
+    "wgerImageUrl": null
+  },
+  {
+    "id": "seated-cable-row",
+    "name": "Seated Cable Row",
+    "category": "Back",
+    "primaryMuscles": [
+      "Back"
+    ],
+    "secondaryMuscles": [
+      "Biceps"
+    ],
+    "equipment": [
+      "Cable"
+    ],
+    "difficulty": "Beginner",
+    "preparation": "Sit with knees slightly bent and feet braced on the platform, holding the handle with arms extended.",
+    "execution": "Pull the handle toward your torso while keeping your back straight, squeeze your shoulder blades together, then extend back out.",
+    "formTips": [
+      "Avoid rounding your lower back as you reach forward.",
+      "Keep your elbows close to your body as you pull."
+    ],
+    "commonMistakes": [],
+    "safetyNotes": [],
+    "substitutes": [
+      "deadlift",
+      "pull-up",
+      "lat-pulldown"
+    ],
+    "wgerImageUrl": "https://wger.de/media/exercise-images/1117/2555c4c3-a84d-47db-b83b-cbf721f12e45.png.400x400_q85.jpg"
+  },
+  {
+    "id": "t-bar-row",
+    "name": "T-Bar Row",
+    "category": "Back",
+    "primaryMuscles": [
+      "Back"
+    ],
+    "secondaryMuscles": [
+      "Biceps",
+      "Rear Delts"
+    ],
+    "equipment": [
+      "Barbell",
+      "Machine"
+    ],
+    "difficulty": "Intermediate",
+    "preparation": "Straddle the bar with a hinged torso and flat back, gripping the handles.",
+    "execution": "Pull the handles up toward your chest, keeping elbows close to your body, then lower under control.",
+    "formTips": [
+      "Keep your neck neutral — don't crane your head up to see the weight.",
+      "Squeeze your shoulder blades together at the top of each rep."
+    ],
+    "commonMistakes": [],
+    "safetyNotes": [],
+    "substitutes": [
+      "deadlift",
+      "pull-up",
+      "lat-pulldown"
+    ],
+    "wgerImageUrl": null
+  },
+  {
+    "id": "chin-up",
+    "name": "Chin-Up",
+    "category": "Back",
+    "primaryMuscles": [
+      "Back"
+    ],
+    "secondaryMuscles": [
+      "Biceps"
+    ],
+    "equipment": [
+      "Bodyweight"
+    ],
+    "difficulty": "Advanced",
+    "preparation": "Hang from a bar with an underhand, shoulder-width grip, arms fully extended.",
+    "execution": "Pull yourself up until your chin clears the bar, then lower with control back to a full hang.",
+    "formTips": [
+      "The underhand grip recruits more biceps than a standard pull-up.",
+      "Avoid stopping short at the top — a full chin-over-bar rep counts most."
+    ],
+    "commonMistakes": [
+      "Using momentum/kipping instead of a controlled pull.",
+      "Not achieving a full range of motion (partial reps from a bent-arm start)."
+    ],
+    "safetyNotes": [
+      "Lower yourself under control on every rep -- dropping suddenly from the top stresses the shoulders and elbows."
+    ],
+    "substitutes": [
+      "deadlift",
+      "lat-pulldown",
+      "barbell-bent-over-row"
+    ],
+    "wgerImageUrl": "https://wger.de/media/exercise-images/152/6c1a7459-266d-491a-bd50-7cbaea2bc771.png.400x400_q85.png"
+  },
+  {
+    "id": "face-pull",
+    "name": "Face Pull",
+    "category": "Back",
+    "primaryMuscles": [
+      "Back"
+    ],
+    "secondaryMuscles": [
+      "Shoulders"
+    ],
+    "equipment": [
+      "Cable",
+      "Resistance Band"
+    ],
+    "difficulty": "Beginner",
+    "preparation": "Set the pulley to roughly face height and grip the rope with both hands, palms facing in.",
+    "execution": "Pull the rope toward your face while flaring your elbows out wide, squeezing your rear shoulders and upper back.",
+    "formTips": [
+      "Aim to finish with your hands beside your ears, not your chin.",
+      "Use a light weight — this is a technique-focused movement for shoulder health."
+    ],
+    "commonMistakes": [],
+    "safetyNotes": [],
+    "substitutes": [
+      "deadlift",
+      "pull-up",
+      "lat-pulldown"
+    ],
+    "wgerImageUrl": null
+  },
+  {
+    "id": "straight-arm-pulldown",
+    "name": "Straight-Arm Pulldown",
+    "category": "Back",
+    "primaryMuscles": [
+      "Back"
+    ],
+    "secondaryMuscles": [
+      "Triceps"
+    ],
+    "equipment": [
+      "Cable"
+    ],
+    "difficulty": "Beginner",
+    "preparation": "Stand facing a high pulley, gripping the bar with arms extended almost straight in front of you.",
+    "execution": "Pull the bar down in an arc to your thighs, keeping a slight elbow bend, then let it rise back under control.",
+    "formTips": [
+      "Keep the movement isolated to your shoulder joint — don't bend your elbows more as you pull.",
+      "Slight forward lean helps you feel the lats working."
+    ],
+    "commonMistakes": [],
+    "safetyNotes": [],
+    "substitutes": [
+      "deadlift",
+      "pull-up",
+      "lat-pulldown"
+    ],
+    "wgerImageUrl": "https://wger.de/media/exercise-images/1726/2e7e541b-5f55-405a-ae78-3e71b3f42db4.png.400x400_q85.jpg"
+  },
+  {
+    "id": "overhead-barbell-press",
+    "name": "Overhead Barbell Press",
+    "category": "Shoulders",
+    "primaryMuscles": [
+      "Shoulders"
+    ],
+    "secondaryMuscles": [
+      "Triceps",
+      "Core"
+    ],
+    "equipment": [
+      "Barbell"
+    ],
+    "difficulty": "Intermediate",
+    "preparation": "Stand with the bar racked at shoulder height, feet hip-width apart, core braced.",
+    "execution": "Press the bar straight overhead until your arms lock out, then lower it back to shoulder height under control.",
+    "formTips": [
+      "Squeeze your glutes and brace your core to avoid arching your lower back.",
+      "Move your head slightly back and then through as the bar passes your face."
+    ],
+    "commonMistakes": [
+      "Arching the lower back excessively to help the bar past the face.",
+      "Pressing the bar forward instead of straight up, which wastes leverage."
+    ],
+    "safetyNotes": [
+      "Brace your core throughout to protect your lower back from the arch this lift tends to encourage."
+    ],
+    "substitutes": [
+      "dumbbell-shoulder-press",
+      "arnold-press",
+      "lateral-raise"
+    ],
+    "wgerImageUrl": "https://wger.de/media/exercise-images/1893/7dbad19e-0616-41fd-9d7d-3e21649c0eea.png.400x400_q85.png"
+  },
+  {
+    "id": "dumbbell-shoulder-press",
+    "name": "Dumbbell Shoulder Press",
+    "category": "Shoulders",
+    "primaryMuscles": [
+      "Shoulders"
+    ],
+    "secondaryMuscles": [
+      "Triceps"
+    ],
+    "equipment": [
+      "Dumbbell"
+    ],
+    "difficulty": "Intermediate",
+    "preparation": "Seated or standing, bring two dumbbells up to shoulder height with palms facing forward.",
+    "execution": "Press the dumbbells straight overhead until your arms extend, then lower them back with control.",
+    "formTips": [
+      "Avoid arching your lower back to gain height — keep your ribs down.",
+      "Don't let the dumbbells drift forward of your shoulders."
+    ],
+    "commonMistakes": [],
+    "safetyNotes": [],
+    "substitutes": [
+      "overhead-barbell-press",
+      "cable-lateral-raise",
+      "upright-row"
+    ],
+    "wgerImageUrl": "https://wger.de/media/exercise-images/1968/cd92e973-a0d9-4e5f-9011-5369012598d3.png.400x400_q85.png"
+  },
+  {
+    "id": "arnold-press",
+    "name": "Arnold Press",
+    "category": "Shoulders",
+    "primaryMuscles": [
+      "Shoulders"
+    ],
+    "secondaryMuscles": [
+      "Triceps"
+    ],
+    "equipment": [
+      "Dumbbell"
+    ],
+    "difficulty": "Intermediate",
+    "preparation": "Start with a dumbbell in each hand in front of your shoulders, palms facing you.",
+    "execution": "As you press overhead, rotate your palms to face forward, reversing the rotation as you lower back down.",
+    "formTips": [
+      "The rotation adds extra work through the full range of the shoulder — keep it slow and controlled.",
+      "Use a lighter weight than a standard press until the rotation feels natural."
+    ],
+    "commonMistakes": [],
+    "safetyNotes": [],
+    "substitutes": [
+      "overhead-barbell-press",
+      "cable-lateral-raise",
+      "upright-row"
+    ],
+    "wgerImageUrl": null
+  },
+  {
+    "id": "lateral-raise",
+    "name": "Dumbbell Lateral Raise",
+    "category": "Shoulders",
+    "primaryMuscles": [
+      "Shoulders"
+    ],
+    "secondaryMuscles": [],
+    "equipment": [
+      "Dumbbell"
+    ],
+    "difficulty": "Beginner",
+    "preparation": "Stand holding a dumbbell in each hand at your sides, with a slight bend in the elbows.",
+    "execution": "Raise the dumbbells out to your sides until arms are roughly parallel to the floor, then lower with control.",
+    "formTips": [
+      "Lead with your elbows rather than your hands.",
+      "Avoid using momentum by swinging the weights up."
+    ],
+    "commonMistakes": [],
+    "safetyNotes": [],
+    "substitutes": [
+      "overhead-barbell-press",
+      "cable-lateral-raise",
+      "upright-row"
+    ],
+    "wgerImageUrl": "https://wger.de/media/exercise-images/148/lateral-dumbbell-raises-large-2.png.400x400_q85.jpg"
+  },
+  {
+    "id": "front-raise",
+    "name": "Dumbbell Front Raise",
+    "category": "Shoulders",
+    "primaryMuscles": [
+      "Shoulders"
+    ],
+    "secondaryMuscles": [],
+    "equipment": [
+      "Dumbbell"
+    ],
+    "difficulty": "Beginner",
+    "preparation": "Stand holding a dumbbell in each hand in front of your thighs, palms facing your body.",
+    "execution": "Raise the dumbbells straight out in front of you to shoulder height, keeping a slight elbow bend, then lower with control.",
+    "formTips": [
+      "Avoid swinging your torso to generate momentum.",
+      "You can alternate arms if lifting both at once feels too heavy."
+    ],
+    "commonMistakes": [],
+    "safetyNotes": [],
+    "substitutes": [
+      "overhead-barbell-press",
+      "cable-lateral-raise",
+      "upright-row"
+    ],
+    "wgerImageUrl": "https://wger.de/media/exercise-images/256/b7def5bc-2352-499b-b9e5-fff741003831.png.400x400_q85.jpg"
+  },
+  {
+    "id": "rear-delt-fly",
+    "name": "Rear Delt Fly",
+    "category": "Shoulders",
+    "primaryMuscles": [
+      "Shoulders"
+    ],
+    "secondaryMuscles": [
+      "Back"
+    ],
+    "equipment": [
+      "Dumbbell"
+    ],
+    "difficulty": "Beginner",
+    "preparation": "Hinge forward at the hips holding a dumbbell in each hand, with a slight bend in the elbows.",
+    "execution": "Raise the dumbbells out to the sides, squeezing your rear shoulders at the top, then lower with control.",
+    "formTips": [
+      "Keep your torso still — the movement should come from your shoulders, not your back swinging.",
+      "Use a light weight; this is a small, isolation-focused muscle group."
+    ],
+    "commonMistakes": [],
+    "safetyNotes": [],
+    "substitutes": [
+      "overhead-barbell-press",
+      "cable-lateral-raise",
+      "upright-row"
+    ],
+    "wgerImageUrl": "https://wger.de/media/exercise-images/487/ad724e5c-b1ed-49e8-9279-a17545b0dd0b.png.400x400_q85.jpg"
+  },
+  {
+    "id": "cable-lateral-raise",
+    "name": "Cable Lateral Raise",
+    "category": "Shoulders",
+    "primaryMuscles": [
+      "Shoulders"
+    ],
+    "secondaryMuscles": [],
+    "equipment": [
+      "Cable"
+    ],
+    "difficulty": "Beginner",
+    "preparation": "Stand side-on to a low pulley, gripping the handle with your outside hand.",
+    "execution": "Raise the handle out and up to shoulder height with a slight elbow bend, then lower under control.",
+    "formTips": [
+      "The cable keeps tension on the shoulder throughout, unlike a dumbbell at the bottom of the rep.",
+      "Keep your torso upright rather than leaning away from the machine."
+    ],
+    "commonMistakes": [],
+    "safetyNotes": [],
+    "substitutes": [
+      "overhead-barbell-press",
+      "dumbbell-shoulder-press",
+      "arnold-press"
+    ],
+    "wgerImageUrl": "https://wger.de/media/exercise-images/1378/7c1fcf34-fb7e-45e7-a0c1-51f296235315.jpg.400x400_q85.jpg"
+  },
+  {
+    "id": "upright-row",
+    "name": "Upright Row",
+    "category": "Shoulders",
+    "primaryMuscles": [
+      "Shoulders"
+    ],
+    "secondaryMuscles": [
+      "Back"
+    ],
+    "equipment": [
+      "Barbell",
+      "Dumbbell"
+    ],
+    "difficulty": "Intermediate",
+    "preparation": "Stand holding a barbell or dumbbells in front of your thighs with an overhand grip.",
+    "execution": "Pull the weight straight up along your body toward chin height, leading with your elbows, then lower with control.",
+    "formTips": [
+      "Stop if you feel shoulder pinching — a wider grip can help reduce impingement.",
+      "Keep the bar close to your body throughout the pull."
+    ],
+    "commonMistakes": [
+      "Pulling the bar too high (above chest height), which increases shoulder impingement risk."
+    ],
+    "safetyNotes": [
+      "Stop if you feel any shoulder pinching -- a wider grip or lower pull height usually resolves it."
+    ],
+    "substitutes": [
+      "overhead-barbell-press",
+      "dumbbell-shoulder-press",
+      "arnold-press"
+    ],
+    "wgerImageUrl": "https://wger.de/media/exercise-images/693/05c91bd2-7814-40b6-b2d1-51ae942b8321.png.400x400_q85.jpg"
+  },
+  {
+    "id": "machine-shoulder-press",
+    "name": "Machine Shoulder Press",
+    "category": "Shoulders",
+    "primaryMuscles": [
+      "Shoulders"
+    ],
+    "secondaryMuscles": [
+      "Triceps"
+    ],
+    "equipment": [
+      "Machine"
+    ],
+    "difficulty": "Beginner",
+    "preparation": "Adjust the seat so the handles start at shoulder height.",
+    "execution": "Press straight up until your arms extend, then lower back under control.",
+    "formTips": [
+      "A fixed path is a good option if you're still building overhead pressing strength.",
+      "Don't shrug your shoulders up as you press."
+    ],
+    "commonMistakes": [],
+    "safetyNotes": [],
+    "substitutes": [
+      "overhead-barbell-press",
+      "dumbbell-shoulder-press",
+      "arnold-press"
+    ],
+    "wgerImageUrl": null
+  },
+  {
+    "id": "band-pull-apart",
+    "name": "Resistance Band Pull-Apart",
+    "category": "Shoulders",
+    "primaryMuscles": [
+      "Shoulders"
+    ],
+    "secondaryMuscles": [
+      "Back"
+    ],
+    "equipment": [
+      "Resistance Band"
+    ],
+    "difficulty": "Beginner",
+    "preparation": "Hold a resistance band with both hands at shoulder width, arms extended in front of you.",
+    "execution": "Pull the band apart by squeezing your shoulder blades together until it touches your chest, then return with control.",
+    "formTips": [
+      "Great as a warm-up for pressing days to activate the rear shoulders.",
+      "Keep your arms straight throughout the movement."
+    ],
+    "commonMistakes": [],
+    "safetyNotes": [],
+    "substitutes": [
+      "overhead-barbell-press",
+      "dumbbell-shoulder-press",
+      "arnold-press"
+    ],
+    "wgerImageUrl": null
+  },
+  {
+    "id": "barbell-back-squat",
+    "name": "Barbell Back Squat",
+    "category": "Legs",
+    "primaryMuscles": [
+      "Legs"
+    ],
+    "secondaryMuscles": [
+      "Glutes",
+      "Core"
+    ],
+    "equipment": [
+      "Barbell"
+    ],
+    "difficulty": "Advanced",
+    "preparation": "Position the bar across your upper back (not your neck), feet shoulder-width apart, and unrack it.",
+    "execution": "Bend at the hips and knees to lower until your thighs are at least parallel to the floor, then drive back up through your heels.",
+    "formTips": [
+      "Keep your knees tracking over your toes rather than caving inward.",
+      "Brace your core before descending, like you're about to take a punch."
+    ],
+    "commonMistakes": [
+      "Letting the knees cave inward as the weight gets heavier.",
+      "Rounding the lower back at the bottom of the rep instead of keeping a neutral spine.",
+      "Rising with the hips first, turning the squat into a good-morning."
+    ],
+    "safetyNotes": [
+      "Use safety bars or pins set just below your bottom position when squatting heavy without a spotter.",
+      "Stop the descent if you can't maintain a neutral lower back -- depth isn't worth a rounded spine."
+    ],
+    "substitutes": [
+      "leg-press",
+      "walking-lunge",
+      "bulgarian-split-squat"
+    ],
+    "wgerImageUrl": "https://wger.de/media/exercise-images/1801/60043328-1cfb-4289-9865-aaf64d5aaa28.jpg.400x400_q85.jpg"
+  },
+  {
+    "id": "front-squat",
+    "name": "Front Squat",
+    "category": "Legs",
+    "primaryMuscles": [
+      "Legs"
+    ],
+    "secondaryMuscles": [
+      "Core"
+    ],
+    "equipment": [
+      "Barbell"
+    ],
+    "difficulty": "Advanced",
+    "preparation": "Rest the bar across your front shoulders with elbows raised high, fingertips lightly supporting the bar.",
+    "execution": "Squat down while keeping your torso upright, then drive back up through your heels.",
+    "formTips": [
+      "An upright torso is essential — leaning forward will roll the bar off your shoulders.",
+      "This variation shifts more emphasis onto the quads and core than a back squat."
+    ],
+    "commonMistakes": [
+      "Letting the elbows drop, which lets the bar roll forward off the shoulders.",
+      "Leaning the torso forward instead of staying upright."
+    ],
+    "safetyNotes": [
+      "Be ready to bail forward (dump the bar) or use a squat rack with pins -- front squats are harder to bail backward from."
+    ],
+    "substitutes": [
+      "leg-press",
+      "walking-lunge",
+      "bulgarian-split-squat"
+    ],
+    "wgerImageUrl": "https://wger.de/media/exercise-images/191/Front-squat-1-857x1024.png.400x400_q85.png"
+  },
+  {
+    "id": "leg-press",
+    "name": "Leg Press",
+    "category": "Legs",
+    "primaryMuscles": [
+      "Legs"
+    ],
+    "secondaryMuscles": [
+      "Glutes"
+    ],
+    "equipment": [
+      "Machine"
+    ],
+    "difficulty": "Beginner",
+    "preparation": "Sit in the machine with feet shoulder-width apart on the platform.",
+    "execution": "Lower the platform until your knees reach about 90 degrees, then press back up without locking your knees out hard.",
+    "formTips": [
+      "Don't let your lower back round off the seat pad at the bottom of the movement.",
+      "Keep your knees tracking in line with your feet."
+    ],
+    "commonMistakes": [
+      "Letting the lower back round off the seat pad at the bottom of the movement.",
+      "Locking the knees out hard at the top of every rep."
+    ],
+    "safetyNotes": [
+      "Never fully lock and hold your knees under heavy load -- keep a slight bend to avoid transferring stress to the joint."
+    ],
+    "substitutes": [
+      "barbell-back-squat",
+      "front-squat",
+      "romanian-deadlift"
+    ],
+    "wgerImageUrl": "https://wger.de/media/exercise-images/371/d2136f96-3a43-4d4c-9944-1919c4ca1ce1.webp.400x400_q85.png"
+  },
+  {
+    "id": "romanian-deadlift",
+    "name": "Romanian Deadlift",
+    "category": "Legs",
+    "primaryMuscles": [
+      "Legs"
+    ],
+    "secondaryMuscles": [
+      "Glutes",
+      "Back"
+    ],
+    "equipment": [
+      "Barbell"
+    ],
+    "difficulty": "Intermediate",
+    "preparation": "Stand holding the bar at hip height with a slight bend in your knees.",
+    "execution": "Hinge at the hips and lower the bar down the front of your legs until you feel a hamstring stretch, then drive your hips forward to stand.",
+    "formTips": [
+      "Keep the bar close to your legs the entire time.",
+      "This is a hip-hinge, not a squat — your knee bend should stay roughly constant."
+    ],
+    "commonMistakes": [
+      "Bending the knees too much, turning it into a conventional deadlift instead of a hip hinge.",
+      "Rounding the back to reach further down than your hamstring flexibility allows."
+    ],
+    "safetyNotes": [
+      "Stop the descent at the point your lower back would round -- range of motion varies a lot by hamstring flexibility."
+    ],
+    "substitutes": [
+      "leg-press",
+      "walking-lunge",
+      "bulgarian-split-squat"
+    ],
+    "wgerImageUrl": null
+  },
+  {
+    "id": "walking-lunge",
+    "name": "Walking Lunge",
+    "category": "Legs",
+    "primaryMuscles": [
+      "Legs"
+    ],
+    "secondaryMuscles": [
+      "Glutes"
+    ],
+    "equipment": [
+      "Dumbbell",
+      "Bodyweight"
+    ],
+    "difficulty": "Intermediate",
+    "preparation": "Stand tall, optionally holding a dumbbell in each hand at your sides.",
+    "execution": "Step forward into a lunge until both knees reach about 90 degrees, then push off your front foot to step into the next lunge.",
+    "formTips": [
+      "Keep your torso upright rather than leaning forward over your front leg.",
+      "Take a long enough step that your front knee doesn't travel past your toes."
+    ],
+    "commonMistakes": [
+      "Letting the front knee travel far past the toes on a short step.",
+      "Leaning the torso forward instead of staying upright."
+    ],
+    "safetyNotes": [],
+    "substitutes": [
+      "barbell-back-squat",
+      "front-squat",
+      "leg-press"
+    ],
+    "wgerImageUrl": null
+  },
+  {
+    "id": "bulgarian-split-squat",
+    "name": "Bulgarian Split Squat",
+    "category": "Legs",
+    "primaryMuscles": [
+      "Legs"
+    ],
+    "secondaryMuscles": [
+      "Glutes"
+    ],
+    "equipment": [
+      "Dumbbell",
+      "Bench"
+    ],
+    "difficulty": "Intermediate",
+    "preparation": "Rest one foot behind you on a bench, standing far enough forward that your front shin stays roughly vertical.",
+    "execution": "Lower your back knee toward the floor, then drive up through your front heel.",
+    "formTips": [
+      "Most of the work should be through your front leg — the back foot is just for balance.",
+      "Start with bodyweight only until your balance feels solid."
+    ],
+    "commonMistakes": [],
+    "safetyNotes": [],
+    "substitutes": [
+      "barbell-back-squat",
+      "front-squat",
+      "leg-press"
+    ],
+    "wgerImageUrl": null
+  },
+  {
+    "id": "leg-extension",
+    "name": "Leg Extension",
+    "category": "Legs",
+    "primaryMuscles": [
+      "Legs"
+    ],
+    "secondaryMuscles": [],
+    "equipment": [
+      "Machine"
+    ],
+    "difficulty": "Beginner",
+    "preparation": "Sit with your shins behind the pad and back flat against the seat.",
+    "execution": "Extend your legs until straight, squeeze your quads at the top, then lower back under control.",
+    "formTips": [
+      "Avoid locking your knees out violently — control the top of the rep.",
+      "Slow the lowering phase down to increase the muscle-building stimulus."
+    ],
+    "commonMistakes": [],
+    "safetyNotes": [],
+    "substitutes": [
+      "barbell-back-squat",
+      "front-squat",
+      "romanian-deadlift"
+    ],
+    "wgerImageUrl": "https://wger.de/media/exercise-images/369/78c915d1-e46d-4d30-8124-65d68664c3ef.png.400x400_q85.jpg"
+  },
+  {
+    "id": "leg-curl",
+    "name": "Leg Curl",
+    "category": "Legs",
+    "primaryMuscles": [
+      "Legs"
+    ],
+    "secondaryMuscles": [],
+    "equipment": [
+      "Machine"
+    ],
+    "difficulty": "Beginner",
+    "preparation": "Lie face down (or sit, depending on the machine) with the pad positioned behind your ankles.",
+    "execution": "Curl your heels toward your glutes, then lower back under control.",
+    "formTips": [
+      "Avoid lifting your hips off the pad to cheat the weight up.",
+      "A brief pause at full contraction improves hamstring engagement."
+    ],
+    "commonMistakes": [],
+    "safetyNotes": [],
+    "substitutes": [
+      "barbell-back-squat",
+      "front-squat",
+      "romanian-deadlift"
+    ],
+    "wgerImageUrl": "https://wger.de/media/exercise-images/364/b318dde9-f5f2-489f-940a-cd864affb9e3.png.400x400_q85.png"
+  },
+  {
+    "id": "goblet-squat",
+    "name": "Goblet Squat",
+    "category": "Legs",
+    "primaryMuscles": [
+      "Legs"
+    ],
+    "secondaryMuscles": [
+      "Core"
+    ],
+    "equipment": [
+      "Kettlebell",
+      "Dumbbell"
+    ],
+    "difficulty": "Beginner",
+    "preparation": "Hold a kettlebell or dumbbell close to your chest with both hands.",
+    "execution": "Squat down between your knees while keeping your torso upright, then stand back up.",
+    "formTips": [
+      "A great squat pattern to learn before progressing to a barbell squat.",
+      "Keep your elbows inside your knees at the bottom of the movement."
+    ],
+    "commonMistakes": [
+      "Letting the heels lift off the floor as you descend.",
+      "Leaning too far forward instead of keeping the chest up."
+    ],
+    "safetyNotes": [],
+    "substitutes": [
+      "barbell-back-squat",
+      "front-squat",
+      "leg-press"
+    ],
+    "wgerImageUrl": "https://wger.de/media/exercise-images/203/1c052351-2af0-4227-aeb0-244008e4b0a8.jpeg.400x400_q85.jpg"
+  },
+  {
+    "id": "standing-calf-raise",
+    "name": "Standing Calf Raise",
+    "category": "Legs",
+    "primaryMuscles": [
+      "Legs"
+    ],
+    "secondaryMuscles": [],
+    "equipment": [
+      "Machine",
+      "Bodyweight"
+    ],
+    "difficulty": "Beginner",
+    "preparation": "Stand with the balls of your feet on a raised platform or step, heels hanging off the edge.",
+    "execution": "Rise up onto the balls of your feet as high as possible, pause, then lower your heels below the platform for a full stretch.",
+    "formTips": [
+      "Full range of motion matters more than heavy weight for calf development.",
+      "Pause briefly at the top for a stronger contraction."
+    ],
+    "commonMistakes": [],
+    "safetyNotes": [],
+    "substitutes": [
+      "barbell-back-squat",
+      "front-squat",
+      "leg-press"
+    ],
+    "wgerImageUrl": "https://wger.de/media/exercise-images/622/9a429bd0-afd3-4ad0-8043-e9beec901c81.jpeg.400x400_q85.jpg"
+  },
+  {
+    "id": "hip-thrust",
+    "name": "Barbell Hip Thrust",
+    "category": "Legs",
+    "primaryMuscles": [
+      "Legs"
+    ],
+    "secondaryMuscles": [
+      "Core"
+    ],
+    "equipment": [
+      "Barbell",
+      "Bench"
+    ],
+    "difficulty": "Intermediate",
+    "preparation": "Sit on the floor with your upper back against a bench and a padded barbell across your hips.",
+    "execution": "Drive your hips up until your body forms a straight line from shoulders to knees, then lower with control.",
+    "formTips": [
+      "Tuck your chin slightly and avoid overextending your lower back at the top.",
+      "Drive through your heels, not your toes."
+    ],
+    "commonMistakes": [
+      "Overextending the lower back at the top instead of stopping at a straight hip line.",
+      "Pushing through the toes instead of the heels."
+    ],
+    "safetyNotes": [
+      "Use a pad on the bar -- the unpadded bar directly across the hips is uncomfortable and can bruise without one."
+    ],
+    "substitutes": [
+      "barbell-back-squat",
+      "front-squat",
+      "leg-press"
+    ],
+    "wgerImageUrl": null
+  },
+  {
+    "id": "kettlebell-swing",
+    "name": "Kettlebell Swing",
+    "category": "Legs",
+    "primaryMuscles": [
+      "Legs"
+    ],
+    "secondaryMuscles": [
+      "Core"
+    ],
+    "equipment": [
+      "Kettlebell"
+    ],
+    "difficulty": "Intermediate",
+    "preparation": "Stand with feet shoulder-width apart, kettlebell on the floor a short distance in front of you.",
+    "execution": "Hinge at the hips to swing the kettlebell back between your legs, then snap your hips forward to drive it up to chest height.",
+    "formTips": [
+      "The power comes from your hips, not your arms — think of it as an explosive hip hinge.",
+      "Keep your back flat throughout; don't round over as you hinge."
+    ],
+    "commonMistakes": [
+      "Squatting the weight up instead of driving it with a hip hinge.",
+      "Using the arms to lift the kettlebell instead of letting hip drive do the work."
+    ],
+    "safetyNotes": [
+      "Keep your back flat throughout the hinge -- this is a ballistic movement and a rounded back under momentum is riskier than under a slow lift."
+    ],
+    "substitutes": [
+      "barbell-back-squat",
+      "front-squat",
+      "leg-press"
+    ],
+    "wgerImageUrl": "https://wger.de/media/exercise-images/960/da4d0560-da89-4bb5-b91f-746458fb04ad.png.400x400_q85.png"
+  },
+  {
+    "id": "barbell-bicep-curl",
+    "name": "Barbell Bicep Curl",
+    "category": "Arms",
+    "primaryMuscles": [
+      "Arms"
+    ],
+    "secondaryMuscles": [],
+    "equipment": [
+      "Barbell"
+    ],
+    "difficulty": "Beginner",
+    "preparation": "Stand holding the bar with a shoulder-width, underhand grip, arms extended.",
+    "execution": "Curl the bar up toward your shoulders keeping your elbows fixed at your sides, then lower with control.",
+    "formTips": [
+      "Avoid swinging your hips to generate momentum.",
+      "Keep your wrists straight rather than curling them at the top."
+    ],
+    "commonMistakes": [
+      "Swinging the hips/torso to help lift the weight.",
+      "Only completing the top half of the range of motion."
+    ],
+    "safetyNotes": [],
+    "substitutes": [
+      "dumbbell-bicep-curl",
+      "hammer-curl",
+      "cable-bicep-curl"
+    ],
+    "wgerImageUrl": null
+  },
+  {
+    "id": "dumbbell-bicep-curl",
+    "name": "Dumbbell Bicep Curl",
+    "category": "Arms",
+    "primaryMuscles": [
+      "Arms"
+    ],
+    "secondaryMuscles": [],
+    "equipment": [
+      "Dumbbell"
+    ],
+    "difficulty": "Beginner",
+    "preparation": "Stand holding a dumbbell in each hand at your sides, palms facing forward.",
+    "execution": "Curl the dumbbells up toward your shoulders, keeping elbows pinned at your sides, then lower under control.",
+    "formTips": [
+      "Alternate arms if it helps you keep strict form.",
+      "Avoid letting your elbows drift forward as the weight gets heavy."
+    ],
+    "commonMistakes": [],
+    "safetyNotes": [],
+    "substitutes": [
+      "barbell-bicep-curl",
+      "cable-bicep-curl",
+      "triceps-pushdown"
+    ],
+    "wgerImageUrl": "https://wger.de/media/exercise-images/1225/39a0b7e7-9780-425d-84f5-56d10d1690ac.gif"
+  },
+  {
+    "id": "hammer-curl",
+    "name": "Hammer Curl",
+    "category": "Arms",
+    "primaryMuscles": [
+      "Arms"
+    ],
+    "secondaryMuscles": [],
+    "equipment": [
+      "Dumbbell"
+    ],
+    "difficulty": "Beginner",
+    "preparation": "Stand holding a dumbbell in each hand with a neutral grip, palms facing your body.",
+    "execution": "Curl the dumbbells up toward your shoulders, then lower with control.",
+    "formTips": [
+      "The neutral grip targets the brachialis and forearms in addition to the biceps.",
+      "Keep your upper arms still throughout the movement."
+    ],
+    "commonMistakes": [],
+    "safetyNotes": [],
+    "substitutes": [
+      "barbell-bicep-curl",
+      "cable-bicep-curl",
+      "triceps-pushdown"
+    ],
+    "wgerImageUrl": "https://wger.de/media/exercise-images/86/Bicep-hammer-curl-1.png.400x400_q85.png"
+  },
+  {
+    "id": "cable-bicep-curl",
+    "name": "Cable Bicep Curl",
+    "category": "Arms",
+    "primaryMuscles": [
+      "Arms"
+    ],
+    "secondaryMuscles": [],
+    "equipment": [
+      "Cable"
+    ],
+    "difficulty": "Beginner",
+    "preparation": "Stand facing a low pulley, gripping a straight or EZ bar attachment with an underhand grip.",
+    "execution": "Curl the handle up toward your shoulders keeping your elbows fixed, then lower under control.",
+    "formTips": [
+      "The cable keeps constant tension on the biceps, unlike a dumbbell at the bottom of the rep.",
+      "Stand far enough back that the cable stays taut throughout."
+    ],
+    "commonMistakes": [],
+    "safetyNotes": [],
+    "substitutes": [
+      "barbell-bicep-curl",
+      "dumbbell-bicep-curl",
+      "hammer-curl"
+    ],
+    "wgerImageUrl": null
+  },
+  {
+    "id": "concentration-curl",
+    "name": "Concentration Curl",
+    "category": "Arms",
+    "primaryMuscles": [
+      "Arms"
+    ],
+    "secondaryMuscles": [],
+    "equipment": [
+      "Dumbbell"
+    ],
+    "difficulty": "Beginner",
+    "preparation": "Sit on a bench, brace the back of your upper arm against your inner thigh, and let the dumbbell hang.",
+    "execution": "Curl the dumbbell up toward your shoulder, focusing on a strict, isolated motion, then lower with control.",
+    "formTips": [
+      "This variation removes momentum almost entirely — go lighter than your standing curl weight.",
+      "Squeeze hard at the top of each rep."
+    ],
+    "commonMistakes": [],
+    "safetyNotes": [],
+    "substitutes": [
+      "barbell-bicep-curl",
+      "cable-bicep-curl",
+      "triceps-pushdown"
+    ],
+    "wgerImageUrl": null
+  },
+  {
+    "id": "triceps-pushdown",
+    "name": "Triceps Pushdown",
+    "category": "Arms",
+    "primaryMuscles": [
+      "Arms"
+    ],
+    "secondaryMuscles": [],
+    "equipment": [
+      "Cable"
+    ],
+    "difficulty": "Beginner",
+    "preparation": "Stand facing a high pulley, gripping the bar or rope with elbows pinned at your sides.",
+    "execution": "Push the attachment down until your arms are fully extended, then let it rise back under control.",
+    "formTips": [
+      "Keep your elbows locked in place — only your forearms should move.",
+      "Avoid leaning your bodyweight into the movement to cheat the weight down."
+    ],
+    "commonMistakes": [],
+    "safetyNotes": [],
+    "substitutes": [
+      "barbell-bicep-curl",
+      "dumbbell-bicep-curl",
+      "hammer-curl"
+    ],
+    "wgerImageUrl": "https://wger.de/media/exercise-images/1185/c5ca283d-8958-4fd8-9d59-a3f52a3ac66b.jpg.400x400_q85.jpg"
+  },
+  {
+    "id": "skull-crusher",
+    "name": "Skull Crusher (Lying Triceps Extension)",
+    "category": "Arms",
+    "primaryMuscles": [
+      "Arms"
+    ],
+    "secondaryMuscles": [],
+    "equipment": [
+      "Barbell",
+      "Dumbbell",
+      "Bench"
+    ],
+    "difficulty": "Intermediate",
+    "preparation": "Lie on a bench holding a barbell or dumbbells above your chest with arms extended.",
+    "execution": "Lower the weight toward your forehead by bending only at the elbows, then extend back up.",
+    "formTips": [
+      "Keep your upper arms stationary throughout — only your forearms should move.",
+      "Start light; this movement puts significant stress on the elbow joint."
+    ],
+    "commonMistakes": [
+      "Letting the upper arms drift backward, which turns it into a pullover.",
+      "Using too much weight, which is a common cause of elbow strain on this exercise."
+    ],
+    "safetyNotes": [
+      "Start light -- this movement puts significant, concentrated stress on the elbow joint."
+    ],
+    "substitutes": [
+      "barbell-bicep-curl",
+      "dumbbell-bicep-curl",
+      "hammer-curl"
+    ],
+    "wgerImageUrl": null
+  },
+  {
+    "id": "overhead-triceps-extension",
+    "name": "Overhead Triceps Extension",
+    "category": "Arms",
+    "primaryMuscles": [
+      "Arms"
+    ],
+    "secondaryMuscles": [],
+    "equipment": [
+      "Dumbbell"
+    ],
+    "difficulty": "Beginner",
+    "preparation": "Stand or sit holding a single dumbbell overhead with both hands.",
+    "execution": "Lower the dumbbell behind your head by bending your elbows, then extend back up.",
+    "formTips": [
+      "Keep your elbows pointed forward, not flared out to the sides.",
+      "Brace your core to avoid arching your lower back."
+    ],
+    "commonMistakes": [],
+    "safetyNotes": [],
+    "substitutes": [
+      "barbell-bicep-curl",
+      "cable-bicep-curl",
+      "triceps-pushdown"
+    ],
+    "wgerImageUrl": "https://wger.de/media/exercise-images/1519/fab7f641-27d4-40b5-8edd-1a0a137bfd94.gif"
+  },
+  {
+    "id": "close-grip-bench-press",
+    "name": "Close-Grip Bench Press",
+    "category": "Arms",
+    "primaryMuscles": [
+      "Arms"
+    ],
+    "secondaryMuscles": [
+      "Chest"
+    ],
+    "equipment": [
+      "Barbell",
+      "Bench"
+    ],
+    "difficulty": "Intermediate",
+    "preparation": "Lie on a bench and grip the bar at roughly shoulder width, closer than a standard bench press grip.",
+    "execution": "Lower the bar to your lower chest keeping elbows tucked, then press back up.",
+    "formTips": [
+      "This variation emphasizes the triceps more than a standard bench press.",
+      "Keep your elbows tucked close rather than flaring out."
+    ],
+    "commonMistakes": [
+      "Gripping too narrow, which strains the wrists.",
+      "Flaring the elbows out instead of keeping them tucked."
+    ],
+    "safetyNotes": [
+      "Use a spotter near your max the same as a standard bench press."
+    ],
+    "substitutes": [
+      "barbell-bicep-curl",
+      "dumbbell-bicep-curl",
+      "hammer-curl"
+    ],
+    "wgerImageUrl": null
+  },
+  {
+    "id": "bench-dip",
+    "name": "Bench Dip",
+    "category": "Arms",
+    "primaryMuscles": [
+      "Arms"
+    ],
+    "secondaryMuscles": [
+      "Chest"
+    ],
+    "equipment": [
+      "Bodyweight",
+      "Bench"
+    ],
+    "difficulty": "Beginner",
+    "preparation": "Sit on the edge of a bench, hands gripping the edge beside your hips, legs extended in front of you.",
+    "execution": "Lower your hips toward the floor by bending your elbows, then press back up.",
+    "formTips": [
+      "Keep your shoulders down away from your ears throughout.",
+      "Bend your knees to make the movement easier if needed."
+    ],
+    "commonMistakes": [],
+    "safetyNotes": [],
+    "substitutes": [
+      "barbell-bicep-curl",
+      "dumbbell-bicep-curl",
+      "hammer-curl"
+    ],
+    "wgerImageUrl": "https://wger.de/media/exercise-images/83/Bench-dips-1.png.400x400_q85.png"
+  },
+  {
+    "id": "plank",
+    "name": "Plank",
+    "category": "Core",
+    "primaryMuscles": [
+      "Core"
+    ],
+    "secondaryMuscles": [],
+    "equipment": [
+      "Bodyweight"
+    ],
+    "difficulty": "Beginner",
+    "preparation": "Rest on your forearms and toes, elbows under your shoulders, body in a straight line.",
+    "execution": "Brace your core and hold the position without letting your hips sag or pike upward.",
+    "formTips": [
+      "Squeeze your glutes to help keep your hips level.",
+      "Breathe steadily — don't hold your breath while bracing."
+    ],
+    "commonMistakes": [
+      "Letting the hips sag toward the floor as fatigue sets in.",
+      "Holding your breath instead of breathing steadily."
+    ],
+    "safetyNotes": [],
+    "substitutes": [
+      "russian-twist",
+      "cable-woodchopper",
+      "side-plank"
+    ],
+    "wgerImageUrl": "https://wger.de/media/exercise-images/458/b7bd9c28-9f1d-4647-bd17-ab6a3adf5770.png.400x400_q85.png"
+  },
+  {
+    "id": "side-plank",
+    "name": "Side Plank",
+    "category": "Core",
+    "primaryMuscles": [
+      "Core"
+    ],
+    "secondaryMuscles": [],
+    "equipment": [
+      "Bodyweight"
+    ],
+    "difficulty": "Beginner",
+    "preparation": "Lie on your side, resting on one forearm with your elbow under your shoulder and feet stacked.",
+    "execution": "Lift your hips so your body forms a straight line, and hold without sagging.",
+    "formTips": [
+      "Stack your hips directly on top of each other rather than rolling forward or back.",
+      "Add a top-arm reach overhead for an extra core challenge once the basic hold feels easy."
+    ],
+    "commonMistakes": [],
+    "safetyNotes": [],
+    "substitutes": [
+      "russian-twist",
+      "cable-woodchopper",
+      "plank"
+    ],
+    "wgerImageUrl": null
+  },
+  {
+    "id": "crunch",
+    "name": "Crunch",
+    "category": "Core",
+    "primaryMuscles": [
+      "Core"
+    ],
+    "secondaryMuscles": [],
+    "equipment": [
+      "Bodyweight"
+    ],
+    "difficulty": "Beginner",
+    "preparation": "Lie on your back with knees bent and feet flat on the floor, hands lightly supporting your head.",
+    "execution": "Curl your shoulders off the floor toward your pelvis, then lower back down with control.",
+    "formTips": [
+      "Avoid pulling on your neck with your hands.",
+      "Exhale as you curl up to engage your abs more fully."
+    ],
+    "commonMistakes": [],
+    "safetyNotes": [],
+    "substitutes": [
+      "russian-twist",
+      "cable-woodchopper",
+      "plank"
+    ],
+    "wgerImageUrl": "https://wger.de/media/exercise-images/91/Crunches-1.png.400x400_q85.png"
+  },
+  {
+    "id": "bicycle-crunch",
+    "name": "Bicycle Crunch",
+    "category": "Core",
+    "primaryMuscles": [
+      "Core"
+    ],
+    "secondaryMuscles": [],
+    "equipment": [
+      "Bodyweight"
+    ],
+    "difficulty": "Beginner",
+    "preparation": "Lie on your back with hands lightly behind your head and knees pulled in toward your chest.",
+    "execution": "Alternate bringing each elbow toward the opposite knee while extending the other leg out, in a pedaling motion.",
+    "formTips": [
+      "Rotate through your torso rather than just moving your elbows.",
+      "Keep the motion slow and controlled rather than rushing through reps."
+    ],
+    "commonMistakes": [],
+    "safetyNotes": [],
+    "substitutes": [
+      "russian-twist",
+      "cable-woodchopper",
+      "plank"
+    ],
+    "wgerImageUrl": null
+  },
+  {
+    "id": "hanging-leg-raise",
+    "name": "Hanging Leg Raise",
+    "category": "Core",
+    "primaryMuscles": [
+      "Core"
+    ],
+    "secondaryMuscles": [
+      "Back"
+    ],
+    "equipment": [
+      "Bodyweight"
+    ],
+    "difficulty": "Advanced",
+    "preparation": "Hang from a pull-up bar with arms fully extended.",
+    "execution": "Raise your legs until roughly parallel to the floor (or higher) without swinging, then lower with control.",
+    "formTips": [
+      "Bend your knees to make the movement easier while you build core strength.",
+      "Avoid using momentum from swinging your body."
+    ],
+    "commonMistakes": [],
+    "safetyNotes": [],
+    "substitutes": [
+      "russian-twist",
+      "cable-woodchopper",
+      "plank"
+    ],
+    "wgerImageUrl": null
+  },
+  {
+    "id": "russian-twist",
+    "name": "Russian Twist",
+    "category": "Core",
+    "primaryMuscles": [
+      "Core"
+    ],
+    "secondaryMuscles": [],
+    "equipment": [
+      "Bodyweight",
+      "Dumbbell"
+    ],
+    "difficulty": "Intermediate",
+    "preparation": "Sit with your knees bent and feet lifted slightly off the floor, torso leaned back a little.",
+    "execution": "Rotate side to side, tapping the floor or a weight beside each hip.",
+    "formTips": [
+      "Keep your chest up rather than rounding your back.",
+      "Move slower to increase difficulty instead of rushing through reps."
+    ],
+    "commonMistakes": [],
+    "safetyNotes": [],
+    "substitutes": [
+      "plank",
+      "side-plank",
+      "crunch"
+    ],
+    "wgerImageUrl": "https://wger.de/media/exercise-images/1193/70ca5d80-3847-4a8c-8882-c6e9e485e29e.png.400x400_q85.png"
+  },
+  {
+    "id": "cable-woodchopper",
+    "name": "Cable Woodchopper",
+    "category": "Core",
+    "primaryMuscles": [
+      "Core"
+    ],
+    "secondaryMuscles": [],
+    "equipment": [
+      "Cable"
+    ],
+    "difficulty": "Intermediate",
+    "preparation": "Set the pulley high and stand side-on to the machine, gripping the handle with both hands.",
+    "execution": "Pull the handle diagonally down across your body to the opposite hip, rotating through your torso.",
+    "formTips": [
+      "Let your hips and torso rotate together rather than just your arms pulling.",
+      "Keep your arms relatively straight — the power should come from your core."
+    ],
+    "commonMistakes": [],
+    "safetyNotes": [],
+    "substitutes": [
+      "plank",
+      "side-plank",
+      "crunch"
+    ],
+    "wgerImageUrl": null
+  },
+  {
+    "id": "ab-wheel-rollout",
+    "name": "Ab Wheel Rollout",
+    "category": "Core",
+    "primaryMuscles": [
+      "Core"
+    ],
+    "secondaryMuscles": [
+      "Back"
+    ],
+    "equipment": [
+      "Bodyweight"
+    ],
+    "difficulty": "Advanced",
+    "preparation": "Kneel on the floor holding the ab wheel handles with both hands, wheel in front of you.",
+    "execution": "Roll the wheel forward as far as you can control while keeping your core braced and back flat, then pull back to the start.",
+    "formTips": [
+      "Only roll out as far as you can maintain a flat back — a sagging lower back means you've gone too far.",
+      "Start with partial-range rollouts before progressing to full extension."
+    ],
+    "commonMistakes": [],
+    "safetyNotes": [],
+    "substitutes": [
+      "russian-twist",
+      "cable-woodchopper",
+      "plank"
+    ],
+    "wgerImageUrl": "https://wger.de/media/exercise-images/1573/a9ab402b-61ef-4d60-b91a-df52bf7f41a9.jpg.400x400_q85.png"
+  },
+  {
+    "id": "mountain-climber",
+    "name": "Mountain Climber",
+    "category": "Core",
+    "primaryMuscles": [
+      "Core"
+    ],
+    "secondaryMuscles": [
+      "Legs"
+    ],
+    "equipment": [
+      "Bodyweight"
+    ],
+    "difficulty": "Beginner",
+    "preparation": "Start in a high plank position with hands under your shoulders.",
+    "execution": "Drive your knees alternately toward your chest at a quick pace, keeping your hips low.",
+    "formTips": [
+      "Keep your core braced so your hips don't rise up as you pick up speed.",
+      "Land softly on the balls of your feet."
+    ],
+    "commonMistakes": [],
+    "safetyNotes": [],
+    "substitutes": [
+      "russian-twist",
+      "cable-woodchopper",
+      "plank"
+    ],
+    "wgerImageUrl": null
+  },
+  {
+    "id": "dead-bug",
+    "name": "Dead Bug",
+    "category": "Core",
+    "primaryMuscles": [
+      "Core"
+    ],
+    "secondaryMuscles": [],
+    "equipment": [
+      "Bodyweight"
+    ],
+    "difficulty": "Beginner",
+    "preparation": "Lie on your back with arms reaching straight up and knees bent at 90 degrees above your hips.",
+    "execution": "Slowly extend one arm and the opposite leg toward the floor while keeping your lower back pressed down, then return and switch sides.",
+    "formTips": [
+      "Keep your lower back flat against the floor the entire time — that's the whole point of the exercise.",
+      "Move slowly; this is a control exercise, not a speed one."
+    ],
+    "commonMistakes": [],
+    "safetyNotes": [],
+    "substitutes": [
+      "russian-twist",
+      "cable-woodchopper",
+      "plank"
+    ],
+    "wgerImageUrl": null
+  },
+  {
+    "id": "jumping-jacks",
+    "name": "Jumping Jacks",
+    "category": "Cardio",
+    "primaryMuscles": [
+      "Full body"
+    ],
+    "secondaryMuscles": [],
+    "equipment": [
+      "Bodyweight"
+    ],
+    "difficulty": "Beginner",
+    "preparation": "Stand tall with feet together and arms at your sides.",
+    "execution": "Jump your feet out wide while raising your arms overhead, then jump back to the starting position, repeating at a steady pace.",
+    "formTips": [
+      "Land softly on the balls of your feet to reduce impact.",
+      "Keep a steady rhythm rather than rushing."
+    ],
+    "commonMistakes": [],
+    "safetyNotes": [],
+    "substitutes": [
+      "burpees",
+      "jump-rope",
+      "battle-ropes"
+    ],
+    "wgerImageUrl": "https://wger.de/media/exercise-images/320/6c9124b6-3551-47a8-9c22-20141c8b9c53.png.400x400_q85.png"
+  },
+  {
+    "id": "burpees",
+    "name": "Burpee",
+    "category": "Cardio",
+    "primaryMuscles": [
+      "Full body"
+    ],
+    "secondaryMuscles": [],
+    "equipment": [
+      "Bodyweight"
+    ],
+    "difficulty": "Intermediate",
+    "preparation": "Stand tall with feet shoulder-width apart.",
+    "execution": "Drop into a squat, kick your feet back into a plank, do a push-up, jump your feet back in, then explode up into a jump.",
+    "formTips": [
+      "Scale the push-up or jump to your fitness level while learning the pattern.",
+      "Keep your core braced during the plank phase to protect your lower back."
+    ],
+    "commonMistakes": [],
+    "safetyNotes": [],
+    "substitutes": [
+      "jumping-jacks",
+      "jump-rope",
+      "battle-ropes"
+    ],
+    "wgerImageUrl": null
+  },
+  {
+    "id": "jump-rope",
+    "name": "Jump Rope",
+    "category": "Cardio",
+    "primaryMuscles": [
+      "Full body"
+    ],
+    "secondaryMuscles": [],
+    "equipment": [
+      "Bodyweight"
+    ],
+    "difficulty": "Beginner",
+    "preparation": "Hold the rope handles at hip height, rope behind your heels.",
+    "execution": "Turn the rope with your wrists and jump just high enough to clear it, landing softly on the balls of your feet.",
+    "formTips": [
+      "Keep the jumps small and quick rather than high.",
+      "Turn the rope with your wrists, not your whole arms."
+    ],
+    "commonMistakes": [],
+    "safetyNotes": [],
+    "substitutes": [
+      "jumping-jacks",
+      "burpees",
+      "battle-ropes"
+    ],
+    "wgerImageUrl": null
+  },
+  {
+    "id": "high-knees",
+    "name": "High Knees",
+    "category": "Cardio",
+    "primaryMuscles": [
+      "Legs"
+    ],
+    "secondaryMuscles": [
+      "Core"
+    ],
+    "equipment": [
+      "Bodyweight"
+    ],
+    "difficulty": "Beginner",
+    "preparation": "Stand tall with feet hip-width apart.",
+    "execution": "Jog in place, driving your knees up toward hip height as quickly as you can while pumping your arms.",
+    "formTips": [
+      "Stay light on your feet rather than stomping down.",
+      "Keep your chest up and core engaged throughout."
+    ],
+    "commonMistakes": [],
+    "safetyNotes": [],
+    "substitutes": [
+      "step-up",
+      "box-jump",
+      "barbell-back-squat"
+    ],
+    "wgerImageUrl": "https://wger.de/media/exercise-images/983/16245344-9957-4a24-8d61-f9939ed5f964.png.400x400_q85.png"
+  },
+  {
+    "id": "box-jump",
+    "name": "Box Jump",
+    "category": "Cardio",
+    "primaryMuscles": [
+      "Legs"
+    ],
+    "secondaryMuscles": [],
+    "equipment": [
+      "Bodyweight"
+    ],
+    "difficulty": "Intermediate",
+    "preparation": "Stand facing a sturdy box or platform in a quarter-squat position.",
+    "execution": "Swing your arms and jump onto the box, landing softly with bent knees, then step back down.",
+    "formTips": [
+      "Step down rather than jumping down to reduce impact on your joints.",
+      "Start with a lower box and increase height as your confidence grows."
+    ],
+    "commonMistakes": [],
+    "safetyNotes": [],
+    "substitutes": [
+      "step-up",
+      "high-knees",
+      "barbell-back-squat"
+    ],
+    "wgerImageUrl": null
+  },
+  {
+    "id": "rowing-machine",
+    "name": "Rowing Machine",
+    "category": "Cardio",
+    "primaryMuscles": [
+      "Back"
+    ],
+    "secondaryMuscles": [
+      "Legs",
+      "Core"
+    ],
+    "equipment": [
+      "Machine"
+    ],
+    "difficulty": "Beginner",
+    "preparation": "Sit on the machine with feet strapped in and knees bent, gripping the handle with arms extended.",
+    "execution": "Drive with your legs first, then lean back slightly and pull the handle to your ribs, reversing the sequence smoothly on the way forward.",
+    "formTips": [
+      "The power sequence is legs, then back, then arms — reverse it on the way back.",
+      "Avoid rounding your lower back as you reach forward for the next stroke."
+    ],
+    "commonMistakes": [],
+    "safetyNotes": [],
+    "substitutes": [
+      "deadlift",
+      "pull-up",
+      "lat-pulldown"
+    ],
+    "wgerImageUrl": null
+  },
+  {
+    "id": "battle-ropes",
+    "name": "Battle Ropes",
+    "category": "Cardio",
+    "primaryMuscles": [
+      "Full body"
+    ],
+    "secondaryMuscles": [
+      "Shoulders",
+      "Core"
+    ],
+    "equipment": [
+      "Bodyweight"
+    ],
+    "difficulty": "Intermediate",
+    "preparation": "Stand in a stable athletic stance holding one rope end in each hand, arms extended toward the anchor point.",
+    "execution": "Whip the ropes up and down alternately (or together) as fast as you can sustain for the interval.",
+    "formTips": [
+      "Keep your knees slightly bent and core braced throughout.",
+      "Start with shorter intervals — this movement is more fatiguing than it looks."
+    ],
+    "commonMistakes": [],
+    "safetyNotes": [],
+    "substitutes": [
+      "jumping-jacks",
+      "burpees",
+      "jump-rope"
+    ],
+    "wgerImageUrl": null
+  },
+  {
+    "id": "step-up",
+    "name": "Step-Up",
+    "category": "Cardio",
+    "primaryMuscles": [
+      "Legs"
+    ],
+    "secondaryMuscles": [],
+    "equipment": [
+      "Dumbbell",
+      "Bodyweight"
+    ],
+    "difficulty": "Beginner",
+    "preparation": "Stand facing a sturdy bench or box, optionally holding a dumbbell in each hand.",
+    "execution": "Step fully onto the bench with one foot, drive through that heel to stand tall, then step back down and repeat, alternating legs.",
+    "formTips": [
+      "Push through your heel rather than pushing off your trailing foot.",
+      "Choose a step height that lets your knee stay behind your toes at the top."
+    ],
+    "commonMistakes": [],
+    "safetyNotes": [],
+    "substitutes": [
+      "high-knees",
+      "box-jump",
+      "barbell-back-squat"
+    ],
+    "wgerImageUrl": null
+  }
+]

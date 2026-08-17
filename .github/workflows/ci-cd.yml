@@ -35,8 +35,11 @@ jobs:
       - name: Static analysis (flutter analyze)
         run: flutter analyze
 
+      # Scoped to tracked files only — lib/firebase_options.dart is
+      # gitignored and reconstructed from a secret above, so its exact
+      # formatting isn't part of what this repo's format check governs.
       - name: Format check
-        run: dart format --output=none --set-exit-if-changed .
+        run: dart format --output=none --set-exit-if-changed $(git ls-files '*.dart')
 
       # Free for public repos / individual accounts, no signup required.
       - name: Secret scan (gitleaks)

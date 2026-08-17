@@ -9,7 +9,7 @@ useDefault = true
 # Firebase project, and access is enforced by Firestore/Storage security
 # rules, not by keeping this value private. See:
 # https://firebase.google.com/docs/projects/api-keys
-[[allowlist]]
+[allowlist]
 description = "Firebase client config API keys are public identifiers, not secrets"
 paths = [
   '''android/app/google-services\.json''',

@@ -1,0 +1,17 @@
+title = "fitness_buddy gitleaks config"
+
+[extend]
+useDefault = true
+
+# Firebase client config (Android google-services.json + the generated
+# lib/firebase_options.dart) contains an "apiKey" that matches gitleaks'
+# generic gcp-api-key pattern, but it is not a secret: it only identifies the
+# Firebase project, and access is enforced by Firestore/Storage security
+# rules, not by keeping this value private. See:
+# https://firebase.google.com/docs/projects/api-keys
+[[allowlist]]
+description = "Firebase client config API keys are public identifiers, not secrets"
+paths = [
+  '''android/app/google-services\.json''',
+  '''lib/firebase_options\.dart''',
+]

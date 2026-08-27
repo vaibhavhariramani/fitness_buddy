@@ -2,8 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
+import '../../../../core/design_system/app_colors.dart';
+import '../../../../core/design_system/app_haptics.dart';
+import '../../../../core/design_system/app_spacing.dart';
 import '../../../../core/providers.dart';
 import '../../../../models/workout_entry.dart';
+import '../../../../shared/widgets/app_card.dart';
 import '../../../exercises/providers/exercise_providers.dart';
 import '../../../exercises/widgets/add_to_workout_dialog.dart'
     show nearestMuscleGroup;
@@ -130,6 +134,7 @@ class _ActiveWorkoutPageState extends ConsumerState<ActiveWorkoutPage> {
         previous?.sets.isNotEmpty == true ? previous!.sets.last.weightKg : 0.0;
     final defaultReps =
         previous?.sets.isNotEmpty == true ? previous!.sets.last.reps : 10;
+    AppHaptics.success();
     setState(() {
       _exercises.add(
         _SessionExercise(
@@ -144,6 +149,7 @@ class _ActiveWorkoutPageState extends ConsumerState<ActiveWorkoutPage> {
   }
 
   void _completeSet(_SessionExercise exercise, _DraftSet set) {
+    AppHaptics.tap();
     setState(() => set.completed = !set.completed);
     if (set.completed) {
       showRestTimerSheet(context, seconds: exercise.restSeconds);
@@ -180,6 +186,7 @@ class _ActiveWorkoutPageState extends ConsumerState<ActiveWorkoutPage> {
     }
 
     if (logs.isEmpty) {
+      AppHaptics.warn();
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Log at least one set before finishing')),
       );
@@ -200,6 +207,8 @@ class _ActiveWorkoutPageState extends ConsumerState<ActiveWorkoutPage> {
             ),
           );
       await ref.read(userRepoProvider).registerActivityAndGetStreak(uid);
+      final anyPr = saved.exercises.any((e) => e.isPr);
+      anyPr ? AppHaptics.celebrate() : AppHaptics.success();
       if (mounted) {
         Navigator.pushReplacement(
           context,
@@ -216,8 +225,13 @@ class _ActiveWorkoutPageState extends ConsumerState<ActiveWorkoutPage> {
   @override
   Widget build(BuildContext context) {
     _seedFromWidget();
-    final completedCount =
-        _exercises.where((e) => e.sets.every((s) => s.completed)).length;
+    final totalSets = _exercises.fold<int>(0, (n, e) => n + e.sets.length);
+    final completedSets = _exercises.fold<int>(
+      0,
+      (n, e) => n + e.sets.where((s) => s.completed).length,
+    );
+    final progress = totalSets == 0 ? 0.0 : completedSets / totalSets;
+    final scheme = Theme.of(context).colorScheme;
 
     return Scaffold(
       appBar: AppBar(
@@ -230,21 +244,53 @@ class _ActiveWorkoutPageState extends ConsumerState<ActiveWorkoutPage> {
           ),
         ],
         bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(28),
+          preferredSize: const Size.fromHeight(36),
           child: Padding(
-            padding: const EdgeInsets.only(bottom: 8),
-            child: Text(
-              '$completedCount / ${_exercises.length} exercises',
-              style: Theme.of(context).textTheme.bodySmall,
+            padding: const EdgeInsets.fromLTRB(
+              AppSpacing.md,
+              0,
+              AppSpacing.md,
+              AppSpacing.sm,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '$completedSets / $totalSets sets',
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: scheme.onSurfaceVariant,
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.xxs),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(3),
+                  child: TweenAnimationBuilder<double>(
+                    tween: Tween(begin: 0, end: progress),
+                    duration: const Duration(milliseconds: 250),
+                    builder:
+                        (context, value, _) => LinearProgressIndicator(
+                          value: value,
+                          minHeight: 4,
+                          backgroundColor: scheme.surfaceContainerHighest,
+                          valueColor: const AlwaysStoppedAnimation(
+                            AppColors.workout,
+                          ),
+                        ),
+                  ),
+                ),
+              ],
             ),
           ),
         ),
       ),
       body: ListView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(AppSpacing.md),
         children: [
           for (final ex in _exercises)
-            _ExerciseCard(exercise: ex, onCompleteSet: _completeSet),
+            Padding(
+              padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+              child: _ExerciseCard(exercise: ex, onCompleteSet: _completeSet),
+            ),
           OutlinedButton.icon(
             onPressed: _addExercise,
             icon: const Icon(Icons.add),
@@ -254,7 +300,7 @@ class _ActiveWorkoutPageState extends ConsumerState<ActiveWorkoutPage> {
       ),
       bottomNavigationBar: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(AppSpacing.md),
           child: FilledButton(
             onPressed: _saving ? null : _finish,
             child:
@@ -306,70 +352,75 @@ class _ExerciseCardState extends ConsumerState<_ExerciseCard> {
     final previous = ref.watch(
       previousPerformanceProvider(exercise.exerciseId),
     );
+    final allComplete =
+        exercise.sets.isNotEmpty && exercise.sets.every((s) => s.completed);
 
-    return Card(
-      margin: const EdgeInsets.only(bottom: 12),
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                if (catalogExercise != null)
-                  SizedBox(
-                    width: 40,
-                    height: 40,
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
-                      child: ExerciseVisual(
-                        exerciseId: catalogExercise.id,
-                        category: catalogExercise.category,
-                        photoUrl: catalogExercise.wgerImageUrl,
-                        iconSize: 18,
-                      ),
+    return AppCard(
+      accentColor: allComplete ? AppColors.workout : null,
+      padding: const EdgeInsets.all(AppSpacing.sm),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              if (catalogExercise != null)
+                SizedBox(
+                  width: 40,
+                  height: 40,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: ExerciseVisual(
+                      exerciseId: catalogExercise.id,
+                      category: catalogExercise.category,
+                      photoUrl: catalogExercise.wgerImageUrl,
+                      iconSize: 18,
                     ),
                   ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        exercise.name,
-                        style: Theme.of(context).textTheme.titleSmall,
-                      ),
-                      if (previous != null && previous.sets.isNotEmpty)
-                        Text(
-                          'Previous: ${previous.sets.map((s) => '${s.weightKg.toStringAsFixed(0)}kg×${s.reps}').join(', ')}',
-                          style: Theme.of(context).textTheme.bodySmall,
-                        ),
-                    ],
-                  ),
                 ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            for (var i = 0; i < exercise.sets.length; i++)
-              _SetRow(
-                index: i,
-                set: exercise.sets[i],
-                onChanged: () => setState(() {}),
-                onComplete:
-                    () => widget.onCompleteSet(exercise, exercise.sets[i]),
-                onRemove:
-                    exercise.sets.length == 1 ? null : () => _removeSet(i),
+              const SizedBox(width: AppSpacing.sm),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      exercise.name,
+                      style: Theme.of(context).textTheme.titleSmall,
+                    ),
+                    if (previous != null && previous.sets.isNotEmpty)
+                      Text(
+                        'Previous: ${previous.sets.map((s) => '${s.weightKg.toStringAsFixed(0)}kg×${s.reps}').join(', ')}',
+                        style: Theme.of(context).textTheme.bodySmall,
+                      ),
+                  ],
+                ),
               ),
-            Align(
-              alignment: Alignment.centerLeft,
-              child: TextButton.icon(
-                onPressed: _addSet,
-                icon: const Icon(Icons.add),
-                label: const Text('Add set'),
-              ),
+              if (allComplete)
+                const Icon(
+                  Icons.check_circle_rounded,
+                  color: AppColors.workout,
+                  size: 20,
+                ),
+            ],
+          ),
+          const SizedBox(height: AppSpacing.xs),
+          for (var i = 0; i < exercise.sets.length; i++)
+            _SetRow(
+              index: i,
+              set: exercise.sets[i],
+              onChanged: () => setState(() {}),
+              onComplete:
+                  () => widget.onCompleteSet(exercise, exercise.sets[i]),
+              onRemove: exercise.sets.length == 1 ? null : () => _removeSet(i),
             ),
-          ],
-        ),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: TextButton.icon(
+              onPressed: _addSet,
+              icon: const Icon(Icons.add),
+              label: const Text('Add set'),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -392,8 +443,20 @@ class _SetRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 200),
+      margin: const EdgeInsets.symmetric(vertical: 3),
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.xs,
+        vertical: 4,
+      ),
+      decoration: BoxDecoration(
+        color:
+            set.completed
+                ? AppColors.workout.withValues(alpha: 0.08)
+                : Colors.transparent,
+        borderRadius: BorderRadius.circular(12),
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -457,20 +520,7 @@ class _SetRow extends StatelessWidget {
                   },
                 ),
               ),
-              IconButton(
-                visualDensity: VisualDensity.compact,
-                padding: EdgeInsets.zero,
-                icon: Icon(
-                  set.completed
-                      ? Icons.check_circle
-                      : Icons.check_circle_outline,
-                  color:
-                      set.completed
-                          ? Theme.of(context).colorScheme.primary
-                          : null,
-                ),
-                onPressed: onComplete,
-              ),
+              _CompleteButton(completed: set.completed, onPressed: onComplete),
               if (onRemove != null)
                 IconButton(
                   visualDensity: VisualDensity.compact,
@@ -509,6 +559,38 @@ class _SetRow extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// A comfortably-sized (44dp) tap target wrapping the compact check icon —
+/// the icon itself stays visually small, but the tappable area meets a
+/// comfortable touch-target size for quick in-gym logging.
+class _CompleteButton extends StatelessWidget {
+  final bool completed;
+  final VoidCallback onPressed;
+
+  const _CompleteButton({required this.completed, required this.onPressed});
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    return Material(
+      color: Colors.transparent,
+      shape: const CircleBorder(),
+      child: InkWell(
+        customBorder: const CircleBorder(),
+        onTap: onPressed,
+        child: SizedBox(
+          width: 40,
+          height: 40,
+          child: Icon(
+            completed ? Icons.check_circle_rounded : Icons.circle_outlined,
+            size: 22,
+            color: completed ? AppColors.workout : scheme.outline,
+          ),
+        ),
       ),
     );
   }

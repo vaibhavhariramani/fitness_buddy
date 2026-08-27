@@ -2,8 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
+import '../../../core/design_system/app_colors.dart';
+import '../../../core/design_system/app_spacing.dart';
 import '../../../core/providers.dart';
 import '../../../models/workout_entry.dart';
+import '../../../shared/widgets/app_card.dart';
+import '../../../shared/widgets/empty_state.dart';
 import '../../exercises/models/exercise.dart';
 import '../../exercises/providers/exercise_providers.dart';
 import '../../exercises/widgets/add_to_workout_dialog.dart'
@@ -88,16 +92,33 @@ class _WorkoutsTabState extends ConsumerState<WorkoutsTab> {
         error: (e, _) => Center(child: Text('Failed to load: $e')),
         data: (workouts) {
           if (workouts.isEmpty) {
-            return const Center(child: Text('No workouts logged yet.'));
+            return EmptyState(
+              icon: Icons.fitness_center_outlined,
+              title: 'No workouts yet',
+              message:
+                  'Start your first workout and begin tracking your progress.',
+              actionLabel: 'Start Workout',
+              onAction:
+                  () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder:
+                          (context) =>
+                              const ActiveWorkoutPage(title: 'Workout'),
+                    ),
+                  ),
+            );
           }
           return ListView.builder(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(AppSpacing.md),
             itemCount: workouts.length,
             itemBuilder: (context, i) {
               final workout = workouts[i];
-              return Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(12),
+              final hasPr = workout.exercises.any((e) => e.isPr);
+              return Padding(
+                padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+                child: AppCard(
+                  accentColor: hasPr ? AppColors.achievement : null,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -105,7 +126,7 @@ class _WorkoutsTabState extends ConsumerState<WorkoutsTab> {
                         DateFormat.yMMMd().format(workout.date),
                         style: Theme.of(context).textTheme.titleSmall,
                       ),
-                      const SizedBox(height: 8),
+                      const SizedBox(height: AppSpacing.xs),
                       for (final exercise in workout.exercises)
                         Padding(
                           padding: const EdgeInsets.only(bottom: 6),
@@ -115,14 +136,30 @@ class _WorkoutsTabState extends ConsumerState<WorkoutsTab> {
                                 child: Text(
                                   '${exercise.name} (${exercise.muscleGroup}) — '
                                   '${exercise.sets.map((s) => '${s.reps}x${s.weightKg.toStringAsFixed(0)}kg').join(', ')}',
+                                  style: Theme.of(context).textTheme.bodySmall,
                                 ),
                               ),
                               if (exercise.isPr)
-                                const Padding(
-                                  padding: EdgeInsets.only(left: 8),
-                                  child: Chip(
-                                    label: Text('PR'),
-                                    avatar: Icon(Icons.emoji_events, size: 16),
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 8),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      const Icon(
+                                        Icons.emoji_events_rounded,
+                                        size: 14,
+                                        color: AppColors.achievement,
+                                      ),
+                                      const SizedBox(width: 2),
+                                      Text(
+                                        'PR',
+                                        style: Theme.of(
+                                          context,
+                                        ).textTheme.labelSmall?.copyWith(
+                                          color: AppColors.achievement,
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ),
                             ],

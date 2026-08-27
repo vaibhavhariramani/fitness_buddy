@@ -47,6 +47,12 @@ class AnalyticsScreen extends ConsumerWidget {
       lastLogDate: profile.lastLogDate,
     );
 
+    // A genuinely blank slate — never logged anything at all. Lead with one
+    // confident welcome instead of a wall of separate "0" / "log more"
+    // fragments across every section below.
+    final isBrandNew =
+        profile.lastLogDate == null && weightLogs.isEmpty && workouts.isEmpty;
+
     const stagger = Duration(milliseconds: 60);
 
     return Scaffold(
@@ -61,23 +67,29 @@ class AnalyticsScreen extends ConsumerWidget {
           children: [
             _Header(profile: profile, streak: displayStreak),
             const SizedBox(height: AppSpacing.xl),
-            FadeSlideIn(child: _TodayNutritionSection()),
-            const SizedBox(height: AppSpacing.xl),
-            FadeSlideIn(delay: stagger, child: const _TodayWorkoutSection()),
+            if (isBrandNew) ...[
+              const FadeSlideIn(child: _WelcomeSection()),
+              const SizedBox(height: AppSpacing.xl),
+            ],
+            // Real, always-available history first — a returning user sees
+            // their actual numbers immediately, not an empty "today" ring.
+            FadeSlideIn(child: _StreakSection(streak: displayStreak)),
             const SizedBox(height: AppSpacing.xl),
             FadeSlideIn(
-              delay: stagger * 2,
-              child: const _WeeklyConsistencySection(),
+              delay: stagger,
+              child: _BodySection(profile: profile, weightLogs: weightLogs),
             ),
+            const SizedBox(height: AppSpacing.xl),
+            FadeSlideIn(delay: stagger * 2, child: _TodayNutritionSection()),
             const SizedBox(height: AppSpacing.xl),
             FadeSlideIn(
               delay: stagger * 3,
-              child: _BodySection(profile: profile, weightLogs: weightLogs),
+              child: const _TodayWorkoutSection(),
             ),
             const SizedBox(height: AppSpacing.xl),
             FadeSlideIn(
               delay: stagger * 4,
-              child: _StreakSection(streak: displayStreak),
+              child: const _WeeklyConsistencySection(),
             ),
             const SizedBox(height: AppSpacing.xl),
             FadeSlideIn(
@@ -91,6 +103,59 @@ class AnalyticsScreen extends ConsumerWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _WelcomeSection extends StatelessWidget {
+  const _WelcomeSection();
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    return AppCard(
+      accentColor: AppColors.workout,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            "Let's get your first day on the board",
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
+          const SizedBox(height: AppSpacing.xxs),
+          Text(
+            'Log a weight check-in, a meal, or a workout and this page '
+            'fills in with your real trends, streak, and personal records.',
+            style: Theme.of(
+              context,
+            ).textTheme.bodySmall?.copyWith(color: scheme.onSurfaceVariant),
+          ),
+          const SizedBox(height: AppSpacing.md),
+          Wrap(
+            spacing: AppSpacing.xs,
+            runSpacing: AppSpacing.xs,
+            children: [
+              FilledButton.icon(
+                onPressed:
+                    () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder:
+                            (_) => const ActiveWorkoutPage(title: 'Workout'),
+                      ),
+                    ),
+                icon: const Icon(Icons.fitness_center, size: 18),
+                label: const Text('Start a workout'),
+              ),
+              OutlinedButton.icon(
+                onPressed: () => GoRouter.of(context).go('/tracking'),
+                icon: const Icon(Icons.monitor_weight_outlined, size: 18),
+                label: const Text('Log weight or a meal'),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }

@@ -6,16 +6,24 @@ class PrivacySettings {
   final bool shareWorkouts;
   final bool shareStreak;
 
+  /// Whether today's meal photos are visible to accepted friends. Unlike the
+  /// other flags (which default on for backward compatibility), this
+  /// defaults OFF — food photos are more personal than a weight number or a
+  /// workout count, so sharing them is opt-in.
+  final bool shareMeals;
+
   const PrivacySettings({
     this.shareWeight = true,
     this.shareWorkouts = true,
     this.shareStreak = true,
+    this.shareMeals = false,
   });
 
   Map<String, dynamic> toJson() => {
     'shareWeight': shareWeight,
     'shareWorkouts': shareWorkouts,
     'shareStreak': shareStreak,
+    'shareMeals': shareMeals,
   };
 
   factory PrivacySettings.fromJson(Map<String, dynamic>? json) {
@@ -24,6 +32,7 @@ class PrivacySettings {
       shareWeight: json['shareWeight'] as bool? ?? true,
       shareWorkouts: json['shareWorkouts'] as bool? ?? true,
       shareStreak: json['shareStreak'] as bool? ?? true,
+      shareMeals: json['shareMeals'] as bool? ?? false,
     );
   }
 }

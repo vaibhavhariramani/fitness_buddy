@@ -202,6 +202,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     shareWeight: v,
                     shareWorkouts: profile.privacy.shareWorkouts,
                     shareStreak: profile.privacy.shareStreak,
+                    shareMeals: profile.privacy.shareMeals,
                   ),
                 ),
           ),
@@ -215,6 +216,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     shareWeight: profile.privacy.shareWeight,
                     shareWorkouts: v,
                     shareStreak: profile.privacy.shareStreak,
+                    shareMeals: profile.privacy.shareMeals,
                   ),
                 ),
           ),
@@ -228,6 +230,24 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     shareWeight: profile.privacy.shareWeight,
                     shareWorkouts: profile.privacy.shareWorkouts,
                     shareStreak: v,
+                    shareMeals: profile.privacy.shareMeals,
+                  ),
+                ),
+          ),
+          SwitchListTile(
+            title: const Text("Share today's meal photos"),
+            subtitle: const Text(
+              'Off by default — opt in to let friends see them',
+            ),
+            value: profile.privacy.shareMeals,
+            onChanged:
+                (v) => _updatePrivacy(
+                  profile,
+                  PrivacySettings(
+                    shareWeight: profile.privacy.shareWeight,
+                    shareWorkouts: profile.privacy.shareWorkouts,
+                    shareStreak: profile.privacy.shareStreak,
+                    shareMeals: v,
                   ),
                 ),
           ),

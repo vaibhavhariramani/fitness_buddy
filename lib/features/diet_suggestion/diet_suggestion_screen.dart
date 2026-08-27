@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../core/design_system/app_colors.dart';
+import '../../core/design_system/app_spacing.dart';
 import '../../core/providers.dart';
 import '../../core/utils/calculations.dart';
 import '../../models/user_profile.dart';
+import '../../shared/widgets/app_card.dart';
+import '../../shared/widgets/section_header.dart';
 
 class DietSuggestionScreen extends ConsumerStatefulWidget {
   const DietSuggestionScreen({super.key});
@@ -119,6 +123,8 @@ class _DietSuggestionScreenState extends ConsumerState<DietSuggestionScreen> {
                             )
                             : const Text('Set as my daily target'),
                   ),
+                  const SizedBox(height: AppSpacing.xxl),
+                  const _NorthIndianDietGuide(),
                 ],
               ),
     );
@@ -216,6 +222,188 @@ class _DietSuggestionScreenState extends ConsumerState<DietSuggestionScreen> {
           ],
         ),
       ),
+    );
+  }
+}
+
+class _FoodGroup {
+  final String title;
+  final IconData icon;
+  final Color color;
+  final List<String> items;
+  final String note;
+
+  const _FoodGroup({
+    required this.title,
+    required this.icon,
+    required this.color,
+    required this.items,
+    required this.note,
+  });
+}
+
+const _northIndianFoodGroups = [
+  _FoodGroup(
+    title: 'Protein',
+    icon: Icons.egg_alt_outlined,
+    color: AppColors.workout,
+    items: [
+      'Paneer',
+      'Dal (moong, masoor, toor)',
+      'Rajma',
+      'Chole / chana',
+      'Curd (dahi)',
+      'Eggs',
+      'Chicken or fish',
+      'Sprouts',
+      'Soybean / tofu',
+    ],
+    note:
+        'Aim for a protein source at every meal — pair dals with rice or '
+        'roti for a complete amino acid profile.',
+  ),
+  _FoodGroup(
+    title: 'Whole grains',
+    icon: Icons.grain_outlined,
+    color: AppColors.nutrition,
+    items: [
+      'Whole wheat roti / chapati',
+      'Millets (bajra, jowar, ragi)',
+      'Brown rice',
+      'Dalia (broken wheat)',
+      'Oats',
+    ],
+    note:
+        'Favor whole-grain atta and millets over maida (refined flour) '
+        'for more fiber and steadier energy.',
+  ),
+  _FoodGroup(
+    title: 'Vegetables',
+    icon: Icons.eco_outlined,
+    color: AppColors.recovery,
+    items: [
+      'Palak (spinach)',
+      'Methi (fenugreek)',
+      'Lauki (bottle gourd)',
+      'Bhindi (okra)',
+      'Gobi (cauliflower)',
+      'Seasonal mixed sabzi',
+    ],
+    note:
+        'Half the plate as vegetables is a simple, reliable target most '
+        'dietitians reach for first.',
+  ),
+  _FoodGroup(
+    title: 'Fruits & dairy',
+    icon: Icons.local_florist_outlined,
+    color: AppColors.achievement,
+    items: [
+      'Guava',
+      'Papaya',
+      'Apple',
+      'Amla',
+      'Buttermilk (chaas)',
+      'Low-fat milk',
+    ],
+    note:
+        'A piece of seasonal fruit and a glass of chaas make an easy, '
+        'light snack between meals.',
+  ),
+  _FoodGroup(
+    title: 'Healthy fats',
+    icon: Icons.spa_outlined,
+    color: AppColors.workout,
+    items: [
+      'Ghee (in moderation)',
+      'Mustard or groundnut oil',
+      'Almonds & walnuts',
+      'Flax or chia seeds',
+    ],
+    note:
+        'A teaspoon of ghee on dal or roti is fine daily — the goal is '
+        'moderation, not elimination.',
+  ),
+  _FoodGroup(
+    title: 'Limit / moderate',
+    icon: Icons.info_outline,
+    color: Colors.redAccent,
+    items: [
+      'Fried snacks (samosa, pakora)',
+      'Mithai / sweets',
+      'Excess ghee or butter',
+      'Sugary drinks',
+    ],
+    note:
+        'These are fine occasionally — the aim is a mostly-whole-food '
+        'plate, not strict avoidance.',
+  ),
+];
+
+/// A general reference list of North Indian foods commonly recommended by
+/// dietitians, organized the way a nutritionist would frame a plate —
+/// protein, whole grains, vegetables, fruit/dairy, healthy fats, and what to
+/// keep occasional. General guidance, not a personalized medical plan.
+class _NorthIndianDietGuide extends StatelessWidget {
+  const _NorthIndianDietGuide();
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SectionHeader(title: 'North Indian Diet Guide'),
+        Text(
+          "A general reference — the kind of everyday food list a dietitian "
+          "would suggest for a North Indian diet, organized by what each "
+          "food group is for.",
+          style: Theme.of(
+            context,
+          ).textTheme.bodySmall?.copyWith(color: scheme.onSurfaceVariant),
+        ),
+        const SizedBox(height: AppSpacing.md),
+        for (final group in _northIndianFoodGroups)
+          Padding(
+            padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+            child: AppCard(
+              accentColor: group.color,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Icon(group.icon, size: 18, color: group.color),
+                      const SizedBox(width: AppSpacing.xs),
+                      Text(
+                        group.title,
+                        style: Theme.of(context).textTheme.titleSmall,
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: AppSpacing.sm),
+                  Wrap(
+                    spacing: AppSpacing.xs,
+                    runSpacing: AppSpacing.xs,
+                    children: [
+                      for (final item in group.items)
+                        Chip(
+                          label: Text(item),
+                          visualDensity: VisualDensity.compact,
+                        ),
+                    ],
+                  ),
+                  const SizedBox(height: AppSpacing.xs),
+                  Text(
+                    group.note,
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: scheme.onSurfaceVariant,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+      ],
     );
   }
 }

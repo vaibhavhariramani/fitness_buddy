@@ -50,7 +50,9 @@ service cloud.firestore {
       }
 
       match /meals/{mealId} {
-        allow read, write: if isOwner(uid);
+        allow read: if isOwner(uid)
+          || (isAcceptedFriend(uid) && ownerProfile(uid).data.privacy.shareMeals == true);
+        allow write: if isOwner(uid);
       }
 
       match /workouts/{workoutId} {

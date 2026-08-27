@@ -303,6 +303,10 @@ class _CategoryBarChart extends StatelessWidget {
     return BarChart(
       BarChartData(
         maxY: maxY == 0 ? 1 : maxY * 1.2,
+        alignment:
+            categories.length <= 3
+                ? BarChartAlignment.spaceEvenly
+                : BarChartAlignment.spaceAround,
         gridData: const FlGridData(show: false),
         borderData: FlBorderData(show: false),
         barTouchData: BarTouchData(
@@ -388,6 +392,10 @@ class _NoteBarChart extends StatelessWidget {
     return BarChart(
       BarChartData(
         maxY: maxY == 0 ? 1 : maxY * 1.2,
+        alignment:
+            notes.length <= 3
+                ? BarChartAlignment.spaceEvenly
+                : BarChartAlignment.spaceAround,
         gridData: const FlGridData(show: false),
         borderData: FlBorderData(show: false),
         barTouchData: BarTouchData(

@@ -38,6 +38,10 @@ class OpenFoodFactsService implements FoodDatabaseService {
         'search_terms': q,
         'fields': _fields,
         'page_size': '20',
+        // Without an explicit sort, OFF returns matches in an arbitrary
+        // database order — ranking by how widely-scanned/known a product is
+        // makes the top results actually relevant instead of near-random.
+        'sort_by': 'popularity_key',
       },
     );
     final res = await _get(uri);

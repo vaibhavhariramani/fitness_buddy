@@ -223,11 +223,12 @@ class _FriendTile extends ConsumerWidget {
             onTap:
                 profile == null
                     ? null
-                    : () => showModalBottomSheet(
-                      context: context,
-                      isScrollControlled: true,
-                      builder:
-                          (context) => FriendProgressSheet(friend: profile),
+                    : () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder:
+                            (context) => FriendProgressPage(friend: profile),
+                      ),
                     ),
           ),
         );

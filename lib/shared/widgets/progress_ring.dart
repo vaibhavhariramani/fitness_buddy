@@ -41,9 +41,7 @@ class ProgressRing extends StatelessWidget {
               color: color,
               trackColor: trackColor,
             ),
-            child: child == null
-                ? null
-                : Center(child: child),
+            child: child == null ? null : Center(child: child),
           ),
         );
       },
@@ -69,19 +67,21 @@ class _RingPainter extends CustomPainter {
     final center = size.center(Offset.zero);
     final radius = (math.min(size.width, size.height) - strokeWidth) / 2;
 
-    final track = Paint()
-      ..color = trackColor
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = strokeWidth
-      ..strokeCap = StrokeCap.round;
+    final track =
+        Paint()
+          ..color = trackColor
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = strokeWidth
+          ..strokeCap = StrokeCap.round;
     canvas.drawCircle(center, radius, track);
 
     if (progress <= 0) return;
-    final fg = Paint()
-      ..color = color
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = strokeWidth
-      ..strokeCap = StrokeCap.round;
+    final fg =
+        Paint()
+          ..color = color
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = strokeWidth
+          ..strokeCap = StrokeCap.round;
     const start = -math.pi / 2;
     final sweep = 2 * math.pi * progress;
     canvas.drawArc(

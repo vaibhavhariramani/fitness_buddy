@@ -47,9 +47,9 @@ class MetricCard extends StatelessWidget {
               Expanded(
                 child: Text(
                   label,
-                  style: Theme.of(
-                    context,
-                  ).textTheme.labelMedium?.copyWith(color: scheme.onSurfaceVariant),
+                  style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                    color: scheme.onSurfaceVariant,
+                  ),
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
@@ -64,9 +64,9 @@ class MetricCard extends StatelessWidget {
               if (target != null)
                 Text(
                   target!,
-                  style: Theme.of(
-                    context,
-                  ).textTheme.bodySmall?.copyWith(color: scheme.onSurfaceVariant),
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: scheme.onSurfaceVariant,
+                  ),
                 ),
             ],
           ),

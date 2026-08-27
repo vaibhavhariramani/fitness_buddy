@@ -85,7 +85,8 @@ class TodaysWorkoutSummary {
 final todaysWorkoutSummaryProvider =
     Provider.autoDispose<TodaysWorkoutSummary?>((ref) {
       final workouts =
-          ref.watch(workoutHistoryProvider).valueOrNull ?? const <WorkoutEntry>[];
+          ref.watch(workoutHistoryProvider).valueOrNull ??
+          const <WorkoutEntry>[];
       final today = _dateOnly(DateTime.now());
       final todays = workouts.where((w) => _dateOnly(w.date) == today).toList();
       if (todays.isEmpty) return null;
@@ -112,7 +113,10 @@ class WeeklyTrainingStats {
   final int workoutCount;
   final int prCount;
 
-  const WeeklyTrainingStats({required this.workoutCount, required this.prCount});
+  const WeeklyTrainingStats({
+    required this.workoutCount,
+    required this.prCount,
+  });
 }
 
 final weeklyTrainingStatsProvider = Provider.autoDispose<WeeklyTrainingStats>((
@@ -142,7 +146,8 @@ final recentPersonalRecordsProvider =
           .watch(workoutRepoProvider)
           .watchPersonalRecords(uid)
           .map(
-            (list) => (List.of(list)
-              ..sort((a, b) => b.achievedAt.compareTo(a.achievedAt))),
+            (list) =>
+                (List.of(list)
+                  ..sort((a, b) => b.achievedAt.compareTo(a.achievedAt))),
           );
     });

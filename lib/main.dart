@@ -1,3 +1,5 @@
+import 'dart:developer' as developer;
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -10,6 +12,23 @@ import 'firebase_options.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Flutter's default release-mode ErrorWidget renders as a blank grey box
+  // with no text — a widget that throws during build would look exactly
+  // like "the screen is blank" with no way to tell why. Replace it with a
+  // visible, recoverable error state, and log the underlying exception to
+  // the browser console so it's actually diagnosable.
+  FlutterError.onError = (details) {
+    FlutterError.presentError(details);
+    developer.log(
+      'Uncaught Flutter error',
+      name: 'fitness_buddy',
+      error: details.exception,
+      stackTrace: details.stack,
+    );
+  };
+  ErrorWidget.builder = (details) => _AppErrorWidget(details: details);
+
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   await Hive.initFlutter();
@@ -31,4 +50,45 @@ Future<void> main() async {
       child: const FitnessBuddyApp(),
     ),
   );
+}
+
+/// Deliberately self-contained (own colors, no `Theme.of(context)`) since an
+/// [ErrorWidget] can appear before a [MaterialApp]/[Theme] ancestor exists —
+/// e.g. if the crash happens during the very first frame.
+class _AppErrorWidget extends StatelessWidget {
+  final FlutterErrorDetails details;
+
+  const _AppErrorWidget({required this.details});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      color: const Color(0xFFFFFFFF),
+      alignment: Alignment.center,
+      padding: const EdgeInsets.all(24),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Icon(Icons.error_outline, color: Color(0xFFBA1A1A), size: 40),
+          const SizedBox(height: 12),
+          const Text(
+            'Something went wrong loading this screen',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+              color: Color(0xFF1A1D1A),
+            ),
+          ),
+          const SizedBox(height: 8),
+          const Text(
+            'Try reloading the page. If it keeps happening, this has been '
+            'logged to the browser console.',
+            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: 13, color: Color(0xFF5C665F)),
+          ),
+        ],
+      ),
+    );
+  }
 }

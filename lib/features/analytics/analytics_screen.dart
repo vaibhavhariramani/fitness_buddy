@@ -259,6 +259,7 @@ class _Header extends ConsumerWidget {
                 profile.photoUrl != null
                     ? NetworkImage(profile.photoUrl!)
                     : null,
+            onBackgroundImageError: profile.photoUrl != null ? (_, _) {} : null,
             child:
                 profile.photoUrl == null
                     ? Text(

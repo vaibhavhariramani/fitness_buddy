@@ -16,6 +16,7 @@ import '../../models/workout_entry.dart';
 import '../../shared/widgets/app_card.dart';
 import '../../shared/widgets/empty_state.dart';
 import '../../shared/widgets/fade_slide_in.dart';
+import '../../shared/widgets/muscle_body_diagram.dart';
 import '../../shared/widgets/progress_ring.dart';
 import '../../shared/widgets/section_header.dart';
 import '../nutrition/providers/nutrition_providers.dart';
@@ -80,25 +81,30 @@ class AnalyticsScreen extends ConsumerWidget {
               child: _BodySection(profile: profile, weightLogs: weightLogs),
             ),
             const SizedBox(height: AppSpacing.xl),
-            FadeSlideIn(delay: stagger * 2, child: _TodayNutritionSection()),
+            FadeSlideIn(
+              delay: stagger * 2,
+              child: const _MuscleThisWeekSection(),
+            ),
+            const SizedBox(height: AppSpacing.xl),
+            FadeSlideIn(delay: stagger * 3, child: _TodayNutritionSection()),
             const SizedBox(height: AppSpacing.xl),
             FadeSlideIn(
-              delay: stagger * 3,
+              delay: stagger * 4,
               child: const _TodayWorkoutSection(),
             ),
             const SizedBox(height: AppSpacing.xl),
             FadeSlideIn(
-              delay: stagger * 4,
+              delay: stagger * 5,
               child: const _WeeklyConsistencySection(),
             ),
             const SizedBox(height: AppSpacing.xl),
             FadeSlideIn(
-              delay: stagger * 5,
+              delay: stagger * 6,
               child: const _PrHighlightsSection(),
             ),
             const SizedBox(height: AppSpacing.xl),
             FadeSlideIn(
-              delay: stagger * 6,
+              delay: stagger * 7,
               child: _MuscleVolumeSection(workouts: workouts),
             ),
           ],
@@ -599,6 +605,74 @@ class _ConsistencyDot extends StatelessWidget {
   }
 }
 
+class _MuscleThisWeekSection extends ConsumerWidget {
+  const _MuscleThisWeekSection();
+
+  static const _groupOrder = [
+    'Chest',
+    'Back',
+    'Shoulders',
+    'Arms',
+    'Core',
+    'Legs',
+    'Full body',
+  ];
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final setsByGroup = ref.watch(weeklyMuscleGroupsProvider);
+    final scheme = Theme.of(context).colorScheme;
+    final trainedGroups =
+        _groupOrder.where((g) => setsByGroup.containsKey(g)).toList();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SectionHeader(title: 'Muscles Trained This Week'),
+        AppCard(
+          accentColor: AppColors.workout,
+          child:
+              trainedGroups.isEmpty
+                  ? Text(
+                    'No workouts logged this week yet — trained muscle '
+                    'groups will highlight here.',
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: scheme.onSurfaceVariant,
+                    ),
+                  )
+                  : Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      MuscleBodyDiagram(trainedSets: setsByGroup),
+                      const SizedBox(width: AppSpacing.lg),
+                      Expanded(
+                        child: Wrap(
+                          spacing: AppSpacing.xs,
+                          runSpacing: AppSpacing.xs,
+                          children: [
+                            for (final group in trainedGroups)
+                              Chip(
+                                avatar: Icon(
+                                  Icons.circle,
+                                  size: 10,
+                                  color: AppColors.workout,
+                                ),
+                                label: Text(
+                                  '$group · ${setsByGroup[group]} sets',
+                                ),
+                                visualDensity: VisualDensity.compact,
+                              ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+        ),
+      ],
+    );
+  }
+}
+
 class _BodySection extends StatefulWidget {
   final UserProfile profile;
   final List<WeightEntry> weightLogs;
@@ -625,6 +699,15 @@ class _BodySectionState extends State<_BodySection> {
       trendDelta = visible.last.weightKg - visible.first.weightKg;
     }
 
+    final current = widget.profile.currentWeightKg;
+    final goal = widget.profile.targetWeightKg;
+    final starting =
+        chronological.isNotEmpty ? chronological.first.weightKg : current;
+    final goalProgress =
+        goal == starting
+            ? (current == goal ? 1.0 : 0.0)
+            : ((starting - current) / (starting - goal)).clamp(0.0, 1.0);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -638,7 +721,7 @@ class _BodySectionState extends State<_BodySection> {
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Text(
-                    widget.profile.currentWeightKg.toStringAsFixed(1),
+                    current.toStringAsFixed(1),
                     style: AppTextStyles.statLarge(scheme.onSurface),
                   ),
                   Padding(
@@ -670,6 +753,44 @@ class _BodySectionState extends State<_BodySection> {
                     ),
                   ),
                 ),
+              if (goal != starting) ...[
+                const SizedBox(height: AppSpacing.md),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Goal: ${goal.toStringAsFixed(1)} kg',
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: scheme.onSurfaceVariant,
+                      ),
+                    ),
+                    Text(
+                      '${(goalProgress * 100).toStringAsFixed(0)}% there',
+                      style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                        color: AppColors.recovery,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: AppSpacing.xxs),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(4),
+                  child: TweenAnimationBuilder<double>(
+                    tween: Tween(begin: 0, end: goalProgress),
+                    duration: const Duration(milliseconds: 600),
+                    curve: Curves.easeOutCubic,
+                    builder:
+                        (context, value, _) => LinearProgressIndicator(
+                          value: value,
+                          minHeight: 8,
+                          backgroundColor: scheme.surfaceContainerHighest,
+                          valueColor: const AlwaysStoppedAnimation(
+                            AppColors.recovery,
+                          ),
+                        ),
+                  ),
+                ),
+              ],
               const SizedBox(height: AppSpacing.md),
               SizedBox(
                 height: 120,

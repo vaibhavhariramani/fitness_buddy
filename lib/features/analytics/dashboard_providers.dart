@@ -136,6 +136,26 @@ final weeklyTrainingStatsProvider = Provider.autoDispose<WeeklyTrainingStats>((
   return WeeklyTrainingStats(workoutCount: thisWeek.length, prCount: prCount);
 });
 
+/// Sets performed per muscle group within this calendar week (Monday..now),
+/// for the "muscles trained this week" body diagram.
+final weeklyMuscleGroupsProvider = Provider.autoDispose<Map<String, int>>((
+  ref,
+) {
+  final workouts =
+      ref.watch(workoutHistoryProvider).valueOrNull ?? const <WorkoutEntry>[];
+  final monday = _mondayOf(DateTime.now());
+  final thisWeek = workouts.where((w) => !_dateOnly(w.date).isBefore(monday));
+
+  final setsByGroup = <String, int>{};
+  for (final w in thisWeek) {
+    for (final e in w.exercises) {
+      setsByGroup[e.muscleGroup] =
+          (setsByGroup[e.muscleGroup] ?? 0) + e.sets.length;
+    }
+  }
+  return setsByGroup;
+});
+
 /// The most recently-achieved personal records, newest first, for the
 /// dashboard's PR highlights row.
 final recentPersonalRecordsProvider =

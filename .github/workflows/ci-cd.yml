@@ -65,8 +65,12 @@ jobs:
 
       - run: flutter pub get
 
+      # --no-web-resources-cdn bundles CanvasKit locally instead of fetching
+      # it from gstatic.com at every app startup — a network block on that
+      # CDN (corporate policy, ad-blocker, restrictive network) would
+      # otherwise fail the whole Flutter engine and render a blank page.
       - name: Build web release
-        run: flutter build web --release
+        run: flutter build web --release --no-web-resources-cdn
 
       - uses: actions/upload-artifact@v4
         with:

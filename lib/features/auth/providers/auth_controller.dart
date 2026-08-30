@@ -52,8 +52,12 @@ class AuthController extends AsyncNotifier<void> {
 
   Future<void> signOut() async {
     state = const AsyncLoading();
-    state = await AsyncValue.guard(
-      () => ref.read(authServiceProvider).signOut(),
-    );
+    state = await AsyncValue.guard(() async {
+      final uid = ref.read(authStateProvider).valueOrNull?.uid;
+      if (uid != null) {
+        await ref.read(pushNotificationServiceProvider).clearForSignOut(uid);
+      }
+      await ref.read(authServiceProvider).signOut();
+    });
   }
 }

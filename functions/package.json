@@ -1,0 +1,16 @@
+{
+  "name": "fitness-buddy-functions",
+  "description": "Cloud Functions for Fitness Buddy — friend-activity push notifications",
+  "engines": {
+    "node": "20"
+  },
+  "main": "index.js",
+  "scripts": {
+    "logs": "firebase functions:log"
+  },
+  "dependencies": {
+    "firebase-admin": "^12.7.0",
+    "firebase-functions": "^6.3.1"
+  },
+  "private": true
+}

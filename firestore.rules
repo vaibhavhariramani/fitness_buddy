@@ -90,6 +90,18 @@ service cloud.firestore {
       match /userRecipes/{recipeId} {
         allow read, write: if isOwner(uid);
       }
+
+      match /fcmTokens/{tokenId} {
+        allow read, write: if isOwner(uid);
+      }
+
+      // Written only by Cloud Functions (Admin SDK bypasses these rules) —
+      // the client can read its own and mark them read/delete, but never
+      // fabricate one for itself.
+      match /notifications/{notificationId} {
+        allow read, update, delete: if isOwner(uid);
+        allow create: if false;
+      }
     }
 
     match /friendships/{friendshipId} {

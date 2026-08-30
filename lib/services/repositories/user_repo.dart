@@ -14,6 +14,9 @@ class UserRepo {
   DocumentReference<Map<String, dynamic>> _directoryDoc(String uid) =>
       _db.collection('userDirectory').doc(uid);
 
+  CollectionReference<Map<String, dynamic>> _fcmTokensCol(String uid) =>
+      _doc(uid).collection('fcmTokens');
+
   Future<void> createProfile(UserProfile profile) async {
     await _doc(profile.uid).set(profile.toJson());
     await _directoryDoc(profile.uid).set(
@@ -67,6 +70,21 @@ class UserRepo {
   Future<void> updateDisplayName(String uid, String displayName) async {
     await _doc(uid).update({'displayName': displayName});
     await _directoryDoc(uid).update({'displayName': displayName});
+  }
+
+  /// Registers a device's FCM token so Cloud Functions can push to it — doc
+  /// id is the token itself, so re-saving the same token on relaunch is a
+  /// harmless no-op merge rather than a growing pile of duplicates.
+  Future<void> saveFcmToken(String uid, String token) {
+    return _fcmTokensCol(uid).doc(token).set({
+      'updatedAt': FieldValue.serverTimestamp(),
+    });
+  }
+
+  /// Called on sign-out so a shared/borrowed device stops receiving this
+  /// user's push notifications.
+  Future<void> removeFcmToken(String uid, String token) {
+    return _fcmTokensCol(uid).doc(token).delete();
   }
 
   /// Recomputes the streak inside a transaction so concurrent logs on the

@@ -18,6 +18,7 @@ dependencies:
   firebase_auth: ^5.3.3
   cloud_firestore: ^5.5.0
   firebase_storage: ^12.3.6
+  firebase_messaging: ^15.1.5
   google_sign_in: ^6.2.2
 
   # State management & routing
@@ -41,6 +42,11 @@ dependencies:
   # Nutrition tracking
   http: ^1.2.2
   mobile_scanner: ^7.4.0
+
+  # Notifications
+  flutter_local_notifications: ^18.0.1
+  timezone: ^0.9.4
+  flutter_timezone: ^3.0.1
 
 dev_dependencies:
   flutter_test:

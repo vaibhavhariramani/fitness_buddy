@@ -100,6 +100,30 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     });
   }
 
+  Future<void> _updateReminders(
+    UserProfile profile,
+    ReminderSettings reminders,
+  ) {
+    return ref.read(userRepoProvider).updateProfile(profile.uid, {
+      'reminders': reminders.toJson(),
+    });
+  }
+
+  Future<void> _pickReminderTime(
+    UserProfile profile,
+    int currentMinutes,
+    ValueChanged<int> onPicked,
+  ) async {
+    final picked = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay(
+        hour: currentMinutes ~/ 60,
+        minute: currentMinutes % 60,
+      ),
+    );
+    if (picked != null) onPicked(picked.hour * 60 + picked.minute);
+  }
+
   @override
   Widget build(BuildContext context) {
     final profile = ref.watch(userProfileProvider).valueOrNull;
@@ -252,6 +276,86 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 ),
           ),
           const SizedBox(height: 32),
+          Text('Reminders', style: Theme.of(context).textTheme.titleMedium),
+          SwitchListTile(
+            title: const Text('Meal & workout reminders'),
+            subtitle: const Text(
+              'Get nudged to log breakfast, lunch, a workout, and dinner',
+            ),
+            value: profile.reminders.enabled,
+            onChanged:
+                (v) => _updateReminders(
+                  profile,
+                  profile.reminders.copyWith(enabled: v),
+                ),
+          ),
+          if (profile.reminders.enabled) ...[
+            _ReminderTimeTile(
+              label: 'Breakfast',
+              minutes: profile.reminders.breakfastMinutes,
+              onTap:
+                  () => _pickReminderTime(
+                    profile,
+                    profile.reminders.breakfastMinutes,
+                    (m) => _updateReminders(
+                      profile,
+                      profile.reminders.copyWith(breakfastMinutes: m),
+                    ),
+                  ),
+            ),
+            _ReminderTimeTile(
+              label: 'Lunch',
+              minutes: profile.reminders.lunchMinutes,
+              onTap:
+                  () => _pickReminderTime(
+                    profile,
+                    profile.reminders.lunchMinutes,
+                    (m) => _updateReminders(
+                      profile,
+                      profile.reminders.copyWith(lunchMinutes: m),
+                    ),
+                  ),
+            ),
+            _ReminderTimeTile(
+              label: 'Workout',
+              minutes: profile.reminders.workoutMinutes,
+              onTap:
+                  () => _pickReminderTime(
+                    profile,
+                    profile.reminders.workoutMinutes,
+                    (m) => _updateReminders(
+                      profile,
+                      profile.reminders.copyWith(workoutMinutes: m),
+                    ),
+                  ),
+            ),
+            _ReminderTimeTile(
+              label: 'Dinner',
+              minutes: profile.reminders.dinnerMinutes,
+              onTap:
+                  () => _pickReminderTime(
+                    profile,
+                    profile.reminders.dinnerMinutes,
+                    (m) => _updateReminders(
+                      profile,
+                      profile.reminders.copyWith(dinnerMinutes: m),
+                    ),
+                  ),
+            ),
+            SwitchListTile(
+              title: const Text('Playful snack nudges'),
+              subtitle: const Text(
+                'A couple of lighthearted "skip the junk food" pings a day',
+              ),
+              value: profile.reminders.junkFoodNudgesEnabled,
+              onChanged:
+                  (v) => _updateReminders(
+                    profile,
+                    profile.reminders.copyWith(junkFoodNudgesEnabled: v),
+                  ),
+            ),
+          ],
+          const SizedBox(height: 32),
           OutlinedButton.icon(
             onPressed:
                 () => ref.read(authControllerProvider.notifier).signOut(),
@@ -259,6 +363,31 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             label: const Text('Sign out'),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _ReminderTimeTile extends StatelessWidget {
+  final String label;
+  final int minutes;
+  final VoidCallback onTap;
+
+  const _ReminderTimeTile({
+    required this.label,
+    required this.minutes,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final time = TimeOfDay(hour: minutes ~/ 60, minute: minutes % 60);
+    return ListTile(
+      contentPadding: EdgeInsets.zero,
+      title: Text(label),
+      trailing: TextButton(
+        onPressed: onTap,
+        child: Text(time.format(context)),
       ),
     );
   }

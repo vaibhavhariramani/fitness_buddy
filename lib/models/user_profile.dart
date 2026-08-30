@@ -37,6 +37,76 @@ class PrivacySettings {
   }
 }
 
+/// When each daily reminder should fire, stored as minutes since midnight
+/// (local time) so it round-trips through Firestore as a plain int and
+/// survives DST shifts the same way a wall-clock time would.
+class ReminderSettings {
+  final bool enabled;
+  final int breakfastMinutes;
+  final int lunchMinutes;
+  final int workoutMinutes;
+  final int dinnerMinutes;
+  final bool junkFoodNudgesEnabled;
+
+  const ReminderSettings({
+    this.enabled = true,
+    this.breakfastMinutes = 11 * 60,
+    this.lunchMinutes = 14 * 60,
+    this.workoutMinutes = 17 * 60,
+    this.dinnerMinutes = 20 * 60,
+    this.junkFoodNudgesEnabled = true,
+  });
+
+  Map<String, dynamic> toJson() => {
+    'enabled': enabled,
+    'breakfastMinutes': breakfastMinutes,
+    'lunchMinutes': lunchMinutes,
+    'workoutMinutes': workoutMinutes,
+    'dinnerMinutes': dinnerMinutes,
+    'junkFoodNudgesEnabled': junkFoodNudgesEnabled,
+  };
+
+  factory ReminderSettings.fromJson(Map<String, dynamic>? json) {
+    if (json == null) return const ReminderSettings();
+    const defaults = ReminderSettings();
+    return ReminderSettings(
+      enabled: json['enabled'] as bool? ?? defaults.enabled,
+      breakfastMinutes:
+          (json['breakfastMinutes'] as num?)?.toInt() ??
+          defaults.breakfastMinutes,
+      lunchMinutes:
+          (json['lunchMinutes'] as num?)?.toInt() ?? defaults.lunchMinutes,
+      workoutMinutes:
+          (json['workoutMinutes'] as num?)?.toInt() ??
+          defaults.workoutMinutes,
+      dinnerMinutes:
+          (json['dinnerMinutes'] as num?)?.toInt() ?? defaults.dinnerMinutes,
+      junkFoodNudgesEnabled:
+          json['junkFoodNudgesEnabled'] as bool? ??
+          defaults.junkFoodNudgesEnabled,
+    );
+  }
+
+  ReminderSettings copyWith({
+    bool? enabled,
+    int? breakfastMinutes,
+    int? lunchMinutes,
+    int? workoutMinutes,
+    int? dinnerMinutes,
+    bool? junkFoodNudgesEnabled,
+  }) {
+    return ReminderSettings(
+      enabled: enabled ?? this.enabled,
+      breakfastMinutes: breakfastMinutes ?? this.breakfastMinutes,
+      lunchMinutes: lunchMinutes ?? this.lunchMinutes,
+      workoutMinutes: workoutMinutes ?? this.workoutMinutes,
+      dinnerMinutes: dinnerMinutes ?? this.dinnerMinutes,
+      junkFoodNudgesEnabled:
+          junkFoodNudgesEnabled ?? this.junkFoodNudgesEnabled,
+    );
+  }
+}
+
 /// A minimal, broadly-readable record used only for "find a friend by
 /// email" lookups. Kept separate from the full [UserProfile] because
 /// Firestore security rules can't scope a collection query field-by-field —
@@ -88,6 +158,7 @@ class UserProfile {
   final int streakCount;
   final DateTime? lastLogDate;
   final PrivacySettings privacy;
+  final ReminderSettings reminders;
   final DateTime createdAt;
 
   const UserProfile({
@@ -114,6 +185,7 @@ class UserProfile {
     this.streakCount = 0,
     this.lastLogDate,
     this.privacy = const PrivacySettings(),
+    this.reminders = const ReminderSettings(),
     required this.createdAt,
   });
 
@@ -141,6 +213,7 @@ class UserProfile {
     'lastLogDate':
         lastLogDate == null ? null : Timestamp.fromDate(lastLogDate!),
     'privacy': privacy.toJson(),
+    'reminders': reminders.toJson(),
     'createdAt': Timestamp.fromDate(createdAt),
   };
 
@@ -189,6 +262,11 @@ class UserProfile {
             ? null
             : Map<String, dynamic>.from(json['privacy'] as Map),
       ),
+      reminders: ReminderSettings.fromJson(
+        json['reminders'] == null
+            ? null
+            : Map<String, dynamic>.from(json['reminders'] as Map),
+      ),
       createdAt: (json['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
     );
   }
@@ -215,6 +293,7 @@ class UserProfile {
     int? streakCount,
     DateTime? lastLogDate,
     PrivacySettings? privacy,
+    ReminderSettings? reminders,
   }) {
     return UserProfile(
       uid: uid,
@@ -240,6 +319,7 @@ class UserProfile {
       streakCount: streakCount ?? this.streakCount,
       lastLogDate: lastLogDate ?? this.lastLogDate,
       privacy: privacy ?? this.privacy,
+      reminders: reminders ?? this.reminders,
       createdAt: createdAt,
     );
   }

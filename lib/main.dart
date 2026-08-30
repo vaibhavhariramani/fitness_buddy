@@ -1,14 +1,18 @@
 import 'dart:developer' as developer;
 
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'app/app.dart';
+import 'app/router.dart';
 import 'app/theme_mode_controller.dart';
+import 'core/providers.dart';
 import 'firebase_options.dart';
+import 'services/push_notification_service.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -30,6 +34,7 @@ Future<void> main() async {
   ErrorWidget.builder = (details) => _AppErrorWidget(details: details);
 
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
 
   await Hive.initFlutter();
   await Future.wait([
@@ -40,13 +45,26 @@ Future<void> main() async {
   final prefs = await SharedPreferences.getInstance();
   final initialThemeMode = ThemeModeController.loadInitial(prefs);
 
+  // An explicit container (rather than a plain `ProviderScope`) so the
+  // notification tap handler below — which fires from outside the widget
+  // tree — can read the router and navigate.
+  final container = ProviderContainer(
+    overrides: [
+      themeModeProvider.overrideWith(
+        (ref) => ThemeModeController(prefs, initialThemeMode),
+      ),
+    ],
+  );
+
+  final notificationService = container.read(notificationServiceProvider);
+  await notificationService.init();
+  notificationService.onNotificationTapped.listen((route) {
+    container.read(routerProvider).go(route);
+  });
+
   runApp(
-    ProviderScope(
-      overrides: [
-        themeModeProvider.overrideWith(
-          (ref) => ThemeModeController(prefs, initialThemeMode),
-        ),
-      ],
+    UncontrolledProviderScope(
+      container: container,
       child: const FitnessBuddyApp(),
     ),
   );

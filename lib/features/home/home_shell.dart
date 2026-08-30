@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../app/theme_mode_controller.dart';
 import '../../core/providers.dart';
 import '../auth/providers/auth_controller.dart';
+import '../notifications/notification_bell.dart';
 
 class _NavItem {
   final String path;
@@ -122,6 +123,7 @@ class HomeShell extends ConsumerWidget {
               : AppBar(
                 title: const Text('Fitness Buddy'),
                 actions: [
+                  const NotificationBell(),
                   themeToggle,
                   IconButton(
                     icon: const Icon(Icons.logout),
@@ -132,40 +134,93 @@ class HomeShell extends ConsumerWidget {
                   ),
                 ],
               ),
-      body: Row(
-        children: [
-          if (isWide)
-            NavigationRail(
-              selectedIndex: currentIndex,
-              onDestinationSelected: (i) => context.go(_navItems[i].path),
-              labelType: NavigationRailLabelType.all,
-              leading: Column(
+      body:
+          isWide
+              ? Column(
                 children: [
-                  const SizedBox(height: 12),
-                  CircleAvatar(
-                    child: Text(
-                      (profile?.displayName.isNotEmpty ?? false)
-                          ? profile!.displayName[0].toUpperCase()
-                          : '?',
+                  Material(
+                    elevation: 1,
+                    child: SizedBox(
+                      height: 56,
+                      child: Row(
+                        children: [
+                          const SizedBox(width: 16),
+                          Text(
+                            'Fitness Buddy',
+                            style: Theme.of(context).textTheme.titleMedium,
+                          ),
+                          const Spacer(),
+                          const NotificationBell(),
+                          const SizedBox(width: 8),
+                        ],
+                      ),
                     ),
                   ),
-                  const SizedBox(height: 8),
-                  themeToggle,
-                  IconButton(
-                    icon: const Icon(Icons.logout),
-                    tooltip: 'Sign out',
-                    onPressed:
-                        () =>
-                            ref.read(authControllerProvider.notifier).signOut(),
+                  Expanded(
+                    child: Row(
+                      children: [
+                        // NavigationRail doesn't scroll on its own — with 8
+                        // destinations plus the leading avatar/buttons, it
+                        // can be taller than the viewport on shorter windows
+                        // and overflow. Wrapping it this way (the pattern
+                        // NavigationRail's own docs recommend) lets it
+                        // scroll instead.
+                        LayoutBuilder(
+                          builder: (context, constraints) {
+                            return SingleChildScrollView(
+                              child: ConstrainedBox(
+                                constraints: BoxConstraints(
+                                  minHeight: constraints.maxHeight,
+                                ),
+                                child: IntrinsicHeight(
+                                  child: NavigationRail(
+                                    selectedIndex: currentIndex,
+                                    onDestinationSelected:
+                                        (i) => context.go(_navItems[i].path),
+                                    labelType: NavigationRailLabelType.all,
+                                    leading: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        const SizedBox(height: 12),
+                                        CircleAvatar(
+                                          child: Text(
+                                            (profile?.displayName.isNotEmpty ??
+                                                    false)
+                                                ? profile!.displayName[0]
+                                                    .toUpperCase()
+                                                : '?',
+                                          ),
+                                        ),
+                                        const SizedBox(height: 8),
+                                        themeToggle,
+                                        IconButton(
+                                          icon: const Icon(Icons.logout),
+                                          tooltip: 'Sign out',
+                                          onPressed:
+                                              () => ref
+                                                  .read(
+                                                    authControllerProvider
+                                                        .notifier,
+                                                  )
+                                                  .signOut(),
+                                        ),
+                                      ],
+                                    ),
+                                    destinations: destinations,
+                                  ),
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                        const VerticalDivider(width: 1),
+                        Expanded(child: child),
+                      ],
+                    ),
                   ),
                 ],
-              ),
-              destinations: destinations,
-            ),
-          if (isWide) const VerticalDivider(width: 1),
-          Expanded(child: child),
-        ],
-      ),
+              )
+              : child,
       bottomNavigationBar:
           isWide
               ? null

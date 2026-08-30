@@ -50,9 +50,14 @@ firebase-debug.log
 firestore-debug.log
 ui-debug.log
 
+# Cloud Functions
+functions/node_modules/
+functions/lib/
+
 # Local-only credentials — never commit
 tools/seed/service-account.json
 android/app/google-services.json
+ios/Runner/GoogleService-Info.plist
 lib/firebase_options.dart
 
 # Design-reference working files (third-party screenshots / brand teardown

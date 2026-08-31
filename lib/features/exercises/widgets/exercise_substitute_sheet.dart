@@ -62,6 +62,7 @@ class _ExerciseSubstituteSheet extends ConsumerWidget {
                     child: ExerciseVisual(
                       exerciseId: sub.id,
                       category: sub.category,
+                      photoAsset: sub.photoAsset,
                       iconSize: 18,
                     ),
                   ),

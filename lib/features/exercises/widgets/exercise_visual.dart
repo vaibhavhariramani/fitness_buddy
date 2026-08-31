@@ -5,44 +5,73 @@ import '../data/exercise_pose_mapping.dart';
 import '../data/exercise_pose_svgs.dart';
 import 'category_visual.dart';
 
-/// The visual shown for an exercise: a hand-drawn pose pictogram on a
-/// category-tinted backdrop. Every exercise renders in the same illustrated
-/// style — no photos — so a grid never mixes real human photography (which
-/// varies by lighting, body, camera angle no matter how consistent the
-/// source) with illustration; it also recolors automatically with the app
-/// theme, so light/dark mode never leaves a mismatched photo behind.
+/// The visual shown for an exercise. Every thumbnail — photo or not — sits
+/// on the same category-tinted backdrop with the same inset/rounding, so a
+/// grid mixing real photos and pose-pictogram fallbacks reads as one
+/// consistent, premium set rather than two different visual languages.
+/// Prefers a real photo when one was confidently matched (see
+/// assets/data/exercises.json and the curation script behind it) — all
+/// sourced from free-exercise-db, which shoots every exercise in the same
+/// studio style, so the photos themselves are consistent with each other
+/// too, not just with the fallback icons. The photos are bundled into the
+/// app under assets/images/exercises/ (not hotlinked) so they render
+/// instantly and never depend on a third-party CDN being reachable — falls
+/// back to the pose pictogram (data/exercise_pose_svgs.dart) only when no
+/// photo was matched for this exercise at all.
 class ExerciseVisual extends StatelessWidget {
   final String exerciseId;
   final String category;
+  final String? photoAsset;
   final double iconSize;
 
   const ExerciseVisual({
     super.key,
     required this.exerciseId,
     required this.category,
+    this.photoAsset,
     this.iconSize = 36,
   });
+
+  Widget _pose(Color color) {
+    final poseKey = exercisePoseByExerciseId[exerciseId];
+    final svg = poseKey == null ? null : exercisePoseSvgs[poseKey];
+
+    return Padding(
+      padding: EdgeInsets.all(iconSize * 0.15),
+      child:
+          svg == null
+              ? Icon(categoryIcon(category), size: iconSize, color: color)
+              : SvgPicture.string(
+                svg,
+                colorFilter: ColorFilter.mode(color, BlendMode.srcIn),
+                fit: BoxFit.contain,
+              ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     final color = categoryColor(category);
-    final poseKey = exercisePoseByExerciseId[exerciseId];
-    final svg = poseKey == null ? null : exercisePoseSvgs[poseKey];
+    final url = photoAsset;
 
     return Container(
       color: color.withValues(alpha: 0.10),
       alignment: Alignment.center,
-      child: Padding(
-        padding: EdgeInsets.all(iconSize * 0.15),
-        child:
-            svg == null
-                ? Icon(categoryIcon(category), size: iconSize, color: color)
-                : SvgPicture.string(
-                  svg,
-                  colorFilter: ColorFilter.mode(color, BlendMode.srcIn),
-                  fit: BoxFit.contain,
+      child:
+          url == null
+              ? _pose(color)
+              : FractionallySizedBox(
+                widthFactor: 0.86,
+                heightFactor: 0.86,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(iconSize * 0.28),
+                  child: Image.asset(
+                    url,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, _, __) => _pose(color),
+                  ),
                 ),
-      ),
+              ),
     );
   }
 }

@@ -33,7 +33,8 @@
       "dumbbell-bench-press",
       "incline-dumbbell-press",
       "push-up"
-    ]
+    ],
+    "photoAsset": "assets/images/exercises/barbell-bench-press.jpg"
   },
   {
     "id": "dumbbell-bench-press",
@@ -63,7 +64,8 @@
       "barbell-bench-press",
       "incline-barbell-bench-press",
       "push-up"
-    ]
+    ],
+    "photoAsset": "assets/images/exercises/dumbbell-bench-press.jpg"
   },
   {
     "id": "incline-barbell-bench-press",
@@ -93,7 +95,8 @@
       "dumbbell-bench-press",
       "incline-dumbbell-press",
       "push-up"
-    ]
+    ],
+    "photoAsset": "assets/images/exercises/incline-barbell-bench-press.jpg"
   },
   {
     "id": "incline-dumbbell-press",
@@ -123,7 +126,8 @@
       "barbell-bench-press",
       "incline-barbell-bench-press",
       "push-up"
-    ]
+    ],
+    "photoAsset": "assets/images/exercises/incline-dumbbell-press.jpg"
   },
   {
     "id": "push-up",
@@ -155,7 +159,8 @@
       "barbell-bench-press",
       "dumbbell-bench-press",
       "incline-barbell-bench-press"
-    ]
+    ],
+    "photoAsset": "assets/images/exercises/push-up.jpg"
   },
   {
     "id": "chest-dip",
@@ -183,7 +188,8 @@
       "barbell-bench-press",
       "dumbbell-bench-press",
       "incline-barbell-bench-press"
-    ]
+    ],
+    "photoAsset": "assets/images/exercises/chest-dip.jpg"
   },
   {
     "id": "cable-chest-fly",
@@ -211,7 +217,8 @@
       "barbell-bench-press",
       "dumbbell-bench-press",
       "incline-barbell-bench-press"
-    ]
+    ],
+    "photoAsset": "assets/images/exercises/cable-chest-fly.jpg"
   },
   {
     "id": "dumbbell-fly",
@@ -240,7 +247,8 @@
       "barbell-bench-press",
       "incline-barbell-bench-press",
       "push-up"
-    ]
+    ],
+    "photoAsset": "assets/images/exercises/dumbbell-fly.jpg"
   },
   {
     "id": "machine-chest-press",
@@ -268,7 +276,8 @@
       "barbell-bench-press",
       "dumbbell-bench-press",
       "incline-barbell-bench-press"
-    ]
+    ],
+    "photoAsset": "assets/images/exercises/machine-chest-press.jpg"
   },
   {
     "id": "pec-deck-fly",
@@ -294,7 +303,8 @@
       "barbell-bench-press",
       "dumbbell-bench-press",
       "incline-barbell-bench-press"
-    ]
+    ],
+    "photoAsset": "assets/images/exercises/pec-deck-fly.jpg"
   },
   {
     "id": "deadlift",
@@ -331,7 +341,8 @@
       "pull-up",
       "lat-pulldown",
       "dumbbell-row"
-    ]
+    ],
+    "photoAsset": "assets/images/exercises/deadlift.jpg"
   },
   {
     "id": "pull-up",
@@ -364,7 +375,8 @@
       "deadlift",
       "lat-pulldown",
       "barbell-bent-over-row"
-    ]
+    ],
+    "photoAsset": "assets/images/exercises/pull-up.jpg"
   },
   {
     "id": "lat-pulldown",
@@ -393,7 +405,8 @@
       "deadlift",
       "pull-up",
       "barbell-bent-over-row"
-    ]
+    ],
+    "photoAsset": "assets/images/exercises/lat-pulldown.jpg"
   },
   {
     "id": "barbell-bent-over-row",
@@ -427,7 +440,8 @@
       "pull-up",
       "lat-pulldown",
       "dumbbell-row"
-    ]
+    ],
+    "photoAsset": "assets/images/exercises/barbell-bent-over-row.jpg"
   },
   {
     "id": "dumbbell-row",
@@ -456,7 +470,8 @@
       "deadlift",
       "pull-up",
       "lat-pulldown"
-    ]
+    ],
+    "photoAsset": "assets/images/exercises/dumbbell-row.jpg"
   },
   {
     "id": "seated-cable-row",
@@ -484,7 +499,8 @@
       "deadlift",
       "pull-up",
       "lat-pulldown"
-    ]
+    ],
+    "photoAsset": "assets/images/exercises/seated-cable-row.jpg"
   },
   {
     "id": "t-bar-row",
@@ -514,7 +530,8 @@
       "deadlift",
       "pull-up",
       "lat-pulldown"
-    ]
+    ],
+    "photoAsset": "assets/images/exercises/t-bar-row.jpg"
   },
   {
     "id": "chin-up",
@@ -547,7 +564,8 @@
       "deadlift",
       "lat-pulldown",
       "barbell-bent-over-row"
-    ]
+    ],
+    "photoAsset": "assets/images/exercises/chin-up.jpg"
   },
   {
     "id": "face-pull",
@@ -576,7 +594,8 @@
       "deadlift",
       "pull-up",
       "lat-pulldown"
-    ]
+    ],
+    "photoAsset": "assets/images/exercises/face-pull.jpg"
   },
   {
     "id": "straight-arm-pulldown",
@@ -604,7 +623,8 @@
       "deadlift",
       "pull-up",
       "lat-pulldown"
-    ]
+    ],
+    "photoAsset": "assets/images/exercises/straight-arm-pulldown.jpg"
   },
   {
     "id": "overhead-barbell-press",
@@ -638,7 +658,8 @@
       "dumbbell-shoulder-press",
       "arnold-press",
       "lateral-raise"
-    ]
+    ],
+    "photoAsset": "assets/images/exercises/overhead-barbell-press.jpg"
   },
   {
     "id": "dumbbell-shoulder-press",
@@ -666,7 +687,8 @@
       "overhead-barbell-press",
       "cable-lateral-raise",
       "upright-row"
-    ]
+    ],
+    "photoAsset": "assets/images/exercises/dumbbell-shoulder-press.jpg"
   },
   {
     "id": "arnold-press",
@@ -694,7 +716,8 @@
       "overhead-barbell-press",
       "cable-lateral-raise",
       "upright-row"
-    ]
+    ],
+    "photoAsset": "assets/images/exercises/arnold-press.jpg"
   },
   {
     "id": "lateral-raise",
@@ -720,7 +743,8 @@
       "overhead-barbell-press",
       "cable-lateral-raise",
       "upright-row"
-    ]
+    ],
+    "photoAsset": "assets/images/exercises/lateral-raise.jpg"
   },
   {
     "id": "front-raise",
@@ -746,7 +770,8 @@
       "overhead-barbell-press",
       "cable-lateral-raise",
       "upright-row"
-    ]
+    ],
+    "photoAsset": "assets/images/exercises/front-raise.jpg"
   },
   {
     "id": "rear-delt-fly",
@@ -774,7 +799,8 @@
       "overhead-barbell-press",
       "cable-lateral-raise",
       "upright-row"
-    ]
+    ],
+    "photoAsset": "assets/images/exercises/rear-delt-fly.jpg"
   },
   {
     "id": "cable-lateral-raise",
@@ -800,7 +826,8 @@
       "overhead-barbell-press",
       "dumbbell-shoulder-press",
       "arnold-press"
-    ]
+    ],
+    "photoAsset": "assets/images/exercises/cable-lateral-raise.jpg"
   },
   {
     "id": "upright-row",
@@ -833,7 +860,8 @@
       "overhead-barbell-press",
       "dumbbell-shoulder-press",
       "arnold-press"
-    ]
+    ],
+    "photoAsset": "assets/images/exercises/upright-row.jpg"
   },
   {
     "id": "machine-shoulder-press",
@@ -861,7 +889,8 @@
       "overhead-barbell-press",
       "dumbbell-shoulder-press",
       "arnold-press"
-    ]
+    ],
+    "photoAsset": "assets/images/exercises/machine-shoulder-press.jpg"
   },
   {
     "id": "band-pull-apart",
@@ -889,7 +918,8 @@
       "overhead-barbell-press",
       "dumbbell-shoulder-press",
       "arnold-press"
-    ]
+    ],
+    "photoAsset": "assets/images/exercises/band-pull-apart.jpg"
   },
   {
     "id": "barbell-back-squat",
@@ -925,7 +955,8 @@
       "leg-press",
       "walking-lunge",
       "bulgarian-split-squat"
-    ]
+    ],
+    "photoAsset": "assets/images/exercises/barbell-back-squat.jpg"
   },
   {
     "id": "front-squat",
@@ -958,7 +989,8 @@
       "leg-press",
       "walking-lunge",
       "bulgarian-split-squat"
-    ]
+    ],
+    "photoAsset": "assets/images/exercises/front-squat.jpg"
   },
   {
     "id": "leg-press",
@@ -991,7 +1023,8 @@
       "barbell-back-squat",
       "front-squat",
       "romanian-deadlift"
-    ]
+    ],
+    "photoAsset": "assets/images/exercises/leg-press.jpg"
   },
   {
     "id": "romanian-deadlift",
@@ -1025,7 +1058,8 @@
       "leg-press",
       "walking-lunge",
       "bulgarian-split-squat"
-    ]
+    ],
+    "photoAsset": "assets/images/exercises/romanian-deadlift.jpg"
   },
   {
     "id": "walking-lunge",
@@ -1057,7 +1091,8 @@
       "barbell-back-squat",
       "front-squat",
       "leg-press"
-    ]
+    ],
+    "photoAsset": "assets/images/exercises/walking-lunge.jpg"
   },
   {
     "id": "bulgarian-split-squat",
@@ -1086,7 +1121,8 @@
       "barbell-back-squat",
       "front-squat",
       "leg-press"
-    ]
+    ],
+    "photoAsset": "assets/images/exercises/bulgarian-split-squat.jpg"
   },
   {
     "id": "leg-extension",
@@ -1112,7 +1148,8 @@
       "barbell-back-squat",
       "front-squat",
       "romanian-deadlift"
-    ]
+    ],
+    "photoAsset": "assets/images/exercises/leg-extension.jpg"
   },
   {
     "id": "leg-curl",
@@ -1138,7 +1175,8 @@
       "barbell-back-squat",
       "front-squat",
       "romanian-deadlift"
-    ]
+    ],
+    "photoAsset": "assets/images/exercises/leg-curl.jpg"
   },
   {
     "id": "goblet-squat",
@@ -1170,7 +1208,8 @@
       "barbell-back-squat",
       "front-squat",
       "leg-press"
-    ]
+    ],
+    "photoAsset": "assets/images/exercises/goblet-squat.jpg"
   },
   {
     "id": "standing-calf-raise",
@@ -1197,7 +1236,8 @@
       "barbell-back-squat",
       "front-squat",
       "leg-press"
-    ]
+    ],
+    "photoAsset": "assets/images/exercises/standing-calf-raise.jpg"
   },
   {
     "id": "hip-thrust",
@@ -1231,7 +1271,8 @@
       "barbell-back-squat",
       "front-squat",
       "leg-press"
-    ]
+    ],
+    "photoAsset": "assets/images/exercises/hip-thrust.jpg"
   },
   {
     "id": "kettlebell-swing",
@@ -1264,7 +1305,8 @@
       "barbell-back-squat",
       "front-squat",
       "leg-press"
-    ]
+    ],
+    "photoAsset": "assets/images/exercises/kettlebell-swing.jpg"
   },
   {
     "id": "barbell-bicep-curl",
@@ -1293,7 +1335,8 @@
       "dumbbell-bicep-curl",
       "hammer-curl",
       "cable-bicep-curl"
-    ]
+    ],
+    "photoAsset": "assets/images/exercises/barbell-bicep-curl.jpg"
   },
   {
     "id": "dumbbell-bicep-curl",
@@ -1319,7 +1362,8 @@
       "barbell-bicep-curl",
       "cable-bicep-curl",
       "triceps-pushdown"
-    ]
+    ],
+    "photoAsset": "assets/images/exercises/dumbbell-bicep-curl.jpg"
   },
   {
     "id": "hammer-curl",
@@ -1345,7 +1389,8 @@
       "barbell-bicep-curl",
       "cable-bicep-curl",
       "triceps-pushdown"
-    ]
+    ],
+    "photoAsset": "assets/images/exercises/hammer-curl.jpg"
   },
   {
     "id": "cable-bicep-curl",
@@ -1371,7 +1416,8 @@
       "barbell-bicep-curl",
       "dumbbell-bicep-curl",
       "hammer-curl"
-    ]
+    ],
+    "photoAsset": "assets/images/exercises/cable-bicep-curl.jpg"
   },
   {
     "id": "concentration-curl",
@@ -1397,7 +1443,8 @@
       "barbell-bicep-curl",
       "cable-bicep-curl",
       "triceps-pushdown"
-    ]
+    ],
+    "photoAsset": "assets/images/exercises/concentration-curl.jpg"
   },
   {
     "id": "triceps-pushdown",
@@ -1423,7 +1470,8 @@
       "barbell-bicep-curl",
       "dumbbell-bicep-curl",
       "hammer-curl"
-    ]
+    ],
+    "photoAsset": "assets/images/exercises/triceps-pushdown.jpg"
   },
   {
     "id": "skull-crusher",
@@ -1456,7 +1504,8 @@
       "barbell-bicep-curl",
       "dumbbell-bicep-curl",
       "hammer-curl"
-    ]
+    ],
+    "photoAsset": "assets/images/exercises/skull-crusher.jpg"
   },
   {
     "id": "overhead-triceps-extension",
@@ -1482,7 +1531,8 @@
       "barbell-bicep-curl",
       "cable-bicep-curl",
       "triceps-pushdown"
-    ]
+    ],
+    "photoAsset": "assets/images/exercises/overhead-triceps-extension.jpg"
   },
   {
     "id": "close-grip-bench-press",
@@ -1516,7 +1566,8 @@
       "barbell-bicep-curl",
       "dumbbell-bicep-curl",
       "hammer-curl"
-    ]
+    ],
+    "photoAsset": "assets/images/exercises/close-grip-bench-press.jpg"
   },
   {
     "id": "bench-dip",
@@ -1545,7 +1596,8 @@
       "barbell-bicep-curl",
       "dumbbell-bicep-curl",
       "hammer-curl"
-    ]
+    ],
+    "photoAsset": "assets/images/exercises/bench-dip.jpg"
   },
   {
     "id": "plank",
@@ -1574,7 +1626,8 @@
       "russian-twist",
       "cable-woodchopper",
       "side-plank"
-    ]
+    ],
+    "photoAsset": "assets/images/exercises/plank.jpg"
   },
   {
     "id": "side-plank",
@@ -1600,7 +1653,8 @@
       "russian-twist",
       "cable-woodchopper",
       "plank"
-    ]
+    ],
+    "photoAsset": "assets/images/exercises/side-plank.jpg"
   },
   {
     "id": "crunch",
@@ -1626,7 +1680,8 @@
       "russian-twist",
       "cable-woodchopper",
       "plank"
-    ]
+    ],
+    "photoAsset": "assets/images/exercises/crunch.jpg"
   },
   {
     "id": "bicycle-crunch",
@@ -1652,7 +1707,8 @@
       "russian-twist",
       "cable-woodchopper",
       "plank"
-    ]
+    ],
+    "photoAsset": "assets/images/exercises/bicycle-crunch.jpg"
   },
   {
     "id": "hanging-leg-raise",
@@ -1680,7 +1736,8 @@
       "russian-twist",
       "cable-woodchopper",
       "plank"
-    ]
+    ],
+    "photoAsset": "assets/images/exercises/hanging-leg-raise.jpg"
   },
   {
     "id": "russian-twist",
@@ -1707,7 +1764,8 @@
       "plank",
       "side-plank",
       "crunch"
-    ]
+    ],
+    "photoAsset": "assets/images/exercises/russian-twist.jpg"
   },
   {
     "id": "cable-woodchopper",
@@ -1733,7 +1791,8 @@
       "plank",
       "side-plank",
       "crunch"
-    ]
+    ],
+    "photoAsset": "assets/images/exercises/cable-woodchopper.jpg"
   },
   {
     "id": "ab-wheel-rollout",
@@ -1761,7 +1820,8 @@
       "russian-twist",
       "cable-woodchopper",
       "plank"
-    ]
+    ],
+    "photoAsset": "assets/images/exercises/ab-wheel-rollout.jpg"
   },
   {
     "id": "mountain-climber",
@@ -1789,7 +1849,8 @@
       "russian-twist",
       "cable-woodchopper",
       "plank"
-    ]
+    ],
+    "photoAsset": "assets/images/exercises/mountain-climber.jpg"
   },
   {
     "id": "dead-bug",
@@ -1815,7 +1876,8 @@
       "russian-twist",
       "cable-woodchopper",
       "plank"
-    ]
+    ],
+    "photoAsset": "assets/images/exercises/dead-bug.jpg"
   },
   {
     "id": "jumping-jacks",
@@ -1893,7 +1955,8 @@
       "jumping-jacks",
       "burpees",
       "battle-ropes"
-    ]
+    ],
+    "photoAsset": "assets/images/exercises/jump-rope.jpg"
   },
   {
     "id": "high-knees",
@@ -1947,7 +2010,8 @@
       "step-up",
       "high-knees",
       "barbell-back-squat"
-    ]
+    ],
+    "photoAsset": "assets/images/exercises/box-jump.jpg"
   },
   {
     "id": "rowing-machine",
@@ -1976,7 +2040,8 @@
       "deadlift",
       "pull-up",
       "lat-pulldown"
-    ]
+    ],
+    "photoAsset": "assets/images/exercises/rowing-machine.jpg"
   },
   {
     "id": "battle-ropes",
@@ -2005,7 +2070,8 @@
       "jumping-jacks",
       "burpees",
       "jump-rope"
-    ]
+    ],
+    "photoAsset": "assets/images/exercises/battle-ropes.jpg"
   },
   {
     "id": "step-up",
@@ -2032,6 +2098,7 @@
       "high-knees",
       "box-jump",
       "barbell-back-squat"
-    ]
+    ],
+    "photoAsset": "assets/images/exercises/step-up.jpg"
   }
 ]

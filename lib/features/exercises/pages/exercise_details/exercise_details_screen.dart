@@ -74,7 +74,7 @@ class _ExerciseDetailsScreenState extends ConsumerState<ExerciseDetailsScreen> {
       appBar: AppBar(title: Text(exercise.name)),
       body: ListView(
         children: [
-          // 1. Pose pictogram on top.
+          // 1. Photo (or pose pictogram fallback) on top.
           AspectRatio(
             aspectRatio: 16 / 9,
             child: Hero(
@@ -82,10 +82,31 @@ class _ExerciseDetailsScreenState extends ConsumerState<ExerciseDetailsScreen> {
               child: ExerciseVisual(
                 exerciseId: exercise.id,
                 category: exercise.category,
+                photoAsset: exercise.photoAsset,
                 iconSize: 56,
               ),
             ),
           ),
+          if (exercise.photoAsset == null)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+              child: Text(
+                "No photo available for this exercise yet — showing a simple illustration instead.",
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: Theme.of(context).colorScheme.outline,
+                ),
+              ),
+            )
+          else
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 4, 16, 0),
+              child: Text(
+                'Photo: free-exercise-db contributors • public domain',
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: Theme.of(context).colorScheme.outline,
+                ),
+              ),
+            ),
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
             child: Wrap(

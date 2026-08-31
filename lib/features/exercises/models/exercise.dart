@@ -1,9 +1,13 @@
 /// A curated, locally-bundled exercise (see assets/data/exercises.json).
 /// All factual content (muscles/equipment/instructions/coaching notes) is
-/// local and offline. Every exercise is visualized as a hand-drawn pose
-/// pictogram (widgets/exercise_visual.dart, data/exercise_pose_svgs.dart) —
-/// no photos — so the whole catalog reads as one consistent illustrated set
-/// rather than mixing real human photography of any kind.
+/// local and offline. A subset of exercises additionally carry a bundled
+/// photo (assets/images/exercises/, registered in pubspec.yaml) sourced from
+/// free-exercise-db (public domain; every entry shares the same studio
+/// photography, so photos read as one consistent set rather than a mixed
+/// crowd-sourced style) — matched by hand per exercise and shipped with the
+/// app rather than hotlinked, so it renders instantly with no CDN
+/// dependency. See widgets/exercise_visual.dart, which falls back to the
+/// pose pictogram whenever no confident match exists for an exercise.
 class Exercise {
   final String id;
   final String name;
@@ -20,6 +24,7 @@ class Exercise {
   final List<String> substitutes;
   final int calorieEstimatePerSet;
   final int avgSecondsPerSet;
+  final String? photoAsset;
 
   const Exercise({
     required this.id,
@@ -37,6 +42,7 @@ class Exercise {
     this.substitutes = const [],
     required this.calorieEstimatePerSet,
     required this.avgSecondsPerSet,
+    this.photoAsset,
   });
 
   String get primaryMuscleNames =>
@@ -67,6 +73,7 @@ class Exercise {
           _calorieEstimateFor(category),
       avgSecondsPerSet:
           json['avgSecondsPerSet'] as int? ?? _avgSecondsFor(category),
+      photoAsset: json['photoAsset'] as String?,
     );
   }
 

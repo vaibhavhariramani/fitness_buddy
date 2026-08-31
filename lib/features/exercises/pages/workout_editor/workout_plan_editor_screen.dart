@@ -295,7 +295,6 @@ class _WorkoutPlanEditorScreenState
                                         : ExerciseVisual(
                                           exerciseId: exercise.id,
                                           category: exercise.category,
-                                          photoAsset: exercise.photoAsset,
                                           iconSize: 20,
                                         ),
                               ),

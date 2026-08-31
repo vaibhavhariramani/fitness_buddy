@@ -82,12 +82,12 @@ class _ExerciseDetailsScreenState extends ConsumerState<ExerciseDetailsScreen> {
               child: ExerciseVisual(
                 exerciseId: exercise.id,
                 category: exercise.category,
-                photoUrl: exercise.wgerImageUrl,
+                photoUrl: exercise.photoUrl,
                 iconSize: 56,
               ),
             ),
           ),
-          if (exercise.wgerImageUrl == null)
+          if (exercise.photoUrl == null)
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
               child: Text(
@@ -101,7 +101,7 @@ class _ExerciseDetailsScreenState extends ConsumerState<ExerciseDetailsScreen> {
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 4, 16, 0),
               child: Text(
-                'Photo: wger.de contributors • CC BY-SA 4.0',
+                'Photo: free-exercise-db contributors • public domain',
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
                   color: Theme.of(context).colorScheme.outline,
                 ),

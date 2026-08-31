@@ -4,17 +4,19 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 import '../data/exercise_pose_mapping.dart';
 import '../data/exercise_pose_svgs.dart';
-import '../utils/wger_image_proxy.dart';
 import 'category_visual.dart';
 
 /// The visual shown for an exercise. Every thumbnail — photo or not — sits
 /// on the same category-tinted backdrop with the same inset/rounding, so a
-/// grid mixing real wger.de photos and pose-pictogram fallbacks reads as one
+/// grid mixing real photos and pose-pictogram fallbacks reads as one
 /// consistent, premium set rather than two different visual languages.
 /// Prefers a real photo when one was confidently matched (see
-/// assets/data/exercises.json and the curation script behind it); falls
-/// back to the pose pictogram (data/exercise_pose_svgs.dart) whenever no
-/// photo is set, OR at render time if the photo fails to load.
+/// assets/data/exercises.json and the curation script behind it) — all
+/// sourced from free-exercise-db, which shoots every exercise in the same
+/// studio style, so the photos themselves are consistent with each other
+/// too, not just with the fallback icons. Falls back to the pose pictogram
+/// (data/exercise_pose_svgs.dart) whenever no photo is set, OR at render
+/// time if the photo fails to load.
 class ExerciseVisual extends StatelessWidget {
   final String exerciseId;
   final String category;
@@ -63,7 +65,7 @@ class ExerciseVisual extends StatelessWidget {
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(iconSize * 0.28),
                   child: CachedNetworkImage(
-                    imageUrl: wgerImageProxyUrl(url),
+                    imageUrl: url,
                     fit: BoxFit.cover,
                     placeholder: (context, _) => const SizedBox.expand(),
                     errorWidget: (context, _, __) => _pose(color),

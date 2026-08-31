@@ -1,10 +1,11 @@
 /// A curated, locally-bundled exercise (see assets/data/exercises.json).
 /// All factual content (muscles/equipment/instructions/coaching notes) is
 /// local and offline. A subset of exercises additionally carry a real photo
-/// URL from wger.de (only where a confident, manually-reviewed match to
-/// wger's separate catalog exists) — see widgets/exercise_visual.dart, which
-/// falls back to the original pose pictogram whenever no photo is set or
-/// the photo fails to load.
+/// URL sourced from free-exercise-db (public domain; every entry shares the
+/// same studio photography, so photos read as one consistent set rather than
+/// wger.de's mixed crowd-sourced style) — matched by hand per exercise, see
+/// widgets/exercise_visual.dart, which falls back to the pose pictogram
+/// whenever no confident match exists or the photo fails to load.
 class Exercise {
   final String id;
   final String name;
@@ -21,7 +22,7 @@ class Exercise {
   final List<String> substitutes;
   final int calorieEstimatePerSet;
   final int avgSecondsPerSet;
-  final String? wgerImageUrl;
+  final String? photoUrl;
 
   const Exercise({
     required this.id,
@@ -39,7 +40,7 @@ class Exercise {
     this.substitutes = const [],
     required this.calorieEstimatePerSet,
     required this.avgSecondsPerSet,
-    this.wgerImageUrl,
+    this.photoUrl,
   });
 
   String get primaryMuscleNames =>
@@ -70,7 +71,7 @@ class Exercise {
           _calorieEstimateFor(category),
       avgSecondsPerSet:
           json['avgSecondsPerSet'] as int? ?? _avgSecondsFor(category),
-      wgerImageUrl: json['wgerImageUrl'] as String?,
+      photoUrl: json['photoUrl'] as String?,
     );
   }
 

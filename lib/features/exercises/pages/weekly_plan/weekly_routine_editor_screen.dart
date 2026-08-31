@@ -6,6 +6,7 @@ import '../../../../core/providers.dart';
 import '../../../../models/workout_plan.dart';
 import '../../../../shared/widgets/app_card.dart';
 import '../workout_editor/workout_plans_tab.dart' show workoutPlansProvider;
+import 'plan_picker.dart';
 import 'weekly_plan_providers.dart';
 
 const _dayLabels = [
@@ -27,9 +28,10 @@ class WeeklyRoutineEditorScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final routineAsync = ref.watch(weeklyRoutineProvider);
-    final plansAsync = ref.watch(workoutPlansProvider);
-    final plans = plansAsync.valueOrNull ?? const <WorkoutPlan>[];
-    final plansById = {for (final p in plans) p.id: p};
+    final customPlans =
+        ref.watch(workoutPlansProvider).valueOrNull ?? const <WorkoutPlan>[];
+    final allPlans = ref.watch(availableWorkoutPlansProvider);
+    final plansById = {for (final p in allPlans) p.id: p};
     final scheme = Theme.of(context).colorScheme;
 
     return Scaffold(
@@ -76,7 +78,7 @@ class WeeklyRoutineEditorScreen extends ConsumerWidget {
                           onPressed: () async {
                             final picked = await _pickPlanOrRest(
                               context,
-                              plans,
+                              customPlans,
                             );
                             if (picked == _cancelled) return;
                             final uid =
@@ -105,13 +107,14 @@ class WeeklyRoutineEditorScreen extends ConsumerWidget {
 }
 
 // Sentinels to distinguish "user picked Rest" / "user cancelled" from a
-// real plan id (which is always a non-empty Firestore doc id).
+// real plan id — a saved plan's Firestore doc id, or one of the fixed
+// sample-plan slugs (see sample_workout_plans.dart), never empty either way.
 const _restChoice = '__rest__';
 const _cancelled = '__cancelled__';
 
 Future<String> _pickPlanOrRest(
   BuildContext context,
-  List<WorkoutPlan> plans,
+  List<WorkoutPlan> customPlans,
 ) async {
   final result = await showModalBottomSheet<String>(
     context: context,
@@ -132,16 +135,10 @@ Future<String> _pickPlanOrRest(
                 ),
                 const Divider(height: 1),
                 Flexible(
-                  child: ListView(
-                    shrinkWrap: true,
-                    children: [
-                      for (final p in plans)
-                        ListTile(
-                          title: Text(p.name),
-                          subtitle: Text('${p.exercises.length} exercises'),
-                          onTap: () => Navigator.pop(context, p.id),
-                        ),
-                    ],
+                  child: PlanOptionsList(
+                    customPlans: customPlans,
+                    samplePlans: sampleWorkoutPlansAsPlans,
+                    onSelected: (p) => Navigator.pop(context, p.id),
                   ),
                 ),
               ],

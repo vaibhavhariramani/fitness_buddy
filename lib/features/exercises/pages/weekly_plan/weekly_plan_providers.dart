@@ -4,6 +4,10 @@ import '../../../../core/providers.dart';
 import '../../../../core/utils/weekly_schedule.dart';
 import '../../../../models/week_schedule.dart';
 import '../../../../models/weekly_routine.dart';
+import '../../../../models/workout_plan.dart';
+import '../../data/sample_workout_plans.dart';
+import '../../models/workout_plan_template.dart';
+import '../workout_editor/workout_plans_tab.dart' show workoutPlansProvider;
 
 /// This calendar week's Monday — recomputed each time this provider is
 /// (re)watched, so the planner naturally rolls to the new week without any
@@ -69,4 +73,47 @@ final resolvedWeekProvider = Provider.autoDispose<List<ResolvedDay>>((ref) {
       isOverridden: overrides.containsKey(weekday),
     );
   });
+});
+
+/// The bundled starter plans (Push/Pull/Legs, etc.), reshaped as
+/// [WorkoutPlan]s so every screen that already works in terms of
+/// [WorkoutPlan] — pickers, day cards, "Start" — handles a sample exactly
+/// like a saved one, no special-casing required. Their exercise names fall
+/// back to the raw id, since the only place that ever reads it
+/// (ActiveWorkoutPage's seeding) always prefers the live catalog name when
+/// the id resolves, which every sample-plan id does.
+final List<WorkoutPlan> sampleWorkoutPlansAsPlans = [
+  for (final template in sampleWorkoutPlans) _planFromTemplate(template),
+];
+
+WorkoutPlan _planFromTemplate(WorkoutPlanTemplate template) {
+  final placeholder = DateTime(2024);
+  return WorkoutPlan(
+    id: template.id,
+    name: template.name,
+    createdAt: placeholder,
+    updatedAt: placeholder,
+    exercises: [
+      for (final e in template.exercises)
+        PlannedExercise(
+          exerciseId: e.exerciseId,
+          exerciseName: e.exerciseId,
+          sets: e.sets,
+          targetReps: e.targetReps,
+          isTimed: e.isTimed,
+        ),
+    ],
+  );
+}
+
+/// Every plan a day can be assigned — the user's own saved plans plus the
+/// bundled samples — for lookups (resolving a stored plan id back to a
+/// [WorkoutPlan] to display/start). Custom plans first, so a user's own
+/// work is never shadowed by a sample sharing a coincidental id.
+final availableWorkoutPlansProvider = Provider.autoDispose<List<WorkoutPlan>>((
+  ref,
+) {
+  final custom =
+      ref.watch(workoutPlansProvider).valueOrNull ?? const <WorkoutPlan>[];
+  return [...custom, ...sampleWorkoutPlansAsPlans];
 });

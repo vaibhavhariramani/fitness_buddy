@@ -9,6 +9,7 @@ import '../../../../models/workout_plan.dart';
 import '../../../../shared/widgets/app_card.dart';
 import '../../../tracking/workouts/pages/active_workout_page.dart';
 import '../workout_editor/workout_plans_tab.dart' show workoutPlansProvider;
+import 'plan_picker.dart';
 import 'weekly_plan_providers.dart';
 import 'weekly_routine_editor_screen.dart';
 
@@ -22,9 +23,10 @@ class WeeklyPlanTab extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final resolvedWeek = ref.watch(resolvedWeekProvider);
-    final plansAsync = ref.watch(workoutPlansProvider);
-    final plans = plansAsync.valueOrNull ?? const <WorkoutPlan>[];
-    final plansById = {for (final p in plans) p.id: p};
+    final customPlans =
+        ref.watch(workoutPlansProvider).valueOrNull ?? const <WorkoutPlan>[];
+    final allPlans = ref.watch(availableWorkoutPlansProvider);
+    final plansById = {for (final p in allPlans) p.id: p};
     final today = _dateOnly(DateTime.now());
 
     return Scaffold(
@@ -49,17 +51,6 @@ class WeeklyPlanTab extends ConsumerWidget {
             ],
           ),
           const SizedBox(height: AppSpacing.xs),
-          if (plans.isEmpty)
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8),
-              child: Text(
-                'Build a workout plan first (Workout Plans tab), then assign '
-                'it to days here.',
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: Theme.of(context).colorScheme.outline,
-                ),
-              ),
-            ),
           for (final day in resolvedWeek)
             Padding(
               padding: const EdgeInsets.only(bottom: AppSpacing.sm),
@@ -67,7 +58,7 @@ class WeeklyPlanTab extends ConsumerWidget {
                 day: day,
                 plan: day.planId == null ? null : plansById[day.planId],
                 isToday: _dateOnly(day.date) == today,
-                plans: plans,
+                customPlans: customPlans,
               ),
             ),
         ],
@@ -80,13 +71,13 @@ class _DayCard extends ConsumerWidget {
   final ResolvedDay day;
   final WorkoutPlan? plan;
   final bool isToday;
-  final List<WorkoutPlan> plans;
+  final List<WorkoutPlan> customPlans;
 
   const _DayCard({
     required this.day,
     required this.plan,
     required this.isToday,
-    required this.plans,
+    required this.customPlans,
   });
 
   Future<void> _openOptions(BuildContext context, WidgetRef ref) async {
@@ -130,7 +121,7 @@ class _DayCard extends ConsumerWidget {
       case _DayAction.reset:
         await repo.clearOverride(uid, weekStart, day.isoWeekday);
       case _DayAction.setPlan:
-        final picked = await _pickPlan(context, plans);
+        final picked = await _pickPlan(context, customPlans);
         if (picked != null) {
           await repo.setOverride(uid, weekStart, day.isoWeekday, picked.id);
         }
@@ -229,7 +220,10 @@ class _DayCard extends ConsumerWidget {
 
 enum _DayAction { setPlan, rest, reset }
 
-Future<WorkoutPlan?> _pickPlan(BuildContext context, List<WorkoutPlan> plans) {
+Future<WorkoutPlan?> _pickPlan(
+  BuildContext context,
+  List<WorkoutPlan> customPlans,
+) {
   return showModalBottomSheet<WorkoutPlan>(
     context: context,
     isScrollControlled: true,
@@ -247,25 +241,11 @@ Future<WorkoutPlan?> _pickPlan(BuildContext context, List<WorkoutPlan> plans) {
                   child: Text('Choose a workout'),
                 ),
                 Flexible(
-                  child:
-                      plans.isEmpty
-                          ? const Padding(
-                            padding: EdgeInsets.all(16),
-                            child: Text('No workout plans yet.'),
-                          )
-                          : ListView(
-                            shrinkWrap: true,
-                            children: [
-                              for (final p in plans)
-                                ListTile(
-                                  title: Text(p.name),
-                                  subtitle: Text(
-                                    '${p.exercises.length} exercises',
-                                  ),
-                                  onTap: () => Navigator.pop(context, p),
-                                ),
-                            ],
-                          ),
+                  child: PlanOptionsList(
+                    customPlans: customPlans,
+                    samplePlans: sampleWorkoutPlansAsPlans,
+                    onSelected: (p) => Navigator.pop(context, p),
+                  ),
                 ),
               ],
             ),

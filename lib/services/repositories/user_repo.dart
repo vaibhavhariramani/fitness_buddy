@@ -76,9 +76,9 @@ class UserRepo {
   /// id is the token itself, so re-saving the same token on relaunch is a
   /// harmless no-op merge rather than a growing pile of duplicates.
   Future<void> saveFcmToken(String uid, String token) {
-    return _fcmTokensCol(uid).doc(token).set({
-      'updatedAt': FieldValue.serverTimestamp(),
-    });
+    return _fcmTokensCol(
+      uid,
+    ).doc(token).set({'updatedAt': FieldValue.serverTimestamp()});
   }
 
   /// Called on sign-out so a shared/borrowed device stops receiving this

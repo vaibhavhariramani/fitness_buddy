@@ -23,7 +23,8 @@ class _NotificationBellState extends ConsumerState<NotificationBell> {
 
   @override
   Widget build(BuildContext context) {
-    final unreadCount = ref.watch(unreadNotificationCountProvider).valueOrNull ?? 0;
+    final unreadCount =
+        ref.watch(unreadNotificationCountProvider).valueOrNull ?? 0;
 
     ref.listen(unreadNotificationCountProvider, (previous, next) {
       final count = next.valueOrNull;
@@ -70,7 +71,8 @@ class _NotificationPanel extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final notifications = ref.watch(notificationsProvider).valueOrNull ?? const [];
+    final notifications =
+        ref.watch(notificationsProvider).valueOrNull ?? const [];
 
     return Material(
       elevation: 8,
@@ -93,7 +95,8 @@ class _NotificationPanel extends ConsumerWidget {
                   if (notifications.any((n) => !n.read))
                     TextButton(
                       onPressed: () {
-                        final uid = ref.read(authStateProvider).valueOrNull?.uid;
+                        final uid =
+                            ref.read(authStateProvider).valueOrNull?.uid;
                         if (uid != null) {
                           ref.read(notificationRepoProvider).markAllRead(uid);
                         }
@@ -110,8 +113,11 @@ class _NotificationPanel extends ConsumerWidget {
                       ? Center(
                         child: Text(
                           'No notifications yet',
-                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: Theme.of(context).colorScheme.onSurfaceVariant,
+                          style: Theme.of(
+                            context,
+                          ).textTheme.bodyMedium?.copyWith(
+                            color:
+                                Theme.of(context).colorScheme.onSurfaceVariant,
                           ),
                         ),
                       )
@@ -124,7 +130,8 @@ class _NotificationPanel extends ConsumerWidget {
                             notification: notification,
                             onTap: () {
                               onClose();
-                              final uid = ref.read(authStateProvider).valueOrNull?.uid;
+                              final uid =
+                                  ref.read(authStateProvider).valueOrNull?.uid;
                               if (uid != null && !notification.read) {
                                 ref
                                     .read(notificationRepoProvider)
@@ -164,7 +171,10 @@ class _NotificationTile extends StatelessWidget {
     return InkWell(
       onTap: onTap,
       child: Container(
-        color: notification.read ? null : scheme.primaryContainer.withValues(alpha: 0.25),
+        color:
+            notification.read
+                ? null
+                : scheme.primaryContainer.withValues(alpha: 0.25),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -191,13 +201,16 @@ class _NotificationTile extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(notification.message, style: Theme.of(context).textTheme.bodyMedium),
+                  Text(
+                    notification.message,
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
                   const SizedBox(height: 4),
                   Text(
                     _relative(notification.createdAt),
-                    style: Theme.of(
-                      context,
-                    ).textTheme.bodySmall?.copyWith(color: scheme.onSurfaceVariant),
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: scheme.onSurfaceVariant,
+                    ),
                   ),
                 ],
               ),
@@ -207,7 +220,10 @@ class _NotificationTile extends StatelessWidget {
                 width: 8,
                 height: 8,
                 margin: const EdgeInsets.only(top: 4),
-                decoration: BoxDecoration(color: scheme.primary, shape: BoxShape.circle),
+                decoration: BoxDecoration(
+                  color: scheme.primary,
+                  shape: BoxShape.circle,
+                ),
               ),
           ],
         ),

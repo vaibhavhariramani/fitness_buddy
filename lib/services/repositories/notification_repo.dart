@@ -5,20 +5,23 @@ import '../../models/app_notification.dart';
 class NotificationRepo {
   final FirebaseFirestore _db;
 
-  NotificationRepo({FirebaseFirestore? db}) : _db = db ?? FirebaseFirestore.instance;
+  NotificationRepo({FirebaseFirestore? db})
+    : _db = db ?? FirebaseFirestore.instance;
 
   CollectionReference<Map<String, dynamic>> _col(String uid) =>
       _db.collection('users').doc(uid).collection('notifications');
 
   Stream<List<AppNotification>> watchAll(String uid) {
-    return _col(
-      uid,
-    ).orderBy('createdAt', descending: true).limit(50).snapshots().map(
-      (snap) =>
-          snap.docs
-              .map((d) => AppNotification.fromJson(d.id, d.data()))
-              .toList(),
-    );
+    return _col(uid)
+        .orderBy('createdAt', descending: true)
+        .limit(50)
+        .snapshots()
+        .map(
+          (snap) =>
+              snap.docs
+                  .map((d) => AppNotification.fromJson(d.id, d.data()))
+                  .toList(),
+        );
   }
 
   Stream<int> watchUnreadCount(String uid) {

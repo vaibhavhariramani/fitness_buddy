@@ -385,10 +385,7 @@ class _ReminderTimeTile extends StatelessWidget {
     return ListTile(
       contentPadding: EdgeInsets.zero,
       title: Text(label),
-      trailing: TextButton(
-        onPressed: onTap,
-        child: Text(time.format(context)),
-      ),
+      trailing: TextButton(onPressed: onTap, child: Text(time.format(context))),
     );
   }
 }

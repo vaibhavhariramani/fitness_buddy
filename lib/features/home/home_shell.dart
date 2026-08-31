@@ -197,12 +197,13 @@ class HomeShell extends ConsumerWidget {
                                           icon: const Icon(Icons.logout),
                                           tooltip: 'Sign out',
                                           onPressed:
-                                              () => ref
-                                                  .read(
-                                                    authControllerProvider
-                                                        .notifier,
-                                                  )
-                                                  .signOut(),
+                                              () =>
+                                                  ref
+                                                      .read(
+                                                        authControllerProvider
+                                                            .notifier,
+                                                      )
+                                                      .signOut(),
                                         ),
                                       ],
                                     ),

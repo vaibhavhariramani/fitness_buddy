@@ -77,8 +77,7 @@ class ReminderSettings {
       lunchMinutes:
           (json['lunchMinutes'] as num?)?.toInt() ?? defaults.lunchMinutes,
       workoutMinutes:
-          (json['workoutMinutes'] as num?)?.toInt() ??
-          defaults.workoutMinutes,
+          (json['workoutMinutes'] as num?)?.toInt() ?? defaults.workoutMinutes,
       dinnerMinutes:
           (json['dinnerMinutes'] as num?)?.toInt() ?? defaults.dinnerMinutes,
       junkFoodNudgesEnabled:

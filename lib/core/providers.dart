@@ -18,6 +18,8 @@ import '../services/repositories/recipe_repo.dart';
 import '../services/repositories/saved_meal_repo.dart';
 import '../services/repositories/user_recipe_repo.dart';
 import '../services/repositories/user_repo.dart';
+import '../services/repositories/week_schedule_repo.dart';
+import '../services/repositories/weekly_routine_repo.dart';
 import '../services/repositories/weight_repo.dart';
 import '../services/repositories/workout_repo.dart';
 import '../services/repositories/workout_plan_repo.dart';
@@ -68,6 +70,12 @@ final mealRepoProvider = Provider<MealRepo>((ref) => MealRepo());
 final workoutRepoProvider = Provider<WorkoutRepo>((ref) => WorkoutRepo());
 final workoutPlanRepoProvider = Provider<WorkoutPlanRepo>(
   (ref) => WorkoutPlanRepo(),
+);
+final weeklyRoutineRepoProvider = Provider<WeeklyRoutineRepo>(
+  (ref) => WeeklyRoutineRepo(),
+);
+final weekScheduleRepoProvider = Provider<WeekScheduleRepo>(
+  (ref) => WeekScheduleRepo(),
 );
 final expenseRepoProvider = Provider<ExpenseRepo>((ref) => ExpenseRepo());
 final customFoodRepoProvider = Provider<CustomFoodRepo>(

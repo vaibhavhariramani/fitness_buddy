@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'exercise_library/exercise_library_tab.dart';
 import 'reports/muscle_reports_tab.dart';
+import 'weekly_plan/weekly_plan_tab.dart';
 import 'workout_editor/workout_plans_tab.dart';
 
 class ExercisesScreen extends StatelessWidget {
@@ -10,12 +11,18 @@ class ExercisesScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 3,
+      length: 4,
       child: Scaffold(
         appBar: AppBar(
           title: const Text('Exercises'),
           bottom: const TabBar(
+            isScrollable: true,
+            tabAlignment: TabAlignment.start,
             tabs: [
+              Tab(
+                text: 'This Week',
+                icon: Icon(Icons.calendar_view_week_outlined),
+              ),
               Tab(
                 text: 'All Exercises',
                 icon: Icon(Icons.fitness_center_outlined),
@@ -27,6 +34,7 @@ class ExercisesScreen extends StatelessWidget {
         ),
         body: const TabBarView(
           children: [
+            WeeklyPlanTab(),
             ExerciseLibraryTab(),
             WorkoutPlansTab(),
             MuscleReportsTab(),

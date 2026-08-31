@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 
 import '../../../../core/design_system/app_colors.dart';
 import '../../../../core/design_system/app_haptics.dart';
 import '../../../../core/design_system/app_spacing.dart';
 import '../../../../core/providers.dart';
+import '../../../../core/utils/progression.dart';
 import '../../../../models/workout_entry.dart';
 import '../../../../shared/widgets/app_card.dart';
 import '../../../exercises/providers/exercise_providers.dart';
@@ -81,6 +83,7 @@ class ActiveWorkoutPage extends ConsumerStatefulWidget {
 class _ActiveWorkoutPageState extends ConsumerState<ActiveWorkoutPage> {
   late List<_SessionExercise> _exercises;
   DateTime _date = DateTime.now();
+  final DateTime _startedAt = DateTime.now();
   bool _saving = false;
   bool _seeded = false;
 
@@ -98,6 +101,15 @@ class _ActiveWorkoutPageState extends ConsumerState<ActiveWorkoutPage> {
   void initState() {
     super.initState();
     _exercises = [];
+    // Gym screens lock/dim mid-set otherwise — released in dispose() no
+    // matter how the session ends (finished, backed out, app killed).
+    WakelockPlus.enable();
+  }
+
+  @override
+  void dispose() {
+    WakelockPlus.disable();
+    super.dispose();
   }
 
   void _seedFromWidget() {
@@ -213,7 +225,11 @@ class _ActiveWorkoutPageState extends ConsumerState<ActiveWorkoutPage> {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (context) => WorkoutSummaryPage(entry: saved),
+            builder:
+                (context) => WorkoutSummaryPage(
+                  entry: saved,
+                  duration: DateTime.now().difference(_startedAt),
+                ),
           ),
         );
       }
@@ -352,6 +368,15 @@ class _ExerciseCardState extends ConsumerState<_ExerciseCard> {
     final previous = ref.watch(
       previousPerformanceProvider(exercise.exerciseId),
     );
+    final suggestion =
+        previous == null || previous.sets.isEmpty
+            ? null
+            : suggestNextSession(
+              previousSets: [
+                for (final s in previous.sets)
+                  (reps: s.reps, weightKg: s.weightKg),
+              ],
+            );
     final allComplete =
         exercise.sets.isNotEmpty && exercise.sets.every((s) => s.completed);
 
@@ -390,6 +415,19 @@ class _ExerciseCardState extends ConsumerState<_ExerciseCard> {
                       Text(
                         'Previous: ${previous.sets.map((s) => '${s.weightKg.toStringAsFixed(0)}kg×${s.reps}').join(', ')}',
                         style: Theme.of(context).textTheme.bodySmall,
+                      ),
+                    if (suggestion != null)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 2),
+                        child: Text(
+                          'Suggested: ${suggestion.suggestedWeightKg.toStringAsFixed(1)}kg × ${suggestion.suggestedReps}',
+                          style: Theme.of(
+                            context,
+                          ).textTheme.bodySmall?.copyWith(
+                            color: AppColors.achievement,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
                       ),
                   ],
                 ),

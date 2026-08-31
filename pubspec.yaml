@@ -48,6 +48,9 @@ dependencies:
   timezone: ^0.9.4
   flutter_timezone: ^3.0.1
 
+  # Workout session
+  wakelock_plus: ^1.2.10
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

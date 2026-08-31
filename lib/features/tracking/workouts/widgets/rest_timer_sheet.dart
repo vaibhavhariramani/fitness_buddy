@@ -24,40 +24,69 @@ class _RestTimerSheet extends StatefulWidget {
 }
 
 class _RestTimerSheetState extends State<_RestTimerSheet> {
-  late int _remaining = widget.initialSeconds;
-  Timer? _timer;
+  // Deadline-based rather than decrementing a counter each tick: the
+  // remaining time is always `deadline - now`, so it stays correct even if
+  // the app is backgrounded/throttled and misses ticks — a `Timer.periodic`
+  // that just subtracts 1 each call would drift or freeze in that case.
+  late DateTime _deadline = DateTime.now().add(
+    Duration(seconds: widget.initialSeconds),
+  );
+  Duration _pausedRemaining = Duration.zero;
+  Timer? _ticker;
   bool _paused = false;
+  bool _finished = false;
+
+  int get _remainingSeconds {
+    if (_paused) return _pausedRemaining.inSeconds;
+    final remaining = _deadline.difference(DateTime.now());
+    return remaining.isNegative ? 0 : remaining.inSeconds;
+  }
 
   @override
   void initState() {
     super.initState();
-    _start();
-  }
-
-  void _start() {
-    _timer?.cancel();
-    _timer = Timer.periodic(const Duration(seconds: 1), (_) {
+    _ticker = Timer.periodic(const Duration(milliseconds: 250), (_) {
       if (_paused) return;
-      if (_remaining <= 1) {
-        setState(() => _remaining = 0);
+      if (_remainingSeconds <= 0 && !_finished) {
+        _finished = true;
         HapticFeedback.mediumImpact();
-        _timer?.cancel();
+        _ticker?.cancel();
         Future.delayed(const Duration(milliseconds: 400), () {
           if (mounted) Navigator.pop(context);
         });
-        return;
       }
-      setState(() => _remaining -= 1);
+      setState(() {});
     });
   }
 
   void _addSeconds(int amount) {
-    setState(() => _remaining = (_remaining + amount).clamp(0, 3600));
+    setState(() {
+      if (_paused) {
+        _pausedRemaining = Duration(
+          seconds: (_pausedRemaining.inSeconds + amount).clamp(0, 3600),
+        );
+      } else {
+        _deadline = _deadline.add(Duration(seconds: amount));
+      }
+    });
+  }
+
+  void _togglePause() {
+    setState(() {
+      if (_paused) {
+        // Resuming: rebuild the deadline from however much time was left.
+        _deadline = DateTime.now().add(_pausedRemaining);
+        _paused = false;
+      } else {
+        _pausedRemaining = Duration(seconds: _remainingSeconds);
+        _paused = true;
+      }
+    });
   }
 
   @override
   void dispose() {
-    _timer?.cancel();
+    _ticker?.cancel();
     super.dispose();
   }
 
@@ -78,7 +107,7 @@ class _RestTimerSheetState extends State<_RestTimerSheet> {
             Text('Rest Timer', style: Theme.of(context).textTheme.titleMedium),
             const SizedBox(height: 12),
             Text(
-              _format(_remaining),
+              _format(_remainingSeconds),
               style: Theme.of(context).textTheme.displayMedium,
             ),
             const SizedBox(height: 20),
@@ -96,7 +125,7 @@ class _RestTimerSheetState extends State<_RestTimerSheet> {
                 ),
                 const SizedBox(width: 8),
                 OutlinedButton(
-                  onPressed: () => setState(() => _paused = !_paused),
+                  onPressed: _togglePause,
                   child: Text(_paused ? 'Resume' : 'Pause'),
                 ),
               ],

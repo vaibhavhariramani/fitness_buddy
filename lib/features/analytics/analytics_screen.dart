@@ -739,7 +739,7 @@ class _BodySectionState extends State<_BodySection> {
                   const Spacer(),
                   _RangeSelector(
                     selected: _rangeDays,
-                    onChanged: (v) => setState(() => _rangeDays = v),
+                    onChanged: (v) => setState(() => _rangeDays = v ?? 30),
                   ),
                 ],
               ),
@@ -814,12 +814,21 @@ class _BodySectionState extends State<_BodySection> {
 }
 
 class _RangeSelector extends StatelessWidget {
-  final int selected;
-  final ValueChanged<int> onChanged;
+  final int? selected;
+  final ValueChanged<int?> onChanged;
+  final Map<int?, String> options;
 
-  const _RangeSelector({required this.selected, required this.onChanged});
+  const _RangeSelector({
+    required this.selected,
+    required this.onChanged,
+    this.options = _defaultOptions,
+  });
 
-  static const _options = {7: '7D', 30: '30D', 90: '90D', 365: '1Y'};
+  static const _defaultOptions = {7: '7D', 30: '30D', 90: '90D', 365: '1Y'};
+
+  /// 7D/30D/90D/All — used where "all logged history" is a meaningful,
+  /// distinct option from a 1-year cutoff (e.g. muscle-group volume).
+  static const withAllTime = {7: '7D', 30: '30D', 90: '90D', null: 'All'};
 
   @override
   Widget build(BuildContext context) {
@@ -827,7 +836,7 @@ class _RangeSelector extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        for (final entry in _options.entries)
+        for (final entry in options.entries)
           Padding(
             padding: const EdgeInsets.only(left: AppSpacing.xxs),
             child: GestureDetector(
@@ -1059,16 +1068,28 @@ class _PrRow extends StatelessWidget {
   }
 }
 
-class _MuscleVolumeSection extends StatelessWidget {
+class _MuscleVolumeSection extends StatefulWidget {
   final List<WorkoutEntry> workouts;
 
   const _MuscleVolumeSection({required this.workouts});
 
   @override
+  State<_MuscleVolumeSection> createState() => _MuscleVolumeSectionState();
+}
+
+class _MuscleVolumeSectionState extends State<_MuscleVolumeSection> {
+  int? _rangeDays = 7;
+
+  @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
+    final cutoff =
+        _rangeDays == null
+            ? null
+            : DateTime.now().subtract(Duration(days: _rangeDays!));
     final volumeByGroup = <String, int>{};
-    for (final workout in workouts) {
+    for (final workout in widget.workouts) {
+      if (cutoff != null && workout.date.isBefore(cutoff)) continue;
       for (final exercise in workout.exercises) {
         volumeByGroup[exercise.muscleGroup] =
             (volumeByGroup[exercise.muscleGroup] ?? 0) + exercise.sets.length;
@@ -1078,7 +1099,14 @@ class _MuscleVolumeSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const SectionHeader(title: 'Training Volume (all-time)'),
+        SectionHeader(
+          title: 'Training Volume (effective sets)',
+          trailing: _RangeSelector(
+            selected: _rangeDays,
+            options: _RangeSelector.withAllTime,
+            onChanged: (v) => setState(() => _rangeDays = v),
+          ),
+        ),
         AppCard(
           child: SizedBox(
             height: 180,
@@ -1086,7 +1114,7 @@ class _MuscleVolumeSection extends StatelessWidget {
                 volumeByGroup.isEmpty
                     ? Center(
                       child: Text(
-                        'Log a workout to see muscle group volume.',
+                        'No sets logged in this range yet.',
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
                           color: scheme.onSurfaceVariant,
                         ),

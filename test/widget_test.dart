@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:fitness_buddy/core/utils/calculations.dart';
@@ -7,6 +8,7 @@ import 'package:fitness_buddy/core/utils/pr.dart';
 import 'package:fitness_buddy/core/utils/progression.dart';
 import 'package:fitness_buddy/core/utils/weekly_schedule.dart';
 import 'package:fitness_buddy/models/workout_entry.dart';
+import 'package:fitness_buddy/shared/widgets/muscle_body_diagram.dart';
 
 void main() {
   group('FitnessCalculations', () {
@@ -310,6 +312,23 @@ void main() {
         exerciseId: 'squat',
       );
       expect(history, isEmpty);
+    });
+  });
+
+  group('MuscleBodyDiagram', () {
+    testWidgets('renders every body-part path without throwing', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: MuscleBodyDiagram(
+            trainedSets: {'Chest': 3, 'Legs': 5, 'Back': 2},
+          ),
+        ),
+      );
+      // Settle past the 500ms intro animation so every frame's paint() runs.
+      await tester.pumpAndSettle();
+      expect(tester.takeException(), isNull);
     });
   });
 }

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../../core/design_system/app_colors.dart';
 import '../../../../core/design_system/app_spacing.dart';
 import '../../../../core/design_system/app_text_styles.dart';
+import '../../../../core/utils/pr.dart';
 import '../../../../models/workout_entry.dart';
 import '../../../../shared/widgets/app_card.dart';
 import '../../../../shared/widgets/muscle_body_diagram.dart';
@@ -41,7 +42,8 @@ class WorkoutSummaryPage extends StatelessWidget {
     double bestEst1Rm = 0;
     for (final e in entry.exercises) {
       for (final s in e.sets) {
-        final est = s.weightKg * (1 + s.reps / 30);
+        final est =
+            SetResult(weightKg: s.weightKg, reps: s.reps).estimatedOneRepMax;
         if (est > bestEst1Rm) {
           bestEst1Rm = est;
           bestExercise = e;

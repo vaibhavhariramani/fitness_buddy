@@ -1,10 +1,12 @@
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:fitness_buddy/core/utils/calculations.dart';
+import 'package:fitness_buddy/core/utils/exercise_history.dart';
 import 'package:fitness_buddy/core/utils/streak.dart';
 import 'package:fitness_buddy/core/utils/pr.dart';
 import 'package:fitness_buddy/core/utils/progression.dart';
 import 'package:fitness_buddy/core/utils/weekly_schedule.dart';
+import 'package:fitness_buddy/models/workout_entry.dart';
 
 void main() {
   group('FitnessCalculations', () {
@@ -234,6 +236,80 @@ void main() {
     test('rolls back to Monday for the following Sunday', () {
       final sunday = expectedMonday.add(const Duration(days: 6));
       expect(mondayOfWeek(sunday), expectedMonday);
+    });
+  });
+
+  group('buildExerciseHistory', () {
+    WorkoutEntry entryOn(DateTime date, List<ExerciseSet> sets) => WorkoutEntry(
+      id: date.toIso8601String(),
+      date: date,
+      createdAt: date,
+      exercises: [
+        ExerciseLog(
+          name: 'Bench Press',
+          muscleGroup: 'Chest',
+          exerciseId: 'bench-press',
+          sets: sets,
+        ),
+      ],
+    );
+
+    test('returns one point per session, most recent first', () {
+      final history = buildExerciseHistory(
+        workouts: [
+          entryOn(DateTime(2026, 1, 1), [
+            const ExerciseSet(reps: 8, weightKg: 60),
+          ]),
+          entryOn(DateTime(2026, 1, 8), [
+            const ExerciseSet(reps: 8, weightKg: 65),
+          ]),
+        ],
+        exerciseId: 'bench-press',
+      );
+      expect(history, hasLength(2));
+      expect(history.first.date, DateTime(2026, 1, 8));
+      expect(history.first.bestWeightKg, 65);
+    });
+
+    test('collapses a session to its single best set by estimated 1RM', () {
+      final history = buildExerciseHistory(
+        workouts: [
+          entryOn(DateTime(2026, 1, 1), [
+            const ExerciseSet(reps: 10, weightKg: 50),
+            const ExerciseSet(reps: 5, weightKg: 70),
+          ]),
+        ],
+        exerciseId: 'bench-press',
+      );
+      expect(history, hasLength(1));
+      expect(history.single.bestWeightKg, 70);
+      expect(history.single.bestReps, 5);
+    });
+
+    test('ignores warm-up sets when picking the session best', () {
+      final history = buildExerciseHistory(
+        workouts: [
+          entryOn(DateTime(2026, 1, 1), [
+            // Heavier than the work set, but a warm-up, so it must lose.
+            const ExerciseSet(reps: 10, weightKg: 90, isWarmup: true),
+            const ExerciseSet(reps: 8, weightKg: 60),
+          ]),
+        ],
+        exerciseId: 'bench-press',
+      );
+      expect(history.single.bestWeightKg, 60);
+    });
+
+    test('ignores sessions logging an unrelated exercise id', () {
+      final history = buildExerciseHistory(
+        workouts: [
+          entryOn(DateTime(2026, 1, 1), [
+            const ExerciseSet(reps: 8, weightKg: 60),
+          ]),
+        ],
+        exerciseId: 'squat',
+      );
+      expect(history, isEmpty);
     });
   });
 }

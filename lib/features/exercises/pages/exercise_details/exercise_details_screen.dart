@@ -1,7 +1,11 @@
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 
+import '../../../../core/design_system/app_colors.dart';
+import '../../../../core/utils/exercise_history.dart';
 import '../../data/muscle_group_images.dart';
 import '../../models/exercise.dart';
 import '../../providers/exercise_providers.dart';
@@ -11,6 +15,7 @@ import '../../widgets/exercise_substitute_sheet.dart';
 import '../../widgets/exercise_visual.dart';
 import '../../widgets/muscle_chip.dart';
 import '../../widgets/muscle_group_image.dart';
+import 'exercise_history_provider.dart';
 
 /// A single scrollable page (not tabs — everything is visible by scrolling
 /// so nothing gets missed): photo/pose art, then the muscle diagram, then
@@ -45,6 +50,7 @@ class _ExerciseDetailsScreenState extends ConsumerState<ExerciseDetailsScreen> {
   Widget build(BuildContext context) {
     final listAsync = ref.watch(exerciseListProvider);
     final exercise = ref.watch(exerciseByIdProvider(widget.exerciseId));
+    final history = ref.watch(exerciseHistoryProvider(widget.exerciseId));
 
     if (exercise == null) {
       if (listAsync.isLoading) {
@@ -172,6 +178,11 @@ class _ExerciseDetailsScreenState extends ConsumerState<ExerciseDetailsScreen> {
             ),
           ),
 
+          // 2b. Your history — only shows once this exercise has been
+          // logged via the catalog (exerciseId-linked), so free-typed
+          // workout entries don't silently appear here.
+          if (history.isNotEmpty) _HistorySection(history: history),
+
           // 3. Complete instructions.
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 24, 16, 0),
@@ -263,6 +274,127 @@ class _ExerciseDetailsScreenState extends ConsumerState<ExerciseDetailsScreen> {
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _HistorySection extends StatelessWidget {
+  final List<ExerciseHistoryPoint> history;
+
+  const _HistorySection({required this.history});
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final last = history.first;
+    final best = history.reduce(
+      (a, b) => b.estimatedOneRepMax > a.estimatedOneRepMax ? b : a,
+    );
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 24, 16, 0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Your history', style: Theme.of(context).textTheme.titleMedium),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Expanded(
+                child: _StatTile(
+                  label: 'Last session',
+                  value:
+                      '${last.bestWeightKg.toStringAsFixed(0)}kg × ${last.bestReps}',
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: _StatTile(
+                  label: 'Best est. 1RM',
+                  value: '${best.estimatedOneRepMax.toStringAsFixed(0)}kg',
+                ),
+              ),
+            ],
+          ),
+          if (history.length > 1) ...[
+            const SizedBox(height: 16),
+            SizedBox(height: 80, child: _EstOneRepMaxChart(history: history)),
+          ],
+          const SizedBox(height: 12),
+          for (final point in history.take(5))
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 4),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      DateFormat.yMMMd().format(point.date),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: scheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ),
+                  Text(
+                    '${point.bestWeightKg.toStringAsFixed(0)}kg × ${point.bestReps}',
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                ],
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+class _EstOneRepMaxChart extends StatelessWidget {
+  final List<ExerciseHistoryPoint> history;
+
+  const _EstOneRepMaxChart({required this.history});
+
+  @override
+  Widget build(BuildContext context) {
+    // history is most-recent-first; the chart reads left-to-right, oldest
+    // first, so reverse it for plotting.
+    final chronological = history.reversed.toList();
+    final spots = <FlSpot>[
+      for (var i = 0; i < chronological.length; i++)
+        FlSpot(i.toDouble(), chronological[i].estimatedOneRepMax),
+    ];
+    final values = chronological.map((p) => p.estimatedOneRepMax);
+    final minY = values.reduce((a, b) => a < b ? a : b) - 2;
+    final maxY = values.reduce((a, b) => a > b ? a : b) + 2;
+
+    return LineChart(
+      LineChartData(
+        minY: minY,
+        maxY: maxY,
+        gridData: const FlGridData(show: false),
+        borderData: FlBorderData(show: false),
+        titlesData: const FlTitlesData(show: false),
+        lineTouchData: const LineTouchData(enabled: false),
+        lineBarsData: [
+          LineChartBarData(
+            spots: spots,
+            isCurved: true,
+            curveSmoothness: 0.25,
+            color: AppColors.achievement,
+            barWidth: 2.5,
+            dotData: const FlDotData(show: false),
+            belowBarData: BarAreaData(
+              show: true,
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  AppColors.achievement.withValues(alpha: 0.18),
+                  AppColors.achievement.withValues(alpha: 0.0),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

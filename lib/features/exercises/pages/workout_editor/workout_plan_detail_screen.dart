@@ -50,7 +50,7 @@ class WorkoutPlanDetailScreen extends ConsumerWidget {
                         child: ExerciseVisual(
                           exerciseId: exercise.id,
                           category: exercise.category,
-                          photoUrl: exercise.photoUrl,
+                          photoAsset: exercise.photoAsset,
                           iconSize: 22,
                         ),
                       ),

@@ -82,12 +82,12 @@ class _ExerciseDetailsScreenState extends ConsumerState<ExerciseDetailsScreen> {
               child: ExerciseVisual(
                 exerciseId: exercise.id,
                 category: exercise.category,
-                photoUrl: exercise.photoUrl,
+                photoAsset: exercise.photoAsset,
                 iconSize: 56,
               ),
             ),
           ),
-          if (exercise.photoUrl == null)
+          if (exercise.photoAsset == null)
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
               child: Text(

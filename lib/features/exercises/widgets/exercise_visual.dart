@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -14,20 +13,22 @@ import 'category_visual.dart';
 /// assets/data/exercises.json and the curation script behind it) — all
 /// sourced from free-exercise-db, which shoots every exercise in the same
 /// studio style, so the photos themselves are consistent with each other
-/// too, not just with the fallback icons. Falls back to the pose pictogram
-/// (data/exercise_pose_svgs.dart) whenever no photo is set, OR at render
-/// time if the photo fails to load.
+/// too, not just with the fallback icons. The photos are bundled into the
+/// app under assets/images/exercises/ (not hotlinked) so they render
+/// instantly and never depend on a third-party CDN being reachable — falls
+/// back to the pose pictogram (data/exercise_pose_svgs.dart) only when no
+/// photo was matched for this exercise at all.
 class ExerciseVisual extends StatelessWidget {
   final String exerciseId;
   final String category;
-  final String? photoUrl;
+  final String? photoAsset;
   final double iconSize;
 
   const ExerciseVisual({
     super.key,
     required this.exerciseId,
     required this.category,
-    this.photoUrl,
+    this.photoAsset,
     this.iconSize = 36,
   });
 
@@ -51,7 +52,7 @@ class ExerciseVisual extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final color = categoryColor(category);
-    final url = photoUrl;
+    final url = photoAsset;
 
     return Container(
       color: color.withValues(alpha: 0.10),
@@ -64,11 +65,10 @@ class ExerciseVisual extends StatelessWidget {
                 heightFactor: 0.86,
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(iconSize * 0.28),
-                  child: CachedNetworkImage(
-                    imageUrl: url,
+                  child: Image.asset(
+                    url,
                     fit: BoxFit.cover,
-                    placeholder: (context, _) => const SizedBox.expand(),
-                    errorWidget: (context, _, __) => _pose(color),
+                    errorBuilder: (context, _, __) => _pose(color),
                   ),
                 ),
               ),

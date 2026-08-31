@@ -397,7 +397,7 @@ class _ExerciseCardState extends ConsumerState<_ExerciseCard> {
                     child: ExerciseVisual(
                       exerciseId: catalogExercise.id,
                       category: catalogExercise.category,
-                      photoUrl: catalogExercise.photoUrl,
+                      photoAsset: catalogExercise.photoAsset,
                       iconSize: 18,
                     ),
                   ),

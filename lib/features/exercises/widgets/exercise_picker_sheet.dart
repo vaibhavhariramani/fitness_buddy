@@ -101,7 +101,7 @@ class _ExercisePickerSheetState extends ConsumerState<_ExercisePickerSheet> {
                               child: ExerciseVisual(
                                 exerciseId: exercise.id,
                                 category: exercise.category,
-                                photoUrl: exercise.photoUrl,
+                                photoAsset: exercise.photoAsset,
                                 iconSize: 18,
                               ),
                             ),

@@ -34,7 +34,7 @@ class ExerciseCard extends StatelessWidget {
                 child: ExerciseVisual(
                   exerciseId: exercise.id,
                   category: exercise.category,
-                  photoUrl: exercise.photoUrl,
+                  photoAsset: exercise.photoAsset,
                 ),
               ),
             ),

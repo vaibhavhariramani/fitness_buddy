@@ -34,7 +34,7 @@
       "incline-dumbbell-press",
       "push-up"
     ],
-    "photoUrl": "https://cdn.jsdelivr.net/gh/yuhonas/free-exercise-db@main/exercises/Barbell_Bench_Press_-_Medium_Grip/0.jpg"
+    "photoAsset": "assets/images/exercises/barbell-bench-press.jpg"
   },
   {
     "id": "dumbbell-bench-press",
@@ -65,7 +65,7 @@
       "incline-barbell-bench-press",
       "push-up"
     ],
-    "photoUrl": "https://cdn.jsdelivr.net/gh/yuhonas/free-exercise-db@main/exercises/Dumbbell_Bench_Press/0.jpg"
+    "photoAsset": "assets/images/exercises/dumbbell-bench-press.jpg"
   },
   {
     "id": "incline-barbell-bench-press",
@@ -96,7 +96,7 @@
       "incline-dumbbell-press",
       "push-up"
     ],
-    "photoUrl": "https://cdn.jsdelivr.net/gh/yuhonas/free-exercise-db@main/exercises/Barbell_Incline_Bench_Press_-_Medium_Grip/0.jpg"
+    "photoAsset": "assets/images/exercises/incline-barbell-bench-press.jpg"
   },
   {
     "id": "incline-dumbbell-press",
@@ -127,7 +127,7 @@
       "incline-barbell-bench-press",
       "push-up"
     ],
-    "photoUrl": "https://cdn.jsdelivr.net/gh/yuhonas/free-exercise-db@main/exercises/Incline_Dumbbell_Press/0.jpg"
+    "photoAsset": "assets/images/exercises/incline-dumbbell-press.jpg"
   },
   {
     "id": "push-up",
@@ -160,7 +160,7 @@
       "dumbbell-bench-press",
       "incline-barbell-bench-press"
     ],
-    "photoUrl": "https://cdn.jsdelivr.net/gh/yuhonas/free-exercise-db@main/exercises/Pushups/0.jpg"
+    "photoAsset": "assets/images/exercises/push-up.jpg"
   },
   {
     "id": "chest-dip",
@@ -189,7 +189,7 @@
       "dumbbell-bench-press",
       "incline-barbell-bench-press"
     ],
-    "photoUrl": "https://cdn.jsdelivr.net/gh/yuhonas/free-exercise-db@main/exercises/Dips_-_Chest_Version/0.jpg"
+    "photoAsset": "assets/images/exercises/chest-dip.jpg"
   },
   {
     "id": "cable-chest-fly",
@@ -218,7 +218,7 @@
       "dumbbell-bench-press",
       "incline-barbell-bench-press"
     ],
-    "photoUrl": "https://cdn.jsdelivr.net/gh/yuhonas/free-exercise-db@main/exercises/Cable_Crossover/0.jpg"
+    "photoAsset": "assets/images/exercises/cable-chest-fly.jpg"
   },
   {
     "id": "dumbbell-fly",
@@ -248,7 +248,7 @@
       "incline-barbell-bench-press",
       "push-up"
     ],
-    "photoUrl": "https://cdn.jsdelivr.net/gh/yuhonas/free-exercise-db@main/exercises/Dumbbell_Flyes/0.jpg"
+    "photoAsset": "assets/images/exercises/dumbbell-fly.jpg"
   },
   {
     "id": "machine-chest-press",
@@ -277,7 +277,7 @@
       "dumbbell-bench-press",
       "incline-barbell-bench-press"
     ],
-    "photoUrl": "https://cdn.jsdelivr.net/gh/yuhonas/free-exercise-db@main/exercises/Machine_Bench_Press/0.jpg"
+    "photoAsset": "assets/images/exercises/machine-chest-press.jpg"
   },
   {
     "id": "pec-deck-fly",
@@ -304,7 +304,7 @@
       "dumbbell-bench-press",
       "incline-barbell-bench-press"
     ],
-    "photoUrl": "https://cdn.jsdelivr.net/gh/yuhonas/free-exercise-db@main/exercises/Butterfly/0.jpg"
+    "photoAsset": "assets/images/exercises/pec-deck-fly.jpg"
   },
   {
     "id": "deadlift",
@@ -342,7 +342,7 @@
       "lat-pulldown",
       "dumbbell-row"
     ],
-    "photoUrl": "https://cdn.jsdelivr.net/gh/yuhonas/free-exercise-db@main/exercises/Barbell_Deadlift/0.jpg"
+    "photoAsset": "assets/images/exercises/deadlift.jpg"
   },
   {
     "id": "pull-up",
@@ -376,7 +376,7 @@
       "lat-pulldown",
       "barbell-bent-over-row"
     ],
-    "photoUrl": "https://cdn.jsdelivr.net/gh/yuhonas/free-exercise-db@main/exercises/Pullups/0.jpg"
+    "photoAsset": "assets/images/exercises/pull-up.jpg"
   },
   {
     "id": "lat-pulldown",
@@ -406,7 +406,7 @@
       "pull-up",
       "barbell-bent-over-row"
     ],
-    "photoUrl": "https://cdn.jsdelivr.net/gh/yuhonas/free-exercise-db@main/exercises/Wide-Grip_Lat_Pulldown/0.jpg"
+    "photoAsset": "assets/images/exercises/lat-pulldown.jpg"
   },
   {
     "id": "barbell-bent-over-row",
@@ -441,7 +441,7 @@
       "lat-pulldown",
       "dumbbell-row"
     ],
-    "photoUrl": "https://cdn.jsdelivr.net/gh/yuhonas/free-exercise-db@main/exercises/Bent_Over_Barbell_Row/0.jpg"
+    "photoAsset": "assets/images/exercises/barbell-bent-over-row.jpg"
   },
   {
     "id": "dumbbell-row",
@@ -471,7 +471,7 @@
       "pull-up",
       "lat-pulldown"
     ],
-    "photoUrl": "https://cdn.jsdelivr.net/gh/yuhonas/free-exercise-db@main/exercises/One-Arm_Dumbbell_Row/0.jpg"
+    "photoAsset": "assets/images/exercises/dumbbell-row.jpg"
   },
   {
     "id": "seated-cable-row",
@@ -500,7 +500,7 @@
       "pull-up",
       "lat-pulldown"
     ],
-    "photoUrl": "https://cdn.jsdelivr.net/gh/yuhonas/free-exercise-db@main/exercises/Seated_Cable_Rows/0.jpg"
+    "photoAsset": "assets/images/exercises/seated-cable-row.jpg"
   },
   {
     "id": "t-bar-row",
@@ -531,7 +531,7 @@
       "pull-up",
       "lat-pulldown"
     ],
-    "photoUrl": "https://cdn.jsdelivr.net/gh/yuhonas/free-exercise-db@main/exercises/T-Bar_Row_with_Handle/0.jpg"
+    "photoAsset": "assets/images/exercises/t-bar-row.jpg"
   },
   {
     "id": "chin-up",
@@ -565,7 +565,7 @@
       "lat-pulldown",
       "barbell-bent-over-row"
     ],
-    "photoUrl": "https://cdn.jsdelivr.net/gh/yuhonas/free-exercise-db@main/exercises/Chin-Up/0.jpg"
+    "photoAsset": "assets/images/exercises/chin-up.jpg"
   },
   {
     "id": "face-pull",
@@ -595,7 +595,7 @@
       "pull-up",
       "lat-pulldown"
     ],
-    "photoUrl": "https://cdn.jsdelivr.net/gh/yuhonas/free-exercise-db@main/exercises/Face_Pull/0.jpg"
+    "photoAsset": "assets/images/exercises/face-pull.jpg"
   },
   {
     "id": "straight-arm-pulldown",
@@ -624,7 +624,7 @@
       "pull-up",
       "lat-pulldown"
     ],
-    "photoUrl": "https://cdn.jsdelivr.net/gh/yuhonas/free-exercise-db@main/exercises/Straight-Arm_Pulldown/0.jpg"
+    "photoAsset": "assets/images/exercises/straight-arm-pulldown.jpg"
   },
   {
     "id": "overhead-barbell-press",
@@ -659,7 +659,7 @@
       "arnold-press",
       "lateral-raise"
     ],
-    "photoUrl": "https://cdn.jsdelivr.net/gh/yuhonas/free-exercise-db@main/exercises/Barbell_Shoulder_Press/0.jpg"
+    "photoAsset": "assets/images/exercises/overhead-barbell-press.jpg"
   },
   {
     "id": "dumbbell-shoulder-press",
@@ -688,7 +688,7 @@
       "cable-lateral-raise",
       "upright-row"
     ],
-    "photoUrl": "https://cdn.jsdelivr.net/gh/yuhonas/free-exercise-db@main/exercises/Dumbbell_Shoulder_Press/0.jpg"
+    "photoAsset": "assets/images/exercises/dumbbell-shoulder-press.jpg"
   },
   {
     "id": "arnold-press",
@@ -717,7 +717,7 @@
       "cable-lateral-raise",
       "upright-row"
     ],
-    "photoUrl": "https://cdn.jsdelivr.net/gh/yuhonas/free-exercise-db@main/exercises/Arnold_Dumbbell_Press/0.jpg"
+    "photoAsset": "assets/images/exercises/arnold-press.jpg"
   },
   {
     "id": "lateral-raise",
@@ -744,7 +744,7 @@
       "cable-lateral-raise",
       "upright-row"
     ],
-    "photoUrl": "https://cdn.jsdelivr.net/gh/yuhonas/free-exercise-db@main/exercises/Side_Lateral_Raise/0.jpg"
+    "photoAsset": "assets/images/exercises/lateral-raise.jpg"
   },
   {
     "id": "front-raise",
@@ -771,7 +771,7 @@
       "cable-lateral-raise",
       "upright-row"
     ],
-    "photoUrl": "https://cdn.jsdelivr.net/gh/yuhonas/free-exercise-db@main/exercises/Front_Dumbbell_Raise/0.jpg"
+    "photoAsset": "assets/images/exercises/front-raise.jpg"
   },
   {
     "id": "rear-delt-fly",
@@ -800,7 +800,7 @@
       "cable-lateral-raise",
       "upright-row"
     ],
-    "photoUrl": "https://cdn.jsdelivr.net/gh/yuhonas/free-exercise-db@main/exercises/Seated_Bent-Over_Rear_Delt_Raise/0.jpg"
+    "photoAsset": "assets/images/exercises/rear-delt-fly.jpg"
   },
   {
     "id": "cable-lateral-raise",
@@ -827,7 +827,7 @@
       "dumbbell-shoulder-press",
       "arnold-press"
     ],
-    "photoUrl": "https://cdn.jsdelivr.net/gh/yuhonas/free-exercise-db@main/exercises/Cable_Seated_Lateral_Raise/0.jpg"
+    "photoAsset": "assets/images/exercises/cable-lateral-raise.jpg"
   },
   {
     "id": "upright-row",
@@ -861,7 +861,7 @@
       "dumbbell-shoulder-press",
       "arnold-press"
     ],
-    "photoUrl": "https://cdn.jsdelivr.net/gh/yuhonas/free-exercise-db@main/exercises/Upright_Barbell_Row/0.jpg"
+    "photoAsset": "assets/images/exercises/upright-row.jpg"
   },
   {
     "id": "machine-shoulder-press",
@@ -890,7 +890,7 @@
       "dumbbell-shoulder-press",
       "arnold-press"
     ],
-    "photoUrl": "https://cdn.jsdelivr.net/gh/yuhonas/free-exercise-db@main/exercises/Machine_Shoulder_Military_Press/0.jpg"
+    "photoAsset": "assets/images/exercises/machine-shoulder-press.jpg"
   },
   {
     "id": "band-pull-apart",
@@ -919,7 +919,7 @@
       "dumbbell-shoulder-press",
       "arnold-press"
     ],
-    "photoUrl": "https://cdn.jsdelivr.net/gh/yuhonas/free-exercise-db@main/exercises/Band_Pull_Apart/0.jpg"
+    "photoAsset": "assets/images/exercises/band-pull-apart.jpg"
   },
   {
     "id": "barbell-back-squat",
@@ -956,7 +956,7 @@
       "walking-lunge",
       "bulgarian-split-squat"
     ],
-    "photoUrl": "https://cdn.jsdelivr.net/gh/yuhonas/free-exercise-db@main/exercises/Barbell_Squat/0.jpg"
+    "photoAsset": "assets/images/exercises/barbell-back-squat.jpg"
   },
   {
     "id": "front-squat",
@@ -990,7 +990,7 @@
       "walking-lunge",
       "bulgarian-split-squat"
     ],
-    "photoUrl": "https://cdn.jsdelivr.net/gh/yuhonas/free-exercise-db@main/exercises/Front_Barbell_Squat/0.jpg"
+    "photoAsset": "assets/images/exercises/front-squat.jpg"
   },
   {
     "id": "leg-press",
@@ -1024,7 +1024,7 @@
       "front-squat",
       "romanian-deadlift"
     ],
-    "photoUrl": "https://cdn.jsdelivr.net/gh/yuhonas/free-exercise-db@main/exercises/Leg_Press/0.jpg"
+    "photoAsset": "assets/images/exercises/leg-press.jpg"
   },
   {
     "id": "romanian-deadlift",
@@ -1059,7 +1059,7 @@
       "walking-lunge",
       "bulgarian-split-squat"
     ],
-    "photoUrl": "https://cdn.jsdelivr.net/gh/yuhonas/free-exercise-db@main/exercises/Romanian_Deadlift/0.jpg"
+    "photoAsset": "assets/images/exercises/romanian-deadlift.jpg"
   },
   {
     "id": "walking-lunge",
@@ -1092,7 +1092,7 @@
       "front-squat",
       "leg-press"
     ],
-    "photoUrl": "https://cdn.jsdelivr.net/gh/yuhonas/free-exercise-db@main/exercises/Bodyweight_Walking_Lunge/0.jpg"
+    "photoAsset": "assets/images/exercises/walking-lunge.jpg"
   },
   {
     "id": "bulgarian-split-squat",
@@ -1122,7 +1122,7 @@
       "front-squat",
       "leg-press"
     ],
-    "photoUrl": "https://cdn.jsdelivr.net/gh/yuhonas/free-exercise-db@main/exercises/Split_Squat_with_Dumbbells/0.jpg"
+    "photoAsset": "assets/images/exercises/bulgarian-split-squat.jpg"
   },
   {
     "id": "leg-extension",
@@ -1149,7 +1149,7 @@
       "front-squat",
       "romanian-deadlift"
     ],
-    "photoUrl": "https://cdn.jsdelivr.net/gh/yuhonas/free-exercise-db@main/exercises/Leg_Extensions/0.jpg"
+    "photoAsset": "assets/images/exercises/leg-extension.jpg"
   },
   {
     "id": "leg-curl",
@@ -1176,7 +1176,7 @@
       "front-squat",
       "romanian-deadlift"
     ],
-    "photoUrl": "https://cdn.jsdelivr.net/gh/yuhonas/free-exercise-db@main/exercises/Seated_Leg_Curl/0.jpg"
+    "photoAsset": "assets/images/exercises/leg-curl.jpg"
   },
   {
     "id": "goblet-squat",
@@ -1209,7 +1209,7 @@
       "front-squat",
       "leg-press"
     ],
-    "photoUrl": "https://cdn.jsdelivr.net/gh/yuhonas/free-exercise-db@main/exercises/Goblet_Squat/0.jpg"
+    "photoAsset": "assets/images/exercises/goblet-squat.jpg"
   },
   {
     "id": "standing-calf-raise",
@@ -1237,7 +1237,7 @@
       "front-squat",
       "leg-press"
     ],
-    "photoUrl": "https://cdn.jsdelivr.net/gh/yuhonas/free-exercise-db@main/exercises/Standing_Calf_Raises/0.jpg"
+    "photoAsset": "assets/images/exercises/standing-calf-raise.jpg"
   },
   {
     "id": "hip-thrust",
@@ -1272,7 +1272,7 @@
       "front-squat",
       "leg-press"
     ],
-    "photoUrl": "https://cdn.jsdelivr.net/gh/yuhonas/free-exercise-db@main/exercises/Barbell_Hip_Thrust/0.jpg"
+    "photoAsset": "assets/images/exercises/hip-thrust.jpg"
   },
   {
     "id": "kettlebell-swing",
@@ -1306,7 +1306,7 @@
       "front-squat",
       "leg-press"
     ],
-    "photoUrl": "https://cdn.jsdelivr.net/gh/yuhonas/free-exercise-db@main/exercises/One-Arm_Kettlebell_Swings/0.jpg"
+    "photoAsset": "assets/images/exercises/kettlebell-swing.jpg"
   },
   {
     "id": "barbell-bicep-curl",
@@ -1336,7 +1336,7 @@
       "hammer-curl",
       "cable-bicep-curl"
     ],
-    "photoUrl": "https://cdn.jsdelivr.net/gh/yuhonas/free-exercise-db@main/exercises/Barbell_Curl/0.jpg"
+    "photoAsset": "assets/images/exercises/barbell-bicep-curl.jpg"
   },
   {
     "id": "dumbbell-bicep-curl",
@@ -1363,7 +1363,7 @@
       "cable-bicep-curl",
       "triceps-pushdown"
     ],
-    "photoUrl": "https://cdn.jsdelivr.net/gh/yuhonas/free-exercise-db@main/exercises/Dumbbell_Bicep_Curl/0.jpg"
+    "photoAsset": "assets/images/exercises/dumbbell-bicep-curl.jpg"
   },
   {
     "id": "hammer-curl",
@@ -1390,7 +1390,7 @@
       "cable-bicep-curl",
       "triceps-pushdown"
     ],
-    "photoUrl": "https://cdn.jsdelivr.net/gh/yuhonas/free-exercise-db@main/exercises/Hammer_Curls/0.jpg"
+    "photoAsset": "assets/images/exercises/hammer-curl.jpg"
   },
   {
     "id": "cable-bicep-curl",
@@ -1417,7 +1417,7 @@
       "dumbbell-bicep-curl",
       "hammer-curl"
     ],
-    "photoUrl": "https://cdn.jsdelivr.net/gh/yuhonas/free-exercise-db@main/exercises/Standing_Biceps_Cable_Curl/0.jpg"
+    "photoAsset": "assets/images/exercises/cable-bicep-curl.jpg"
   },
   {
     "id": "concentration-curl",
@@ -1444,7 +1444,7 @@
       "cable-bicep-curl",
       "triceps-pushdown"
     ],
-    "photoUrl": "https://cdn.jsdelivr.net/gh/yuhonas/free-exercise-db@main/exercises/Concentration_Curls/0.jpg"
+    "photoAsset": "assets/images/exercises/concentration-curl.jpg"
   },
   {
     "id": "triceps-pushdown",
@@ -1471,7 +1471,7 @@
       "dumbbell-bicep-curl",
       "hammer-curl"
     ],
-    "photoUrl": "https://cdn.jsdelivr.net/gh/yuhonas/free-exercise-db@main/exercises/Triceps_Pushdown/0.jpg"
+    "photoAsset": "assets/images/exercises/triceps-pushdown.jpg"
   },
   {
     "id": "skull-crusher",
@@ -1505,7 +1505,7 @@
       "dumbbell-bicep-curl",
       "hammer-curl"
     ],
-    "photoUrl": "https://cdn.jsdelivr.net/gh/yuhonas/free-exercise-db@main/exercises/Lying_Close-Grip_Barbell_Triceps_Extension_Behind_The_Head/0.jpg"
+    "photoAsset": "assets/images/exercises/skull-crusher.jpg"
   },
   {
     "id": "overhead-triceps-extension",
@@ -1532,7 +1532,7 @@
       "cable-bicep-curl",
       "triceps-pushdown"
     ],
-    "photoUrl": "https://cdn.jsdelivr.net/gh/yuhonas/free-exercise-db@main/exercises/Standing_Dumbbell_Triceps_Extension/0.jpg"
+    "photoAsset": "assets/images/exercises/overhead-triceps-extension.jpg"
   },
   {
     "id": "close-grip-bench-press",
@@ -1567,7 +1567,7 @@
       "dumbbell-bicep-curl",
       "hammer-curl"
     ],
-    "photoUrl": "https://cdn.jsdelivr.net/gh/yuhonas/free-exercise-db@main/exercises/Close-Grip_Barbell_Bench_Press/0.jpg"
+    "photoAsset": "assets/images/exercises/close-grip-bench-press.jpg"
   },
   {
     "id": "bench-dip",
@@ -1597,7 +1597,7 @@
       "dumbbell-bicep-curl",
       "hammer-curl"
     ],
-    "photoUrl": "https://cdn.jsdelivr.net/gh/yuhonas/free-exercise-db@main/exercises/Bench_Dips/0.jpg"
+    "photoAsset": "assets/images/exercises/bench-dip.jpg"
   },
   {
     "id": "plank",
@@ -1627,7 +1627,7 @@
       "cable-woodchopper",
       "side-plank"
     ],
-    "photoUrl": "https://cdn.jsdelivr.net/gh/yuhonas/free-exercise-db@main/exercises/Plank/0.jpg"
+    "photoAsset": "assets/images/exercises/plank.jpg"
   },
   {
     "id": "side-plank",
@@ -1654,7 +1654,7 @@
       "cable-woodchopper",
       "plank"
     ],
-    "photoUrl": "https://cdn.jsdelivr.net/gh/yuhonas/free-exercise-db@main/exercises/Side_Bridge/0.jpg"
+    "photoAsset": "assets/images/exercises/side-plank.jpg"
   },
   {
     "id": "crunch",
@@ -1681,7 +1681,7 @@
       "cable-woodchopper",
       "plank"
     ],
-    "photoUrl": "https://cdn.jsdelivr.net/gh/yuhonas/free-exercise-db@main/exercises/Crunches/0.jpg"
+    "photoAsset": "assets/images/exercises/crunch.jpg"
   },
   {
     "id": "bicycle-crunch",
@@ -1708,7 +1708,7 @@
       "cable-woodchopper",
       "plank"
     ],
-    "photoUrl": "https://cdn.jsdelivr.net/gh/yuhonas/free-exercise-db@main/exercises/Air_Bike/0.jpg"
+    "photoAsset": "assets/images/exercises/bicycle-crunch.jpg"
   },
   {
     "id": "hanging-leg-raise",
@@ -1737,7 +1737,7 @@
       "cable-woodchopper",
       "plank"
     ],
-    "photoUrl": "https://cdn.jsdelivr.net/gh/yuhonas/free-exercise-db@main/exercises/Hanging_Leg_Raise/0.jpg"
+    "photoAsset": "assets/images/exercises/hanging-leg-raise.jpg"
   },
   {
     "id": "russian-twist",
@@ -1765,7 +1765,7 @@
       "side-plank",
       "crunch"
     ],
-    "photoUrl": "https://cdn.jsdelivr.net/gh/yuhonas/free-exercise-db@main/exercises/Russian_Twist/0.jpg"
+    "photoAsset": "assets/images/exercises/russian-twist.jpg"
   },
   {
     "id": "cable-woodchopper",
@@ -1792,7 +1792,7 @@
       "side-plank",
       "crunch"
     ],
-    "photoUrl": "https://cdn.jsdelivr.net/gh/yuhonas/free-exercise-db@main/exercises/Standing_Cable_Wood_Chop/0.jpg"
+    "photoAsset": "assets/images/exercises/cable-woodchopper.jpg"
   },
   {
     "id": "ab-wheel-rollout",
@@ -1821,7 +1821,7 @@
       "cable-woodchopper",
       "plank"
     ],
-    "photoUrl": "https://cdn.jsdelivr.net/gh/yuhonas/free-exercise-db@main/exercises/Ab_Roller/0.jpg"
+    "photoAsset": "assets/images/exercises/ab-wheel-rollout.jpg"
   },
   {
     "id": "mountain-climber",
@@ -1850,7 +1850,7 @@
       "cable-woodchopper",
       "plank"
     ],
-    "photoUrl": "https://cdn.jsdelivr.net/gh/yuhonas/free-exercise-db@main/exercises/Mountain_Climbers/0.jpg"
+    "photoAsset": "assets/images/exercises/mountain-climber.jpg"
   },
   {
     "id": "dead-bug",
@@ -1877,7 +1877,7 @@
       "cable-woodchopper",
       "plank"
     ],
-    "photoUrl": "https://cdn.jsdelivr.net/gh/yuhonas/free-exercise-db@main/exercises/Dead_Bug/0.jpg"
+    "photoAsset": "assets/images/exercises/dead-bug.jpg"
   },
   {
     "id": "jumping-jacks",
@@ -1956,7 +1956,7 @@
       "burpees",
       "battle-ropes"
     ],
-    "photoUrl": "https://cdn.jsdelivr.net/gh/yuhonas/free-exercise-db@main/exercises/Rope_Jumping/0.jpg"
+    "photoAsset": "assets/images/exercises/jump-rope.jpg"
   },
   {
     "id": "high-knees",
@@ -2011,7 +2011,7 @@
       "high-knees",
       "barbell-back-squat"
     ],
-    "photoUrl": "https://cdn.jsdelivr.net/gh/yuhonas/free-exercise-db@main/exercises/Front_Box_Jump/0.jpg"
+    "photoAsset": "assets/images/exercises/box-jump.jpg"
   },
   {
     "id": "rowing-machine",
@@ -2041,7 +2041,7 @@
       "pull-up",
       "lat-pulldown"
     ],
-    "photoUrl": "https://cdn.jsdelivr.net/gh/yuhonas/free-exercise-db@main/exercises/Rowing_Stationary/0.jpg"
+    "photoAsset": "assets/images/exercises/rowing-machine.jpg"
   },
   {
     "id": "battle-ropes",
@@ -2071,7 +2071,7 @@
       "burpees",
       "jump-rope"
     ],
-    "photoUrl": "https://cdn.jsdelivr.net/gh/yuhonas/free-exercise-db@main/exercises/Battling_Ropes/0.jpg"
+    "photoAsset": "assets/images/exercises/battle-ropes.jpg"
   },
   {
     "id": "step-up",
@@ -2099,6 +2099,6 @@
       "box-jump",
       "barbell-back-squat"
     ],
-    "photoUrl": "https://cdn.jsdelivr.net/gh/yuhonas/free-exercise-db@main/exercises/Dumbbell_Step_Ups/0.jpg"
+    "photoAsset": "assets/images/exercises/step-up.jpg"
   }
 ]

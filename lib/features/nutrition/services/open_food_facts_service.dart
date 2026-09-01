@@ -38,10 +38,12 @@ class OpenFoodFactsService implements FoodDatabaseService {
         'search_terms': q,
         'fields': _fields,
         'page_size': '20',
-        // Without an explicit sort, OFF returns matches in an arbitrary
-        // database order — ranking by how widely-scanned/known a product is
-        // makes the top results actually relevant instead of near-random.
-        'sort_by': 'popularity_key',
+        // A 'sort_by' param (e.g. popularity_key) previously ranked matches
+        // by how widely-scanned a product is instead of arbitrary database
+        // order, but OFF now returns a hard 503 for any 'sort_by' value on
+        // this endpoint — confirmed directly, not query-specific — which
+        // broke every search, not just unsorted ones. Omitted until OFF's
+        // v2 search supports it again.
       },
     );
     final res = await _get(uri);

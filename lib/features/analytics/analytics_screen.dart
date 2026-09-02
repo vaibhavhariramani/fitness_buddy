@@ -20,6 +20,7 @@ import '../../shared/widgets/muscle_body_diagram.dart';
 import '../../shared/widgets/progress_ring.dart';
 import '../../shared/widgets/section_header.dart';
 import '../nutrition/providers/nutrition_providers.dart';
+import '../tracking/tracking_tab_provider.dart';
 import '../tracking/weight/weight_tab.dart';
 import '../tracking/workouts/pages/active_workout_page.dart';
 import '../tracking/workouts/workouts_tab.dart';
@@ -305,6 +306,10 @@ class _TodayNutritionSection extends ConsumerWidget {
         const SectionHeader(title: 'Today'),
         AppCard(
           accentColor: AppColors.nutrition,
+          onTap: () {
+            ref.read(pendingTrackingTabProvider.notifier).state = 1;
+            context.push('/tracking');
+          },
           child: Row(
             children: [
               ProgressRing(

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'meals/meals_tab.dart';
+import 'tracking_tab_provider.dart';
 import 'weight/weight_tab.dart';
 import 'workouts/workout_prefill_provider.dart';
 import 'workouts/workouts_tab.dart';
@@ -13,9 +14,17 @@ class TrackingScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final hasPendingWorkoutPrefill =
         ref.read(pendingWorkoutPrefillProvider) != null;
+    final pendingTab = ref.read(pendingTrackingTabProvider);
+    if (pendingTab != null) {
+      // Deferred so we don't mutate provider state mid-build; clears it so a
+      // later, ordinary visit to /tracking isn't stuck on this tab forever.
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        ref.read(pendingTrackingTabProvider.notifier).state = null;
+      });
+    }
     return DefaultTabController(
       length: 3,
-      initialIndex: hasPendingWorkoutPrefill ? 2 : 0,
+      initialIndex: pendingTab ?? (hasPendingWorkoutPrefill ? 2 : 0),
       child: Scaffold(
         appBar: AppBar(
           title: const Text('Daily Tracking'),

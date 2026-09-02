@@ -166,9 +166,9 @@ class _ServingConfirmPageState extends ConsumerState<ServingConfirmPage> {
           final url = await ref
               .read(storageServiceProvider)
               .uploadMealPhoto(uid: uid, mealId: mealId, bytes: _photoBytes!);
-          await ref
-              .read(mealRepoProvider)
-              .update(uid, mealId, {'photoUrl': url});
+          await ref.read(mealRepoProvider).update(uid, mealId, {
+            'photoUrl': url,
+          });
 
           final now = DateTime.now();
           await ref

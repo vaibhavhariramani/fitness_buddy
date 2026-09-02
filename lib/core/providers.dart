@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../models/app_notification.dart';
 import '../models/user_profile.dart';
+import '../models/wellness_reminder.dart';
 import '../services/auth_service.dart';
 import '../services/notification_service.dart';
 import '../services/push_notification_service.dart';
@@ -22,6 +23,7 @@ import '../services/repositories/user_repo.dart';
 import '../services/repositories/week_schedule_repo.dart';
 import '../services/repositories/weekly_routine_repo.dart';
 import '../services/repositories/weight_repo.dart';
+import '../services/repositories/wellness_reminder_repo.dart';
 import '../services/repositories/workout_repo.dart';
 import '../services/repositories/workout_plan_repo.dart';
 
@@ -78,6 +80,17 @@ final weeklyRoutineRepoProvider = Provider<WeeklyRoutineRepo>(
 final weekScheduleRepoProvider = Provider<WeekScheduleRepo>(
   (ref) => WeekScheduleRepo(),
 );
+final wellnessReminderRepoProvider = Provider<WellnessReminderRepo>(
+  (ref) => WellnessReminderRepo(),
+);
+
+/// Empty stream when signed out rather than an error, matching
+/// notificationsProvider's convention.
+final wellnessRemindersProvider = StreamProvider<List<WellnessReminder>>((ref) {
+  final uid = ref.watch(authStateProvider).valueOrNull?.uid;
+  if (uid == null) return Stream.value(const []);
+  return ref.watch(wellnessReminderRepoProvider).watchAll(uid);
+});
 final expenseRepoProvider = Provider<ExpenseRepo>((ref) => ExpenseRepo());
 final customFoodRepoProvider = Provider<CustomFoodRepo>(
   (ref) => CustomFoodRepo(),

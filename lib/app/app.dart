@@ -33,6 +33,19 @@ class FitnessBuddyApp extends ConsumerWidget {
       }
     });
 
+    // Wellness reminders (medicine, yoga, meditation, ...) live in their own
+    // collection rather than on the profile, so they get their own listener
+    // — same cancel-and-reschedule-on-any-change strategy as meal/workout
+    // reminders above, just scoped to that one reminder's notification ids
+    // instead of the app-wide cancelAll().
+    ref.listen(wellnessRemindersProvider, (previous, next) {
+      final reminders = next.valueOrNull;
+      if (reminders == null) return;
+      ref
+          .read(notificationServiceProvider)
+          .scheduleWellnessReminders(reminders);
+    });
+
     return MaterialApp.router(
       title: 'Fitness Buddy',
       debugShowCheckedModeBanner: false,

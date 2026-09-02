@@ -15,11 +15,7 @@ class BarcodeScanPage extends ConsumerStatefulWidget {
   final MealType mealType;
   final DateTime? initialDate;
 
-  const BarcodeScanPage({
-    super.key,
-    required this.mealType,
-    this.initialDate,
-  });
+  const BarcodeScanPage({super.key, required this.mealType, this.initialDate});
 
   @override
   ConsumerState<BarcodeScanPage> createState() => _BarcodeScanPageState();

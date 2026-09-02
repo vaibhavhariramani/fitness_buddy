@@ -38,11 +38,12 @@ class _StoryViewerPageState extends State<StoryViewerPage>
   @override
   void initState() {
     super.initState();
-    _progress = AnimationController(vsync: this, duration: _durationFor(0))
-      ..addStatusListener((status) {
-        if (status == AnimationStatus.completed) _advance();
-      })
-      ..forward();
+    _progress =
+        AnimationController(vsync: this, duration: _durationFor(0))
+          ..addStatusListener((status) {
+            if (status == AnimationStatus.completed) _advance();
+          })
+          ..forward();
   }
 
   @override
@@ -137,10 +138,9 @@ class _StoryViewerPageState extends State<StoryViewerPage>
                                       value: value,
                                       minHeight: 3,
                                       backgroundColor: Colors.white24,
-                                      valueColor:
-                                          const AlwaysStoppedAnimation(
-                                            Colors.white,
-                                          ),
+                                      valueColor: const AlwaysStoppedAnimation(
+                                        Colors.white,
+                                      ),
                                     ),
                                   );
                                 },
@@ -208,7 +208,10 @@ class _StorySlide extends StatelessWidget {
               gradient: LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
-                colors: [Colors.transparent, Colors.black.withValues(alpha: 0.75)],
+                colors: [
+                  Colors.transparent,
+                  Colors.black.withValues(alpha: 0.75),
+                ],
               ),
             ),
             child: switch (story.type) {

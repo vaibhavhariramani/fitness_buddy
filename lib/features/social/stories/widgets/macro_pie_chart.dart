@@ -67,8 +67,14 @@ class MacroPieChart extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            _Legend(color: _proteinColor, label: 'Protein ${proteinG.toStringAsFixed(0)}g'),
-            _Legend(color: _carbColor, label: 'Carbs ${carbG.toStringAsFixed(0)}g'),
+            _Legend(
+              color: _proteinColor,
+              label: 'Protein ${proteinG.toStringAsFixed(0)}g',
+            ),
+            _Legend(
+              color: _carbColor,
+              label: 'Carbs ${carbG.toStringAsFixed(0)}g',
+            ),
             _Legend(color: _fatColor, label: 'Fat ${fatG.toStringAsFixed(0)}g'),
           ],
         ),

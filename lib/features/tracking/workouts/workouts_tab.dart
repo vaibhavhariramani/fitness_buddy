@@ -297,9 +297,9 @@ class _LogWorkoutSheetState extends ConsumerState<LogWorkoutSheet> {
                 workoutId: saved.id,
                 bytes: _photoBytes!,
               );
-          await ref
-              .read(workoutRepoProvider)
-              .update(uid, saved.id, {'photoUrl': url});
+          await ref.read(workoutRepoProvider).update(uid, saved.id, {
+            'photoUrl': url,
+          });
 
           final setCount = saved.exercises.fold<int>(
             0,

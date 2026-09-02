@@ -138,7 +138,11 @@ class WorkoutRepo {
     );
   }
 
-  Future<void> update(String uid, String workoutId, Map<String, dynamic> patch) {
+  Future<void> update(
+    String uid,
+    String workoutId,
+    Map<String, dynamic> patch,
+  ) {
     return _workoutsCol(uid).doc(workoutId).update(patch);
   }
 }

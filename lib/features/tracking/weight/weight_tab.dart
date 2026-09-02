@@ -127,9 +127,9 @@ class WeightTab extends ConsumerWidget {
         final url = await ref
             .read(storageServiceProvider)
             .uploadWeightPhoto(uid: uid, logId: entryId, bytes: pickedPhoto);
-        await ref
-            .read(weightRepoProvider)
-            .update(uid, entryId, {'photoUrl': url});
+        await ref.read(weightRepoProvider).update(uid, entryId, {
+          'photoUrl': url,
+        });
 
         final now = DateTime.now();
         await ref

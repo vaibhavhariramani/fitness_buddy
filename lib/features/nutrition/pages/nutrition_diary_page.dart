@@ -308,11 +308,8 @@ class _NutritionDiaryPageState extends ConsumerState<NutritionDiaryPage> {
                         entries:
                             meals.where((m) => m.mealType == type).toList(),
                         onAddFood:
-                            () => _openAddFoodSheet(
-                              context,
-                              type,
-                              selectedDate,
-                            ),
+                            () =>
+                                _openAddFoodSheet(context, type, selectedDate),
                         onDelete: (entry) {
                           final uid =
                               ref.read(authStateProvider).valueOrNull?.uid;

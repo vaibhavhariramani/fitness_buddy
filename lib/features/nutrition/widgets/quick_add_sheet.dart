@@ -86,9 +86,9 @@ class _QuickAddSheetState extends ConsumerState<QuickAddSheet> {
           final url = await ref
               .read(storageServiceProvider)
               .uploadMealPhoto(uid: uid, mealId: mealId, bytes: _photoBytes!);
-          await ref
-              .read(mealRepoProvider)
-              .update(uid, mealId, {'photoUrl': url});
+          await ref.read(mealRepoProvider).update(uid, mealId, {
+            'photoUrl': url,
+          });
 
           final now = DateTime.now();
           final proteinG = double.tryParse(_proteinController.text) ?? 0;

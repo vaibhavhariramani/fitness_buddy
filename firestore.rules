@@ -83,6 +83,10 @@ service cloud.firestore {
         allow read, write: if isOwner(uid);
       }
 
+      match /wellnessReminders/{reminderId} {
+        allow read, write: if isOwner(uid);
+      }
+
       match /customFoods/{foodId} {
         allow read, write: if isOwner(uid);
       }

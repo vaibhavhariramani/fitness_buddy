@@ -211,7 +211,8 @@ class _StoriesBar extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final myName = ref.watch(userProfileProvider).valueOrNull?.displayName ?? 'You';
+    final myName =
+        ref.watch(userProfileProvider).valueOrNull?.displayName ?? 'You';
     final friends = friendsAsync.valueOrNull ?? const [];
 
     return SizedBox(

@@ -80,7 +80,8 @@ class NutritionTotals {
 
 final nutritionTotalsForDateProvider = Provider.autoDispose
     .family<NutritionTotals, DateTime>((ref, date) {
-      final meals = ref.watch(mealsForDateProvider(date)).valueOrNull ?? const [];
+      final meals =
+          ref.watch(mealsForDateProvider(date)).valueOrNull ?? const [];
       return NutritionTotals.fromMeals(meals);
     });
 

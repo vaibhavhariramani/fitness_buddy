@@ -6,6 +6,7 @@ import '../../core/providers.dart';
 import '../../core/utils/calculations.dart';
 import '../../models/user_profile.dart';
 import '../auth/providers/auth_controller.dart';
+import 'wellness_reminders_screen.dart';
 
 class SettingsScreen extends ConsumerStatefulWidget {
   const SettingsScreen({super.key});
@@ -378,6 +379,23 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   ),
             ),
           ],
+          const SizedBox(height: 8),
+          ListTile(
+            contentPadding: EdgeInsets.zero,
+            leading: const Icon(Icons.self_improvement_outlined),
+            title: const Text('Wellness reminders'),
+            subtitle: const Text(
+              'Medicine, yoga, meditation, or anything else',
+            ),
+            trailing: const Icon(Icons.chevron_right),
+            onTap:
+                () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const WellnessRemindersScreen(),
+                  ),
+                ),
+          ),
           const SizedBox(height: 32),
           OutlinedButton.icon(
             onPressed:

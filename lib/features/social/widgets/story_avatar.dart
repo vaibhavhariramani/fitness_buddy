@@ -8,9 +8,10 @@ import '../stories/story_viewer_page.dart';
 
 /// Active (unexpired) stories for a given uid — shared by [StoryAvatar] and
 /// anything else that needs to know whether someone currently has a story.
-final activeStoriesProvider = StreamProvider.autoDispose.family<List<Story>, String>(
-  (ref, uid) => ref.watch(storyRepoProvider).watchActive(uid),
-);
+final activeStoriesProvider = StreamProvider.autoDispose
+    .family<List<Story>, String>(
+      (ref, uid) => ref.watch(storyRepoProvider).watchActive(uid),
+    );
 
 /// A circle avatar that grows a gradient "story ring" (WhatsApp/Instagram
 /// style) whenever [uid] has an active story, and opens the full-screen
@@ -30,7 +31,8 @@ class StoryAvatar extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final scheme = Theme.of(context).colorScheme;
-    final stories = ref.watch(activeStoriesProvider(uid)).valueOrNull ?? const [];
+    final stories =
+        ref.watch(activeStoriesProvider(uid)).valueOrNull ?? const [];
     final hasActive = stories.isNotEmpty;
 
     final avatar = CircleAvatar(

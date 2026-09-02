@@ -6,7 +6,9 @@ import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:timezone/data/latest_all.dart' as tz_data;
 import 'package:timezone/timezone.dart' as tz;
 
+import '../core/utils/notification_ids.dart';
 import '../models/user_profile.dart';
+import '../models/wellness_reminder.dart';
 
 /// Fixed notification ids so re-scheduling always replaces the same slots
 /// instead of accumulating duplicates.
@@ -142,6 +144,15 @@ class NotificationService {
     priority: Priority.high,
   );
 
+  static const _wellnessChannel = AndroidNotificationDetails(
+    'wellness_reminders',
+    'Wellness reminders',
+    channelDescription:
+        'Medicine, yoga, meditation, and other custom reminders you set',
+    importance: Importance.high,
+    priority: Priority.high,
+  );
+
   NotificationDetails get _mealDetails => const NotificationDetails(
     android: _mealChannel,
     iOS: DarwinNotificationDetails(),
@@ -154,6 +165,11 @@ class NotificationService {
 
   NotificationDetails get _socialDetails => const NotificationDetails(
     android: _socialChannel,
+    iOS: DarwinNotificationDetails(),
+  );
+
+  NotificationDetails get _wellnessDetails => const NotificationDetails(
+    android: _wellnessChannel,
     iOS: DarwinNotificationDetails(),
   );
 
@@ -263,6 +279,79 @@ class NotificationService {
     for (final id in _ReminderIds.junkNudgeSlots) {
       await _plugin.cancel(id);
     }
+  }
+
+  /// Cancels and re-schedules every wellness reminder from scratch — cheap
+  /// enough to call on every change to the list, same strategy as
+  /// [scheduleFromProfile]. Unlike the fixed meal/workout slots, these are
+  /// unboundedly many and user-edited individually, so each reminder's
+  /// notification ids are derived from its own doc id (see
+  /// core/utils/notification_ids.dart) rather than a hand-enumerated
+  /// constant, and only that reminder's ids get cancelled/rescheduled.
+  Future<void> scheduleWellnessReminders(
+    List<WellnessReminder> reminders,
+  ) async {
+    for (final reminder in reminders) {
+      await cancelWellnessReminder(reminder.id);
+      if (!reminder.enabled) continue;
+      for (final day in reminder.repeatDays) {
+        await _scheduleWeekly(
+          id: wellnessNotificationId(reminder.id, day),
+          isoWeekday: day,
+          minutesSinceMidnight: reminder.minutesSinceMidnight,
+          title: '${reminder.type.label} reminder',
+          body: reminder.name,
+          route: '/settings',
+        );
+      }
+    }
+  }
+
+  /// Cancels all 7 possible day-slot ids for one reminder — cancelling an id
+  /// that was never scheduled (e.g. a day not in repeatDays) is a no-op, so
+  /// this doesn't need to know which days were actually in use.
+  Future<void> cancelWellnessReminder(String reminderId) async {
+    for (var day = 1; day <= 7; day++) {
+      await _plugin.cancel(wellnessNotificationId(reminderId, day));
+    }
+  }
+
+  /// Like [_scheduleDaily] but repeats weekly on one specific weekday
+  /// instead of every day, via [DateTimeComponents.dayOfWeekAndTime].
+  Future<void> _scheduleWeekly({
+    required int id,
+    required int isoWeekday,
+    required int minutesSinceMidnight,
+    required String title,
+    required String body,
+    required String route,
+  }) async {
+    final now = tz.TZDateTime.now(tz.local);
+    var scheduled = tz.TZDateTime(
+      tz.local,
+      now.year,
+      now.month,
+      now.day,
+      minutesSinceMidnight ~/ 60,
+      minutesSinceMidnight % 60,
+    );
+    // DateTime.weekday is already 1 (Monday)..7 (Sunday), matching isoWeekday.
+    while (scheduled.weekday != isoWeekday || scheduled.isBefore(now)) {
+      scheduled = scheduled.add(const Duration(days: 1));
+    }
+
+    await _plugin.zonedSchedule(
+      id,
+      title,
+      body,
+      scheduled,
+      _wellnessDetails,
+      androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
+      uiLocalNotificationDateInterpretation:
+          UILocalNotificationDateInterpretation.absoluteTime,
+      matchDateTimeComponents: DateTimeComponents.dayOfWeekAndTime,
+      payload: route,
+    );
   }
 
   void dispose() {

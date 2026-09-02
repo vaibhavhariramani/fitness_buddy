@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:fitness_buddy/core/utils/calculations.dart';
 import 'package:fitness_buddy/core/utils/exercise_history.dart';
+import 'package:fitness_buddy/core/utils/notification_ids.dart';
 import 'package:fitness_buddy/core/utils/streak.dart';
 import 'package:fitness_buddy/core/utils/pr.dart';
 import 'package:fitness_buddy/core/utils/progression.dart';
@@ -329,6 +330,37 @@ void main() {
       // Settle past the 500ms intro animation so every frame's paint() runs.
       await tester.pumpAndSettle();
       expect(tester.takeException(), isNull);
+    });
+  });
+
+  group('wellnessNotificationId', () {
+    test('is deterministic for the same reminder id and day', () {
+      final a = wellnessNotificationId('reminder-1', 3);
+      final b = wellnessNotificationId('reminder-1', 3);
+      expect(a, b);
+    });
+
+    test('differs across the 7 days of the same reminder', () {
+      final ids = {
+        for (var day = 1; day <= 7; day++)
+          day: wellnessNotificationId('reminder-1', day),
+      };
+      expect(ids.values.toSet(), hasLength(7));
+    });
+
+    test('differs between two different reminder ids on the same day', () {
+      final a = wellnessNotificationId('reminder-1', 1);
+      final b = wellnessNotificationId('reminder-2', 1);
+      expect(a, isNot(b));
+    });
+
+    test('never collides with the fixed meal/workout reminder ids', () {
+      const fixedIds = {9001, 9002, 9003, 9004, 9101, 9102};
+      for (final id in ['a', 'b', 'medicine-xyz', 'yoga-123']) {
+        for (var day = 1; day <= 7; day++) {
+          expect(fixedIds.contains(wellnessNotificationId(id, day)), isFalse);
+        }
+      }
     });
   });
 }

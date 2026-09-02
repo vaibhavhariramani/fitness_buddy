@@ -77,36 +77,45 @@ class _QuickAddSheetState extends ConsumerState<QuickAddSheet> {
             ),
           );
 
-      if (_photoBytes != null) {
-        final url = await ref
-            .read(storageServiceProvider)
-            .uploadMealPhoto(uid: uid, mealId: mealId, bytes: _photoBytes!);
-        await ref.read(mealRepoProvider).update(uid, mealId, {'photoUrl': url});
-
-        final now = DateTime.now();
-        final proteinG = double.tryParse(_proteinController.text) ?? 0;
-        final carbG = double.tryParse(_carbController.text) ?? 0;
-        final fatG = double.tryParse(_fatController.text) ?? 0;
-        await ref
-            .read(storyRepoProvider)
-            .add(
-              uid,
-              Story(
-                id: '',
-                type: StoryType.meal,
-                photoUrl: url,
-                mealTypeLabel: widget.mealType.label,
-                calories: calories,
-                proteinG: proteinG,
-                carbG: carbG,
-                fatG: fatG,
-                createdAt: now,
-                expiresAt: now.add(const Duration(hours: 24)),
-              ),
-            );
-      }
-
+      // Core state — the meal itself and the streak — must land even if the
+      // optional photo/story step below fails, so this runs first.
       await ref.read(userRepoProvider).registerActivityAndGetStreak(uid);
+
+      if (_photoBytes != null) {
+        try {
+          final url = await ref
+              .read(storageServiceProvider)
+              .uploadMealPhoto(uid: uid, mealId: mealId, bytes: _photoBytes!);
+          await ref
+              .read(mealRepoProvider)
+              .update(uid, mealId, {'photoUrl': url});
+
+          final now = DateTime.now();
+          final proteinG = double.tryParse(_proteinController.text) ?? 0;
+          final carbG = double.tryParse(_carbController.text) ?? 0;
+          final fatG = double.tryParse(_fatController.text) ?? 0;
+          await ref
+              .read(storyRepoProvider)
+              .add(
+                uid,
+                Story(
+                  id: '',
+                  type: StoryType.meal,
+                  photoUrl: url,
+                  mealTypeLabel: widget.mealType.label,
+                  calories: calories,
+                  proteinG: proteinG,
+                  carbG: carbG,
+                  fatG: fatG,
+                  createdAt: now,
+                  expiresAt: now.add(const Duration(hours: 24)),
+                ),
+              );
+        } catch (_) {
+          // Best-effort — the meal itself is already saved above; a failed
+          // photo/story post shouldn't be treated as a failed log.
+        }
+      }
 
       if (mounted) Navigator.pop(context);
     } finally {

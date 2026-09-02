@@ -108,30 +108,9 @@ class WeightTab extends ConsumerWidget {
         .read(weightRepoProvider)
         .add(uid, WeightEntry(id: '', date: date, weightKg: weight));
 
-    if (pickedPhoto != null) {
-      final url = await ref
-          .read(storageServiceProvider)
-          .uploadWeightPhoto(uid: uid, logId: entryId, bytes: pickedPhoto);
-      await ref
-          .read(weightRepoProvider)
-          .update(uid, entryId, {'photoUrl': url});
-
-      final now = DateTime.now();
-      await ref
-          .read(storyRepoProvider)
-          .add(
-            uid,
-            Story(
-              id: '',
-              type: StoryType.weight,
-              photoUrl: url,
-              weightKg: weight,
-              createdAt: now,
-              expiresAt: now.add(const Duration(hours: 24)),
-            ),
-          );
-    }
-
+    // Core state — the weight log itself, the "current weight" badge, and
+    // the streak — must land even if the optional photo/story step below
+    // fails, so this runs first and unconditionally.
     // Only overwrite the profile's "current" weight if this entry isn't
     // backdated — an old log shouldn't override today's actual current weight.
     if (!date.isBefore(
@@ -142,6 +121,35 @@ class WeightTab extends ConsumerWidget {
       });
     }
     await ref.read(userRepoProvider).registerActivityAndGetStreak(uid);
+
+    if (pickedPhoto != null) {
+      try {
+        final url = await ref
+            .read(storageServiceProvider)
+            .uploadWeightPhoto(uid: uid, logId: entryId, bytes: pickedPhoto);
+        await ref
+            .read(weightRepoProvider)
+            .update(uid, entryId, {'photoUrl': url});
+
+        final now = DateTime.now();
+        await ref
+            .read(storyRepoProvider)
+            .add(
+              uid,
+              Story(
+                id: '',
+                type: StoryType.weight,
+                photoUrl: url,
+                weightKg: weight,
+                createdAt: now,
+                expiresAt: now.add(const Duration(hours: 24)),
+              ),
+            );
+      } catch (_) {
+        // Best-effort — the weight entry itself is already saved above; a
+        // failed photo/story post shouldn't be treated as a failed log.
+      }
+    }
   }
 
   @override

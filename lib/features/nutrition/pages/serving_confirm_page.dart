@@ -1,9 +1,13 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
 import '../../../core/providers.dart';
 import '../../../models/meal_entry.dart';
+import '../../../models/story.dart';
+import '../../../shared/utils/photo_picker.dart';
 import '../models/food.dart';
 import '../providers/nutrition_providers.dart';
 
@@ -41,6 +45,13 @@ class _ServingConfirmPageState extends ConsumerState<ServingConfirmPage> {
   late DateTime _date = widget.initialDate ?? DateTime.now();
   bool _saving = false;
   bool _editingMacros = false;
+  Uint8List? _photoBytes;
+
+  Future<void> _pickPhoto() async {
+    final bytes = await pickPhotoFromCameraOrGallery(context);
+    if (bytes == null) return;
+    setState(() => _photoBytes = bytes);
+  }
 
   double get _grams => double.tryParse(_gramsController.text) ?? 0;
 
@@ -145,8 +156,43 @@ class _ServingConfirmPageState extends ConsumerState<ServingConfirmPage> {
         createdAt: DateTime.now(),
       );
 
-      await ref.read(mealRepoProvider).add(uid, entry);
+      final mealId = await ref.read(mealRepoProvider).add(uid, entry);
+      // Core state — the meal itself and the streak — must land even if the
+      // optional photo/story step below fails, so this runs first.
       await ref.read(userRepoProvider).registerActivityAndGetStreak(uid);
+
+      if (_photoBytes != null) {
+        try {
+          final url = await ref
+              .read(storageServiceProvider)
+              .uploadMealPhoto(uid: uid, mealId: mealId, bytes: _photoBytes!);
+          await ref
+              .read(mealRepoProvider)
+              .update(uid, mealId, {'photoUrl': url});
+
+          final now = DateTime.now();
+          await ref
+              .read(storyRepoProvider)
+              .add(
+                uid,
+                Story(
+                  id: '',
+                  type: StoryType.meal,
+                  photoUrl: url,
+                  mealTypeLabel: widget.mealType.label,
+                  calories: entry.calories,
+                  proteinG: entry.proteinG,
+                  carbG: entry.carbG,
+                  fatG: entry.fatG,
+                  createdAt: now,
+                  expiresAt: now.add(const Duration(hours: 24)),
+                ),
+              );
+        } catch (_) {
+          // Best-effort — the meal itself is already saved above; a failed
+          // photo/story post shouldn't be treated as a failed log.
+        }
+      }
 
       if (mounted) Navigator.popUntil(context, (route) => route.isFirst);
     } finally {
@@ -269,6 +315,14 @@ class _ServingConfirmPageState extends ConsumerState<ServingConfirmPage> {
               );
               if (picked != null) setState(() => _date = picked);
             },
+          ),
+          const SizedBox(height: 8),
+          OutlinedButton.icon(
+            onPressed: _pickPhoto,
+            icon: const Icon(Icons.photo_camera_outlined),
+            label: Text(
+              _photoBytes == null ? 'Add photo (optional)' : 'Photo selected',
+            ),
           ),
           const SizedBox(height: 20),
           Card(

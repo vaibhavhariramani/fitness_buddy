@@ -234,37 +234,42 @@ class _ActiveWorkoutPageState extends ConsumerState<ActiveWorkoutPage> {
       anyPr ? AppHaptics.celebrate() : AppHaptics.success();
 
       if (_photoBytes != null) {
-        final url = await ref
-            .read(storageServiceProvider)
-            .uploadWorkoutPhoto(
-              uid: uid,
-              workoutId: saved.id,
-              bytes: _photoBytes!,
-            );
-        await ref
-            .read(workoutRepoProvider)
-            .update(uid, saved.id, {'photoUrl': url});
+        try {
+          final url = await ref
+              .read(storageServiceProvider)
+              .uploadWorkoutPhoto(
+                uid: uid,
+                workoutId: saved.id,
+                bytes: _photoBytes!,
+              );
+          await ref
+              .read(workoutRepoProvider)
+              .update(uid, saved.id, {'photoUrl': url});
 
-        final setCount = saved.exercises.fold<int>(
-          0,
-          (n, e) => n + e.sets.length,
-        );
-        final now = DateTime.now();
-        await ref
-            .read(storyRepoProvider)
-            .add(
-              uid,
-              Story(
-                id: '',
-                type: StoryType.workout,
-                photoUrl: url,
-                workoutExerciseCount: saved.exercises.length,
-                workoutSetCount: setCount,
-                workoutHasPr: anyPr,
-                createdAt: now,
-                expiresAt: now.add(const Duration(hours: 24)),
-              ),
-            );
+          final setCount = saved.exercises.fold<int>(
+            0,
+            (n, e) => n + e.sets.length,
+          );
+          final now = DateTime.now();
+          await ref
+              .read(storyRepoProvider)
+              .add(
+                uid,
+                Story(
+                  id: '',
+                  type: StoryType.workout,
+                  photoUrl: url,
+                  workoutExerciseCount: saved.exercises.length,
+                  workoutSetCount: setCount,
+                  workoutHasPr: anyPr,
+                  createdAt: now,
+                  expiresAt: now.add(const Duration(hours: 24)),
+                ),
+              );
+        } catch (_) {
+          // Best-effort — the workout itself is already saved above; a
+          // failed photo/story post shouldn't be treated as a failed log.
+        }
       }
 
       if (mounted) {

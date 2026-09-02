@@ -211,10 +211,11 @@ class _StorySlide extends StatelessWidget {
                 colors: [Colors.transparent, Colors.black.withValues(alpha: 0.75)],
               ),
             ),
-            child:
-                story.type == StoryType.weight
-                    ? _WeightOverlay(story: story)
-                    : _MealOverlay(story: story),
+            child: switch (story.type) {
+              StoryType.weight => _WeightOverlay(story: story),
+              StoryType.workout => _WorkoutOverlay(story: story),
+              _ => _MealOverlay(story: story),
+            },
           ),
         ),
       ],
@@ -248,6 +249,55 @@ class _WeightOverlay extends StatelessWidget {
               fontSize: 18,
               fontWeight: FontWeight.w700,
             ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _WorkoutOverlay extends StatelessWidget {
+  final Story story;
+
+  const _WorkoutOverlay({required this.story});
+
+  @override
+  Widget build(BuildContext context) {
+    final exerciseCount = story.workoutExerciseCount;
+    final setCount = story.workoutSetCount;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      decoration: BoxDecoration(
+        color: Colors.black.withValues(alpha: 0.5),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.white24),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Text('💪', style: TextStyle(fontSize: 20)),
+          const SizedBox(width: 8),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                exerciseCount == null
+                    ? 'Workout'
+                    : '$exerciseCount exercise${exerciseCount == 1 ? '' : 's'}'
+                        '${setCount != null ? ' · $setCount sets' : ''}',
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              if (story.workoutHasPr == true)
+                const Text(
+                  '🏆 New PR',
+                  style: TextStyle(color: Colors.white70, fontSize: 12),
+                ),
+            ],
           ),
         ],
       ),

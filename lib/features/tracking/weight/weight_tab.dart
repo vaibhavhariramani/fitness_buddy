@@ -4,12 +4,12 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 
 import '../../../core/providers.dart';
 import '../../../models/story.dart';
 import '../../../models/weight_entry.dart';
+import '../../../shared/utils/photo_picker.dart';
 
 final weightLogsProvider = StreamProvider.autoDispose<List<WeightEntry>>((ref) {
   final uid = ref.watch(authStateProvider).valueOrNull?.uid;
@@ -65,12 +65,10 @@ class WeightTab extends ConsumerWidget {
                       const SizedBox(height: 8),
                       OutlinedButton.icon(
                         onPressed: () async {
-                          final file = await ImagePicker().pickImage(
-                            source: ImageSource.gallery,
-                            imageQuality: 80,
+                          final bytes = await pickPhotoFromCameraOrGallery(
+                            context,
                           );
-                          if (file == null) return;
-                          final bytes = await file.readAsBytes();
+                          if (bytes == null) return;
                           setState(() => photoBytes = bytes);
                         },
                         icon: const Icon(Icons.photo_camera_outlined),

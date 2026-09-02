@@ -95,18 +95,21 @@ class WorkoutEntry {
   final DateTime date;
   final List<ExerciseLog> exercises;
   final DateTime createdAt;
+  final String? photoUrl;
 
   const WorkoutEntry({
     required this.id,
     required this.date,
     required this.exercises,
     required this.createdAt,
+    this.photoUrl,
   });
 
   Map<String, dynamic> toJson() => {
     'date': Timestamp.fromDate(date),
     'exercises': exercises.map((e) => e.toJson()).toList(),
     'createdAt': Timestamp.fromDate(createdAt),
+    'photoUrl': photoUrl,
   };
 
   factory WorkoutEntry.fromJson(
@@ -122,5 +125,6 @@ class WorkoutEntry {
             )
             .toList(),
     createdAt: (json['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
+    photoUrl: json['photoUrl'] as String?,
   );
 }

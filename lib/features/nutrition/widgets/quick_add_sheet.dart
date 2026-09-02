@@ -2,12 +2,12 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 
 import '../../../core/providers.dart';
 import '../../../models/meal_entry.dart';
 import '../../../models/story.dart';
+import '../../../shared/utils/photo_picker.dart';
 
 /// The original manual-numbers meal form, relocated here as the "Quick Add"
 /// option — for when the exact food isn't available in search.
@@ -40,13 +40,8 @@ class _QuickAddSheetState extends ConsumerState<QuickAddSheet> {
   }
 
   Future<void> _pickPhoto() async {
-    final picker = ImagePicker();
-    final file = await picker.pickImage(
-      source: ImageSource.gallery,
-      imageQuality: 80,
-    );
-    if (file == null) return;
-    final bytes = await file.readAsBytes();
+    final bytes = await pickPhotoFromCameraOrGallery(context);
+    if (bytes == null) return;
     setState(() => _photoBytes = bytes);
   }
 

@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -8,7 +10,9 @@ import '../../../../core/design_system/app_haptics.dart';
 import '../../../../core/design_system/app_spacing.dart';
 import '../../../../core/providers.dart';
 import '../../../../core/utils/progression.dart';
+import '../../../../models/story.dart';
 import '../../../../models/workout_entry.dart';
+import '../../../../shared/utils/photo_picker.dart';
 import '../../../../shared/widgets/app_card.dart';
 import '../../../exercises/providers/exercise_providers.dart';
 import '../../../exercises/widgets/add_to_workout_dialog.dart'
@@ -86,6 +90,13 @@ class _ActiveWorkoutPageState extends ConsumerState<ActiveWorkoutPage> {
   final DateTime _startedAt = DateTime.now();
   bool _saving = false;
   bool _seeded = false;
+  Uint8List? _photoBytes;
+
+  Future<void> _pickPhoto() async {
+    final bytes = await pickPhotoFromCameraOrGallery(context);
+    if (bytes == null) return;
+    setState(() => _photoBytes = bytes);
+  }
 
   Future<void> _pickDate() async {
     final picked = await showDatePicker(
@@ -221,6 +232,41 @@ class _ActiveWorkoutPageState extends ConsumerState<ActiveWorkoutPage> {
       await ref.read(userRepoProvider).registerActivityAndGetStreak(uid);
       final anyPr = saved.exercises.any((e) => e.isPr);
       anyPr ? AppHaptics.celebrate() : AppHaptics.success();
+
+      if (_photoBytes != null) {
+        final url = await ref
+            .read(storageServiceProvider)
+            .uploadWorkoutPhoto(
+              uid: uid,
+              workoutId: saved.id,
+              bytes: _photoBytes!,
+            );
+        await ref
+            .read(workoutRepoProvider)
+            .update(uid, saved.id, {'photoUrl': url});
+
+        final setCount = saved.exercises.fold<int>(
+          0,
+          (n, e) => n + e.sets.length,
+        );
+        final now = DateTime.now();
+        await ref
+            .read(storyRepoProvider)
+            .add(
+              uid,
+              Story(
+                id: '',
+                type: StoryType.workout,
+                photoUrl: url,
+                workoutExerciseCount: saved.exercises.length,
+                workoutSetCount: setCount,
+                workoutHasPr: anyPr,
+                createdAt: now,
+                expiresAt: now.add(const Duration(hours: 24)),
+              ),
+            );
+      }
+
       if (mounted) {
         Navigator.pushReplacement(
           context,
@@ -311,6 +357,16 @@ class _ActiveWorkoutPageState extends ConsumerState<ActiveWorkoutPage> {
             onPressed: _addExercise,
             icon: const Icon(Icons.add),
             label: const Text('Add exercise'),
+          ),
+          const SizedBox(height: AppSpacing.sm),
+          OutlinedButton.icon(
+            onPressed: _pickPhoto,
+            icon: const Icon(Icons.photo_camera_outlined),
+            label: Text(
+              _photoBytes == null
+                  ? 'Add workout photo (optional)'
+                  : 'Photo selected',
+            ),
           ),
         ],
       ),

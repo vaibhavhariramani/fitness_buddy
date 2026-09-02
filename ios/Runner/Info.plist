@@ -40,7 +40,9 @@
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSCameraUsageDescription</key>
-	<string>Fitness Buddy uses your camera to scan food barcodes.</string>
+	<string>Fitness Buddy uses your camera to scan food barcodes and to take photos when logging meals, weight, and workouts.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Fitness Buddy needs access to your photos so you can attach a picture when logging a meal, weight check-in, or workout.</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

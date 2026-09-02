@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-enum StoryType { weight, meal, dailySummary }
+enum StoryType { weight, meal, workout, dailySummary }
 
 StoryType _parseStoryType(String? raw) => StoryType.values.firstWhere(
   (t) => t.name == raw,
@@ -35,6 +35,11 @@ class Story {
   final double? carbG;
   final double? fatG;
 
+  // StoryType.workout
+  final int? workoutExerciseCount;
+  final int? workoutSetCount;
+  final bool? workoutHasPr;
+
   // StoryType.dailySummary
   final String? displayName;
   final int? streakCount;
@@ -60,6 +65,9 @@ class Story {
     this.proteinG,
     this.carbG,
     this.fatG,
+    this.workoutExerciseCount,
+    this.workoutSetCount,
+    this.workoutHasPr,
     this.displayName,
     this.streakCount,
     this.summaryWeightKg,
@@ -80,6 +88,9 @@ class Story {
     'proteinG': proteinG,
     'carbG': carbG,
     'fatG': fatG,
+    'workoutExerciseCount': workoutExerciseCount,
+    'workoutSetCount': workoutSetCount,
+    'workoutHasPr': workoutHasPr,
     'displayName': displayName,
     'streakCount': streakCount,
     'summaryWeightKg': summaryWeightKg,
@@ -101,6 +112,9 @@ class Story {
     proteinG: (json['proteinG'] as num?)?.toDouble(),
     carbG: (json['carbG'] as num?)?.toDouble(),
     fatG: (json['fatG'] as num?)?.toDouble(),
+    workoutExerciseCount: (json['workoutExerciseCount'] as num?)?.toInt(),
+    workoutSetCount: (json['workoutSetCount'] as num?)?.toInt(),
+    workoutHasPr: json['workoutHasPr'] as bool?,
     displayName: json['displayName'] as String?,
     streakCount: (json['streakCount'] as num?)?.toInt(),
     summaryWeightKg: (json['summaryWeightKg'] as num?)?.toDouble(),

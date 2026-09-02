@@ -1,3 +1,6 @@
+import 'dart:typed_data';
+
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -5,7 +8,9 @@ import 'package:intl/intl.dart';
 import '../../../core/design_system/app_colors.dart';
 import '../../../core/design_system/app_spacing.dart';
 import '../../../core/providers.dart';
+import '../../../models/story.dart';
 import '../../../models/workout_entry.dart';
+import '../../../shared/utils/photo_picker.dart';
 import '../../../shared/widgets/app_card.dart';
 import '../../../shared/widgets/empty_state.dart';
 import '../../exercises/models/exercise.dart';
@@ -122,9 +127,25 @@ class _WorkoutsTabState extends ConsumerState<WorkoutsTab> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        DateFormat.yMMMd().format(workout.date),
-                        style: Theme.of(context).textTheme.titleSmall,
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              DateFormat.yMMMd().format(workout.date),
+                              style: Theme.of(context).textTheme.titleSmall,
+                            ),
+                          ),
+                          if (workout.photoUrl != null)
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(8),
+                              child: CachedNetworkImage(
+                                imageUrl: workout.photoUrl!,
+                                width: 36,
+                                height: 36,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                        ],
                       ),
                       const SizedBox(height: AppSpacing.xs),
                       for (final exercise in workout.exercises)
@@ -217,6 +238,13 @@ class _LogWorkoutSheetState extends ConsumerState<LogWorkoutSheet> {
   ];
   DateTime _date = DateTime.now();
   bool _saving = false;
+  Uint8List? _photoBytes;
+
+  Future<void> _pickPhoto() async {
+    final bytes = await pickPhotoFromCameraOrGallery(context);
+    if (bytes == null) return;
+    setState(() => _photoBytes = bytes);
+  }
 
   Future<void> _save() async {
     final uid = ref.read(authStateProvider).valueOrNull?.uid;
@@ -257,8 +285,44 @@ class _LogWorkoutSheetState extends ConsumerState<LogWorkoutSheet> {
                 .toList(),
         createdAt: DateTime.now(),
       );
-      await ref.read(workoutRepoProvider).logWorkout(uid, entry);
+      final saved = await ref.read(workoutRepoProvider).logWorkout(uid, entry);
       await ref.read(userRepoProvider).registerActivityAndGetStreak(uid);
+
+      if (_photoBytes != null) {
+        final url = await ref
+            .read(storageServiceProvider)
+            .uploadWorkoutPhoto(
+              uid: uid,
+              workoutId: saved.id,
+              bytes: _photoBytes!,
+            );
+        await ref
+            .read(workoutRepoProvider)
+            .update(uid, saved.id, {'photoUrl': url});
+
+        final setCount = saved.exercises.fold<int>(
+          0,
+          (n, e) => n + e.sets.length,
+        );
+        final anyPr = saved.exercises.any((e) => e.isPr);
+        final now = DateTime.now();
+        await ref
+            .read(storyRepoProvider)
+            .add(
+              uid,
+              Story(
+                id: '',
+                type: StoryType.workout,
+                photoUrl: url,
+                workoutExerciseCount: saved.exercises.length,
+                workoutSetCount: setCount,
+                workoutHasPr: anyPr,
+                createdAt: now,
+                expiresAt: now.add(const Duration(hours: 24)),
+              ),
+            );
+      }
+
       if (mounted) Navigator.pop(context);
     } finally {
       if (mounted) setState(() => _saving = false);
@@ -302,6 +366,16 @@ class _LogWorkoutSheetState extends ConsumerState<LogWorkoutSheet> {
               onPressed: () => setState(() => _exercises.add(_DraftExercise())),
               icon: const Icon(Icons.add),
               label: const Text('Add exercise'),
+            ),
+            const SizedBox(height: 8),
+            OutlinedButton.icon(
+              onPressed: _pickPhoto,
+              icon: const Icon(Icons.photo_camera_outlined),
+              label: Text(
+                _photoBytes == null
+                    ? 'Add workout photo (optional)'
+                    : 'Photo selected',
+              ),
             ),
             const SizedBox(height: 16),
             FilledButton(

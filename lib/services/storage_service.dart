@@ -57,4 +57,28 @@ class StorageService {
       // Already gone — nothing to do.
     }
   }
+
+  /// Uploads a post-workout photo and returns its public download URL.
+  Future<String> uploadWorkoutPhoto({
+    required String uid,
+    required String workoutId,
+    required Uint8List bytes,
+    String contentType = 'image/jpeg',
+  }) async {
+    final ref = _storage.ref('users/$uid/workouts/$workoutId.jpg');
+    await ref.putData(bytes, SettableMetadata(contentType: contentType));
+    return ref.getDownloadURL();
+  }
+
+  Future<void> deleteWorkoutPhoto({
+    required String uid,
+    required String workoutId,
+  }) async {
+    final ref = _storage.ref('users/$uid/workouts/$workoutId.jpg');
+    try {
+      await ref.delete();
+    } on FirebaseException {
+      // Already gone — nothing to do.
+    }
+  }
 }

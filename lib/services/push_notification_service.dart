@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter_timezone/flutter_timezone.dart';
 
 import 'notification_service.dart';
 import 'repositories/user_repo.dart';
@@ -44,6 +45,14 @@ class PushNotificationService {
       }
     } catch (_) {
       // No APNs entitlement / permission denied — see class doc.
+    }
+
+    try {
+      final tz = await FlutterTimezone.getLocalTimezone();
+      await _userRepo.updateProfile(uid, {'timezone': tz});
+    } catch (_) {
+      // Best-effort — the daily-summary story just won't fire for this user
+      // until it succeeds on a later launch.
     }
 
     unawaited(_tokenRefreshSub?.cancel());

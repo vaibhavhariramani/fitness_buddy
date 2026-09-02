@@ -227,6 +227,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     shareWorkouts: profile.privacy.shareWorkouts,
                     shareStreak: profile.privacy.shareStreak,
                     shareMeals: profile.privacy.shareMeals,
+                    shareStories: profile.privacy.shareStories,
                   ),
                 ),
           ),
@@ -241,6 +242,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     shareWorkouts: v,
                     shareStreak: profile.privacy.shareStreak,
                     shareMeals: profile.privacy.shareMeals,
+                    shareStories: profile.privacy.shareStories,
                   ),
                 ),
           ),
@@ -255,6 +257,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     shareWorkouts: profile.privacy.shareWorkouts,
                     shareStreak: v,
                     shareMeals: profile.privacy.shareMeals,
+                    shareStories: profile.privacy.shareStories,
                   ),
                 ),
           ),
@@ -272,6 +275,26 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     shareWorkouts: profile.privacy.shareWorkouts,
                     shareStreak: profile.privacy.shareStreak,
                     shareMeals: v,
+                    shareStories: profile.privacy.shareStories,
+                  ),
+                ),
+          ),
+          SwitchListTile(
+            title: const Text('Share my story'),
+            subtitle: const Text(
+              'Off by default — lets friends see your 24h weight/meal photo '
+              'stories and daily summary',
+            ),
+            value: profile.privacy.shareStories,
+            onChanged:
+                (v) => _updatePrivacy(
+                  profile,
+                  PrivacySettings(
+                    shareWeight: profile.privacy.shareWeight,
+                    shareWorkouts: profile.privacy.shareWorkouts,
+                    shareStreak: profile.privacy.shareStreak,
+                    shareMeals: profile.privacy.shareMeals,
+                    shareStories: v,
                   ),
                 ),
           ),

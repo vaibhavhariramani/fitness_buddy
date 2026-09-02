@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/providers.dart';
 import '../../../models/friendship.dart';
 import '../../../models/user_profile.dart';
+import '../widgets/story_avatar.dart';
 import 'friend_progress_sheet.dart';
 
 // Pending-request tiles show a directory-only lookup (uid/displayName/email)
@@ -99,6 +100,10 @@ class FriendsTab extends ConsumerWidget {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
+          if (myUid != null) ...[
+            _StoriesBar(myUid: myUid, friendsAsync: friendsAsync),
+            const SizedBox(height: 16),
+          ],
           requestsAsync.when(
             loading: () => const SizedBox.shrink(),
             error: (e, _) => const SizedBox.shrink(),
@@ -192,6 +197,86 @@ class _RequestTile extends ConsumerWidget {
           ),
         );
       },
+    );
+  }
+}
+
+/// Horizontal WhatsApp/Instagram-style status bar — "Your story" first, then
+/// one ringed avatar per accepted friend who currently has an active story.
+class _StoriesBar extends ConsumerWidget {
+  final String myUid;
+  final AsyncValue<List<Friendship>> friendsAsync;
+
+  const _StoriesBar({required this.myUid, required this.friendsAsync});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final myName = ref.watch(userProfileProvider).valueOrNull?.displayName ?? 'You';
+    final friends = friendsAsync.valueOrNull ?? const [];
+
+    return SizedBox(
+      height: 84,
+      child: ListView(
+        scrollDirection: Axis.horizontal,
+        children: [
+          _StoryBarItem(uid: myUid, label: 'Your story', displayName: myName),
+          for (final f in friends)
+            _FriendStoryBarItem(otherUid: f.otherUid(myUid)),
+        ],
+      ),
+    );
+  }
+}
+
+class _FriendStoryBarItem extends ConsumerWidget {
+  final String otherUid;
+
+  const _FriendStoryBarItem({required this.otherUid});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return FutureBuilder<UserDirectoryEntry?>(
+      future: ref.read(userRepoProvider).getDirectoryEntry(otherUid),
+      builder: (context, snapshot) {
+        final name = snapshot.data?.displayName;
+        if (name == null) return const SizedBox.shrink();
+        return _StoryBarItem(uid: otherUid, label: name, displayName: name);
+      },
+    );
+  }
+}
+
+class _StoryBarItem extends StatelessWidget {
+  final String uid;
+  final String label;
+  final String displayName;
+
+  const _StoryBarItem({
+    required this.uid,
+    required this.label,
+    required this.displayName,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(right: 12),
+      child: SizedBox(
+        width: 64,
+        child: Column(
+          children: [
+            StoryAvatar(uid: uid, displayName: displayName),
+            const SizedBox(height: 4),
+            Text(
+              label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(context).textTheme.labelSmall,
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

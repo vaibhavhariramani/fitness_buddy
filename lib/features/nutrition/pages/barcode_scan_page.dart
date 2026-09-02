@@ -13,8 +13,13 @@ enum _ScanStatus { scanning, lookingUp, notFound, error }
 
 class BarcodeScanPage extends ConsumerStatefulWidget {
   final MealType mealType;
+  final DateTime? initialDate;
 
-  const BarcodeScanPage({super.key, required this.mealType});
+  const BarcodeScanPage({
+    super.key,
+    required this.mealType,
+    this.initialDate,
+  });
 
   @override
   ConsumerState<BarcodeScanPage> createState() => _BarcodeScanPageState();
@@ -66,6 +71,7 @@ class _BarcodeScanPageState extends ConsumerState<BarcodeScanPage> {
                 food: food,
                 mealType: widget.mealType,
                 sourceOverride: MealEntrySource.barcode,
+                initialDate: widget.initialDate,
               ),
         ),
       );
@@ -87,7 +93,11 @@ class _BarcodeScanPageState extends ConsumerState<BarcodeScanPage> {
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
-        builder: (context) => FoodSearchPage(mealType: widget.mealType),
+        builder:
+            (context) => FoodSearchPage(
+              mealType: widget.mealType,
+              initialDate: widget.initialDate,
+            ),
       ),
     );
   }

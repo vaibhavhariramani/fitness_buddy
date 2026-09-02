@@ -12,11 +12,18 @@ class PrivacySettings {
   /// workout count, so sharing them is opt-in.
   final bool shareMeals;
 
+  /// Whether friends can see this user's 24h stories (weight/meal photos
+  /// posted while logging, plus the auto-generated daily summary). Off by
+  /// default for the same reason as [shareMeals] — a photo-based feed is
+  /// more personal than a number, so it's opt-in.
+  final bool shareStories;
+
   const PrivacySettings({
     this.shareWeight = true,
     this.shareWorkouts = true,
     this.shareStreak = true,
     this.shareMeals = false,
+    this.shareStories = false,
   });
 
   Map<String, dynamic> toJson() => {
@@ -24,6 +31,7 @@ class PrivacySettings {
     'shareWorkouts': shareWorkouts,
     'shareStreak': shareStreak,
     'shareMeals': shareMeals,
+    'shareStories': shareStories,
   };
 
   factory PrivacySettings.fromJson(Map<String, dynamic>? json) {
@@ -33,6 +41,7 @@ class PrivacySettings {
       shareWorkouts: json['shareWorkouts'] as bool? ?? true,
       shareStreak: json['shareStreak'] as bool? ?? true,
       shareMeals: json['shareMeals'] as bool? ?? false,
+      shareStories: json['shareStories'] as bool? ?? false,
     );
   }
 }
@@ -158,6 +167,11 @@ class UserProfile {
   final DateTime? lastLogDate;
   final PrivacySettings privacy;
   final ReminderSettings reminders;
+
+  /// IANA timezone name (e.g. "Asia/Kolkata"), captured from the device on
+  /// sign-in — used server-side to post the daily-summary story at this
+  /// user's own local 11pm rather than a fixed reference time.
+  final String? timezone;
   final DateTime createdAt;
 
   const UserProfile({
@@ -185,6 +199,7 @@ class UserProfile {
     this.lastLogDate,
     this.privacy = const PrivacySettings(),
     this.reminders = const ReminderSettings(),
+    this.timezone,
     required this.createdAt,
   });
 
@@ -213,6 +228,7 @@ class UserProfile {
         lastLogDate == null ? null : Timestamp.fromDate(lastLogDate!),
     'privacy': privacy.toJson(),
     'reminders': reminders.toJson(),
+    'timezone': timezone,
     'createdAt': Timestamp.fromDate(createdAt),
   };
 
@@ -266,6 +282,7 @@ class UserProfile {
             ? null
             : Map<String, dynamic>.from(json['reminders'] as Map),
       ),
+      timezone: json['timezone'] as String?,
       createdAt: (json['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
     );
   }

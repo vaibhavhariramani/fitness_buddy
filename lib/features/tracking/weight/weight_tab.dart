@@ -1,9 +1,14 @@
+import 'dart:typed_data';
+
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 
 import '../../../core/providers.dart';
+import '../../../models/story.dart';
 import '../../../models/weight_entry.dart';
 
 final weightLogsProvider = StreamProvider.autoDispose<List<WeightEntry>>((ref) {
@@ -18,8 +23,9 @@ class WeightTab extends ConsumerWidget {
   Future<void> _logWeight(BuildContext context, WidgetRef ref) async {
     final controller = TextEditingController();
     DateTime date = DateTime.now();
+    Uint8List? photoBytes;
 
-    final result = await showDialog<double>(
+    final result = await showDialog<(double, Uint8List?)>(
       context: context,
       builder:
           (context) => StatefulBuilder(
@@ -56,6 +62,24 @@ class WeightTab extends ConsumerWidget {
                           if (picked != null) setState(() => date = picked);
                         },
                       ),
+                      const SizedBox(height: 8),
+                      OutlinedButton.icon(
+                        onPressed: () async {
+                          final file = await ImagePicker().pickImage(
+                            source: ImageSource.gallery,
+                            imageQuality: 80,
+                          );
+                          if (file == null) return;
+                          final bytes = await file.readAsBytes();
+                          setState(() => photoBytes = bytes);
+                        },
+                        icon: const Icon(Icons.photo_camera_outlined),
+                        label: Text(
+                          photoBytes == null
+                              ? 'Add progress photo (optional)'
+                              : 'Photo selected',
+                        ),
+                      ),
                     ],
                   ),
                   actions: [
@@ -64,32 +88,59 @@ class WeightTab extends ConsumerWidget {
                       child: const Text('Cancel'),
                     ),
                     FilledButton(
-                      onPressed:
-                          () => Navigator.pop(
-                            context,
-                            double.tryParse(controller.text),
-                          ),
+                      onPressed: () {
+                        final weight = double.tryParse(controller.text);
+                        if (weight == null) return;
+                        Navigator.pop(context, (weight, photoBytes));
+                      },
                       child: const Text('Save'),
                     ),
                   ],
                 ),
           ),
     );
-    if (result == null || result <= 0) return;
+    if (result == null || result.$1 <= 0) return;
+    final weight = result.$1;
+    final pickedPhoto = result.$2;
 
     final uid = ref.read(authStateProvider).valueOrNull?.uid;
     if (uid == null) return;
 
-    await ref
+    final entryId = await ref
         .read(weightRepoProvider)
-        .add(uid, WeightEntry(id: '', date: date, weightKg: result));
+        .add(uid, WeightEntry(id: '', date: date, weightKg: weight));
+
+    if (pickedPhoto != null) {
+      final url = await ref
+          .read(storageServiceProvider)
+          .uploadWeightPhoto(uid: uid, logId: entryId, bytes: pickedPhoto);
+      await ref
+          .read(weightRepoProvider)
+          .update(uid, entryId, {'photoUrl': url});
+
+      final now = DateTime.now();
+      await ref
+          .read(storyRepoProvider)
+          .add(
+            uid,
+            Story(
+              id: '',
+              type: StoryType.weight,
+              photoUrl: url,
+              weightKg: weight,
+              createdAt: now,
+              expiresAt: now.add(const Duration(hours: 24)),
+            ),
+          );
+    }
+
     // Only overwrite the profile's "current" weight if this entry isn't
     // backdated — an old log shouldn't override today's actual current weight.
     if (!date.isBefore(
       DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day),
     )) {
       await ref.read(userRepoProvider).updateProfile(uid, {
-        'currentWeightKg': result,
+        'currentWeightKg': weight,
       });
     }
     await ref.read(userRepoProvider).registerActivityAndGetStreak(uid);
@@ -144,7 +195,18 @@ class WeightTab extends ConsumerWidget {
               const SizedBox(height: 16),
               ...logs.map(
                 (entry) => ListTile(
-                  leading: const Icon(Icons.monitor_weight_outlined),
+                  leading:
+                      entry.photoUrl == null
+                          ? const Icon(Icons.monitor_weight_outlined)
+                          : ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: CachedNetworkImage(
+                              imageUrl: entry.photoUrl!,
+                              width: 40,
+                              height: 40,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
                   title: Text('${entry.weightKg.toStringAsFixed(1)} kg'),
                   subtitle: Text(
                     DateFormat.yMMMd().add_jm().format(entry.date),

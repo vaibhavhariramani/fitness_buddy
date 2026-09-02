@@ -16,6 +16,7 @@ import '../services/repositories/meal_repo.dart';
 import '../services/repositories/notification_repo.dart';
 import '../services/repositories/recipe_repo.dart';
 import '../services/repositories/saved_meal_repo.dart';
+import '../services/repositories/story_repo.dart';
 import '../services/repositories/user_recipe_repo.dart';
 import '../services/repositories/user_repo.dart';
 import '../services/repositories/week_schedule_repo.dart';
@@ -90,6 +91,7 @@ final userRecipeRepoProvider = Provider<UserRecipeRepo>(
 );
 final recipeRepoProvider = Provider<RecipeRepo>((ref) => RecipeRepo());
 final friendRepoProvider = Provider<FriendRepo>((ref) => FriendRepo());
+final storyRepoProvider = Provider<StoryRepo>((ref) => StoryRepo());
 final chatRepoProvider = Provider<ChatRepo>((ref) => ChatRepo());
 
 /// Emits the current Firebase user, or null when signed out.

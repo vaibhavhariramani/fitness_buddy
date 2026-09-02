@@ -95,6 +95,17 @@ service cloud.firestore {
         allow read, write: if isOwner(uid);
       }
 
+      // 24h stories — gated by a single "share my story" toggle rather than
+      // per-type (shareWeight/shareMeals), matching the on/off mental model
+      // of a WhatsApp/Instagram status. Client writes are owner-only; the
+      // daily-summary type is written by the scheduled Cloud Function via
+      // the Admin SDK, which bypasses these rules entirely.
+      match /stories/{storyId} {
+        allow read: if isOwner(uid)
+          || (isAcceptedFriend(uid) && ownerProfile(uid).data.privacy.shareStories == true);
+        allow write: if isOwner(uid);
+      }
+
       match /userRecipes/{recipeId} {
         allow read, write: if isOwner(uid);
       }

@@ -8,15 +8,20 @@ import '../../../models/saved_meal.dart';
 
 class SavedMealsListPage extends ConsumerStatefulWidget {
   final MealType mealType;
+  final DateTime? initialDate;
 
-  const SavedMealsListPage({super.key, required this.mealType});
+  const SavedMealsListPage({
+    super.key,
+    required this.mealType,
+    this.initialDate,
+  });
 
   @override
   ConsumerState<SavedMealsListPage> createState() => _SavedMealsListPageState();
 }
 
 class _SavedMealsListPageState extends ConsumerState<SavedMealsListPage> {
-  DateTime _date = DateTime.now();
+  late DateTime _date = widget.initialDate ?? DateTime.now();
 
   Future<void> _pickDate() async {
     final picked = await showDatePicker(

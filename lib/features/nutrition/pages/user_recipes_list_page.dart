@@ -9,8 +9,13 @@ import 'recipe_builder_page.dart';
 
 class UserRecipesListPage extends ConsumerStatefulWidget {
   final MealType mealType;
+  final DateTime? initialDate;
 
-  const UserRecipesListPage({super.key, required this.mealType});
+  const UserRecipesListPage({
+    super.key,
+    required this.mealType,
+    this.initialDate,
+  });
 
   @override
   ConsumerState<UserRecipesListPage> createState() =>
@@ -18,7 +23,7 @@ class UserRecipesListPage extends ConsumerStatefulWidget {
 }
 
 class _UserRecipesListPageState extends ConsumerState<UserRecipesListPage> {
-  DateTime _date = DateTime.now();
+  late DateTime _date = widget.initialDate ?? DateTime.now();
 
   Future<void> _pickDate() async {
     final picked = await showDatePicker(

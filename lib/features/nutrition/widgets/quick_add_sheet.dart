@@ -7,13 +7,15 @@ import 'package:intl/intl.dart';
 
 import '../../../core/providers.dart';
 import '../../../models/meal_entry.dart';
+import '../../../models/story.dart';
 
 /// The original manual-numbers meal form, relocated here as the "Quick Add"
 /// option — for when the exact food isn't available in search.
 class QuickAddSheet extends ConsumerStatefulWidget {
   final MealType mealType;
+  final DateTime? initialDate;
 
-  const QuickAddSheet({super.key, required this.mealType});
+  const QuickAddSheet({super.key, required this.mealType, this.initialDate});
 
   @override
   ConsumerState<QuickAddSheet> createState() => _QuickAddSheetState();
@@ -25,7 +27,7 @@ class _QuickAddSheetState extends ConsumerState<QuickAddSheet> {
   final _carbController = TextEditingController();
   final _fatController = TextEditingController();
   Uint8List? _photoBytes;
-  DateTime _date = DateTime.now();
+  late DateTime _date = widget.initialDate ?? DateTime.now();
   bool _saving = false;
 
   @override
@@ -85,6 +87,28 @@ class _QuickAddSheetState extends ConsumerState<QuickAddSheet> {
             .read(storageServiceProvider)
             .uploadMealPhoto(uid: uid, mealId: mealId, bytes: _photoBytes!);
         await ref.read(mealRepoProvider).update(uid, mealId, {'photoUrl': url});
+
+        final now = DateTime.now();
+        final proteinG = double.tryParse(_proteinController.text) ?? 0;
+        final carbG = double.tryParse(_carbController.text) ?? 0;
+        final fatG = double.tryParse(_fatController.text) ?? 0;
+        await ref
+            .read(storyRepoProvider)
+            .add(
+              uid,
+              Story(
+                id: '',
+                type: StoryType.meal,
+                photoUrl: url,
+                mealTypeLabel: widget.mealType.label,
+                calories: calories,
+                proteinG: proteinG,
+                carbG: carbG,
+                fatG: fatG,
+                createdAt: now,
+                expiresAt: now.add(const Duration(hours: 24)),
+              ),
+            );
       }
 
       await ref.read(userRepoProvider).registerActivityAndGetStreak(uid);

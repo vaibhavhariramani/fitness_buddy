@@ -12,11 +12,19 @@ import '../services/food_database_service.dart';
 import '../services/open_food_facts_service.dart';
 import '../utils/nutrient_scaling.dart';
 
-final todaysMealsProvider = StreamProvider.autoDispose<List<MealEntry>>((ref) {
-  final uid = ref.watch(authStateProvider).valueOrNull?.uid;
-  if (uid == null) return Stream.value(const []);
-  return ref.watch(mealRepoProvider).watchForDate(uid, DateTime.now());
-});
+/// The day currently shown in the nutrition diary — defaults to today, but
+/// lets the diary page browse/log any other date without threading a date
+/// argument through every widget that only ever wants "today".
+final selectedDiaryDateProvider = StateProvider.autoDispose<DateTime>(
+  (ref) => DateTime.now(),
+);
+
+final mealsForDateProvider = StreamProvider.autoDispose
+    .family<List<MealEntry>, DateTime>((ref, date) {
+      final uid = ref.watch(authStateProvider).valueOrNull?.uid;
+      if (uid == null) return Stream.value(const []);
+      return ref.watch(mealRepoProvider).watchForDate(uid, date);
+    });
 
 final foodDatabaseServiceProvider = Provider<FoodDatabaseService>(
   (ref) => OpenFoodFactsService(),
@@ -70,9 +78,16 @@ class NutritionTotals {
   }
 }
 
+final nutritionTotalsForDateProvider = Provider.autoDispose
+    .family<NutritionTotals, DateTime>((ref, date) {
+      final meals = ref.watch(mealsForDateProvider(date)).valueOrNull ?? const [];
+      return NutritionTotals.fromMeals(meals);
+    });
+
+/// Convenience alias for dashboard/analytics widgets that only ever care
+/// about today, so they don't need to know about date-scoped diary browsing.
 final todaysNutritionTotalsProvider = Provider<NutritionTotals>((ref) {
-  final meals = ref.watch(todaysMealsProvider).valueOrNull ?? const [];
-  return NutritionTotals.fromMeals(meals);
+  return ref.watch(nutritionTotalsForDateProvider(DateTime.now()));
 });
 
 /// Distinct foods logged in the last 30 days, most recent first — derived

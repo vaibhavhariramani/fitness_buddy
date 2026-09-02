@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 
 import '../../../core/providers.dart';
 import '../../../models/meal_entry.dart';
@@ -12,6 +13,18 @@ import '../widgets/calorie_ring.dart';
 import '../widgets/macro_progress_bar.dart';
 import '../widgets/meal_section_card.dart';
 
+bool _isSameDay(DateTime a, DateTime b) =>
+    a.year == b.year && a.month == b.month && a.day == b.day;
+
+String _diaryDateLabel(DateTime date) {
+  final now = DateTime.now();
+  if (_isSameDay(date, now)) return 'Today';
+  if (_isSameDay(date, now.subtract(const Duration(days: 1)))) {
+    return 'Yesterday';
+  }
+  return DateFormat.yMMMd().format(date);
+}
+
 class NutritionDiaryPage extends ConsumerStatefulWidget {
   const NutritionDiaryPage({super.key});
 
@@ -23,7 +36,8 @@ class _NutritionDiaryPageState extends ConsumerState<NutritionDiaryPage> {
   bool _selecting = false;
   final Set<String> _selectedIds = {};
 
-  MealType _defaultMealType() {
+  MealType _defaultMealType(DateTime selectedDate) {
+    if (!_isSameDay(selectedDate, DateTime.now())) return MealType.breakfast;
     final hour = DateTime.now().hour;
     if (hour < 10) return MealType.breakfast;
     if (hour < 12) return MealType.morningSnack;
@@ -33,12 +47,29 @@ class _NutritionDiaryPageState extends ConsumerState<NutritionDiaryPage> {
     return MealType.eveningSnack;
   }
 
-  void _openAddFoodSheet(BuildContext context, MealType mealType) {
+  void _openAddFoodSheet(
+    BuildContext context,
+    MealType mealType,
+    DateTime date,
+  ) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      builder: (context) => AddFoodSheet(mealType: mealType),
+      builder: (context) => AddFoodSheet(mealType: mealType, initialDate: date),
     );
+  }
+
+  Future<void> _pickDiaryDate(BuildContext context, WidgetRef ref) async {
+    final current = ref.read(selectedDiaryDateProvider);
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: current,
+      firstDate: DateTime(2000),
+      lastDate: DateTime.now(),
+    );
+    if (picked != null) {
+      ref.read(selectedDiaryDateProvider.notifier).state = picked;
+    }
   }
 
   void _toggleSelect(MealEntry entry) {
@@ -131,13 +162,50 @@ class _NutritionDiaryPageState extends ConsumerState<NutritionDiaryPage> {
 
   @override
   Widget build(BuildContext context) {
-    final mealsAsync = ref.watch(todaysMealsProvider);
-    final totals = ref.watch(todaysNutritionTotalsProvider);
+    final selectedDate = ref.watch(selectedDiaryDateProvider);
+    final mealsAsync = ref.watch(mealsForDateProvider(selectedDate));
+    final totals = ref.watch(nutritionTotalsForDateProvider(selectedDate));
     final targets = ref.watch(activeNutritionTargetsProvider);
+    final isToday = _isSameDay(selectedDate, DateTime.now());
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(_selecting ? '${_selectedIds.length} selected' : 'Today'),
+        title:
+            _selecting
+                ? Text('${_selectedIds.length} selected')
+                : Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.chevron_left),
+                      tooltip: 'Previous day',
+                      onPressed:
+                          () =>
+                              ref
+                                  .read(selectedDiaryDateProvider.notifier)
+                                  .state = selectedDate.subtract(
+                                const Duration(days: 1),
+                              ),
+                    ),
+                    InkWell(
+                      onTap: () => _pickDiaryDate(context, ref),
+                      child: Text(_diaryDateLabel(selectedDate)),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.chevron_right),
+                      tooltip: 'Next day',
+                      onPressed:
+                          isToday
+                              ? null
+                              : () =>
+                                  ref
+                                      .read(selectedDiaryDateProvider.notifier)
+                                      .state = selectedDate.add(
+                                    const Duration(days: 1),
+                                  ),
+                    ),
+                  ],
+                ),
         actions: [
           if (_selecting)
             TextButton(
@@ -160,7 +228,12 @@ class _NutritionDiaryPageState extends ConsumerState<NutritionDiaryPage> {
           _selecting
               ? null
               : FloatingActionButton.extended(
-                onPressed: () => _openAddFoodSheet(context, _defaultMealType()),
+                onPressed:
+                    () => _openAddFoodSheet(
+                      context,
+                      _defaultMealType(selectedDate),
+                      selectedDate,
+                    ),
                 icon: const Icon(Icons.add),
                 label: const Text('Add food'),
               ),
@@ -181,7 +254,9 @@ class _NutritionDiaryPageState extends ConsumerState<NutritionDiaryPage> {
                           child: Column(
                             children: [
                               Text(
-                                "Today's Nutrition",
+                                isToday
+                                    ? "Today's Nutrition"
+                                    : '${_diaryDateLabel(selectedDate)}\'s Nutrition',
                                 style: Theme.of(context).textTheme.titleMedium,
                               ),
                               const SizedBox(height: 12),
@@ -232,7 +307,12 @@ class _NutritionDiaryPageState extends ConsumerState<NutritionDiaryPage> {
                         type: type,
                         entries:
                             meals.where((m) => m.mealType == type).toList(),
-                        onAddFood: () => _openAddFoodSheet(context, type),
+                        onAddFood:
+                            () => _openAddFoodSheet(
+                              context,
+                              type,
+                              selectedDate,
+                            ),
                         onDelete: (entry) {
                           final uid =
                               ref.read(authStateProvider).valueOrNull?.uid;

@@ -14,9 +14,14 @@ class FoodSearchPage extends ConsumerStatefulWidget {
   /// ingredient picker, e.g. from the recipe builder.
   final MealType? mealType;
   final void Function(Food food)? onFoodPicked;
+  final DateTime? initialDate;
 
-  const FoodSearchPage({super.key, this.mealType, this.onFoodPicked})
-    : assert(mealType != null || onFoodPicked != null);
+  const FoodSearchPage({
+    super.key,
+    this.mealType,
+    this.onFoodPicked,
+    this.initialDate,
+  }) : assert(mealType != null || onFoodPicked != null);
 
   @override
   ConsumerState<FoodSearchPage> createState() => _FoodSearchPageState();
@@ -42,8 +47,11 @@ class _FoodSearchPageState extends ConsumerState<FoodSearchPage> {
       context,
       MaterialPageRoute(
         builder:
-            (context) =>
-                ServingConfirmPage(food: food, mealType: widget.mealType!),
+            (context) => ServingConfirmPage(
+              food: food,
+              mealType: widget.mealType!,
+              initialDate: widget.initialDate,
+            ),
       ),
     );
   }

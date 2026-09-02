@@ -27,6 +27,10 @@ class WeightRepo {
         );
   }
 
+  Future<void> update(String uid, String entryId, Map<String, dynamic> patch) {
+    return _col(uid).doc(entryId).update(patch);
+  }
+
   Future<void> delete(String uid, String entryId) {
     return _col(uid).doc(entryId).delete();
   }

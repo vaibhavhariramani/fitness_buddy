@@ -10,8 +10,13 @@ import 'quick_add_sheet.dart';
 
 class AddFoodSheet extends StatelessWidget {
   final MealType mealType;
+  final DateTime initialDate;
 
-  const AddFoodSheet({super.key, required this.mealType});
+  const AddFoodSheet({
+    super.key,
+    required this.mealType,
+    required this.initialDate,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +42,11 @@ class AddFoodSheet extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => FoodSearchPage(mealType: mealType),
+                  builder:
+                      (context) => FoodSearchPage(
+                        mealType: mealType,
+                        initialDate: initialDate,
+                      ),
                 ),
               );
             },
@@ -50,7 +59,11 @@ class AddFoodSheet extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => BarcodeScanPage(mealType: mealType),
+                  builder:
+                      (context) => BarcodeScanPage(
+                        mealType: mealType,
+                        initialDate: initialDate,
+                      ),
                 ),
               );
             },
@@ -64,7 +77,11 @@ class AddFoodSheet extends StatelessWidget {
               showModalBottomSheet(
                 context: context,
                 isScrollControlled: true,
-                builder: (context) => QuickAddSheet(mealType: mealType),
+                builder:
+                    (context) => QuickAddSheet(
+                      mealType: mealType,
+                      initialDate: initialDate,
+                    ),
               );
             },
           ),
@@ -76,7 +93,11 @@ class AddFoodSheet extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => SavedMealsListPage(mealType: mealType),
+                  builder:
+                      (context) => SavedMealsListPage(
+                        mealType: mealType,
+                        initialDate: initialDate,
+                      ),
                 ),
               );
             },
@@ -89,7 +110,11 @@ class AddFoodSheet extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => UserRecipesListPage(mealType: mealType),
+                  builder:
+                      (context) => UserRecipesListPage(
+                        mealType: mealType,
+                        initialDate: initialDate,
+                      ),
                 ),
               );
             },

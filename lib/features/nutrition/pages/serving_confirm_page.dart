@@ -11,12 +11,14 @@ class ServingConfirmPage extends ConsumerStatefulWidget {
   final Food food;
   final MealType mealType;
   final MealEntrySource? sourceOverride;
+  final DateTime? initialDate;
 
   const ServingConfirmPage({
     super.key,
     required this.food,
     required this.mealType,
     this.sourceOverride,
+    this.initialDate,
   });
 
   @override
@@ -36,7 +38,7 @@ class _ServingConfirmPageState extends ConsumerState<ServingConfirmPage> {
   final _satFatController = TextEditingController();
   final _sodiumController = TextEditingController();
 
-  DateTime _date = DateTime.now();
+  late DateTime _date = widget.initialDate ?? DateTime.now();
   bool _saving = false;
   bool _editingMacros = false;
 

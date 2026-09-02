@@ -2,6 +2,13 @@
     <uses-permission android:name="android.permission.CAMERA"/>
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <!-- Lets wellness reminders in "alarm" mode fire at the exact time and
+         play through the alarm audio stream (audible in silent/Do Not
+         Disturb), like a real alarm clock. Android 12+ requires the user to
+         grant this explicitly via a system Settings screen; requested from
+         NotificationService when a reminder needs it. Play Console's
+         permissions declaration form must justify this permission. -->
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM"/>
     <application
         android:label="Fitness Buddy"
         android:name="${applicationName}"

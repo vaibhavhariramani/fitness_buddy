@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/design_system/app_colors.dart';
 import '../../core/design_system/app_spacing.dart';
 import '../../core/providers.dart';
+import '../../core/utils/wellness_sounds.dart';
 import '../../models/wellness_reminder.dart';
 import '../../shared/widgets/app_card.dart';
 
@@ -186,11 +187,27 @@ class _ReminderCard extends StatelessWidget {
                   reminder.name,
                   style: Theme.of(context).textTheme.titleSmall,
                 ),
-                Text(
-                  '${time.format(context)} · ${_repeatSummary(reminder.repeatDays)}',
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: scheme.onSurfaceVariant,
-                  ),
+                Row(
+                  children: [
+                    if (reminder.alarmMode)
+                      Padding(
+                        padding: const EdgeInsets.only(right: 4),
+                        child: Icon(
+                          Icons.alarm,
+                          size: 14,
+                          color: scheme.onSurfaceVariant,
+                        ),
+                      ),
+                    Flexible(
+                      child: Text(
+                        '${time.format(context)} · ${_repeatSummary(reminder.repeatDays)}',
+                        overflow: TextOverflow.ellipsis,
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: scheme.onSurfaceVariant,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -217,6 +234,8 @@ class _ReminderEditorSheetState extends ConsumerState<_ReminderEditorSheet> {
   late WellnessReminderType _type;
   late int _minutes;
   late Set<int> _days;
+  late String _soundId;
+  late bool _alarmMode;
   bool _saving = false;
 
   @override
@@ -227,6 +246,8 @@ class _ReminderEditorSheetState extends ConsumerState<_ReminderEditorSheet> {
     _type = existing?.type ?? WellnessReminderType.medicine;
     _minutes = existing?.minutesSinceMidnight ?? 8 * 60;
     _days = (existing?.repeatDays ?? const [1, 2, 3, 4, 5, 6, 7]).toSet();
+    _soundId = existing?.soundId ?? 'default';
+    _alarmMode = existing?.alarmMode ?? true;
   }
 
   @override
@@ -275,6 +296,8 @@ class _ReminderEditorSheetState extends ConsumerState<_ReminderEditorSheet> {
             type: _type,
             minutesSinceMidnight: _minutes,
             repeatDays: sortedDays,
+            soundId: _soundId,
+            alarmMode: _alarmMode,
           ),
         );
       } else {
@@ -283,6 +306,8 @@ class _ReminderEditorSheetState extends ConsumerState<_ReminderEditorSheet> {
           'type': _type.name,
           'minutesSinceMidnight': _minutes,
           'repeatDays': sortedDays,
+          'soundId': _soundId,
+          'alarmMode': _alarmMode,
         });
       }
       if (mounted) Navigator.pop(context);
@@ -371,7 +396,31 @@ class _ReminderEditorSheetState extends ConsumerState<_ReminderEditorSheet> {
                   ),
               ],
             ),
-            const SizedBox(height: AppSpacing.lg),
+            const SizedBox(height: AppSpacing.md),
+            Text('Sound', style: Theme.of(context).textTheme.labelMedium),
+            const SizedBox(height: AppSpacing.xs),
+            Wrap(
+              spacing: AppSpacing.xs,
+              children: [
+                for (final sound in wellnessSounds)
+                  ChoiceChip(
+                    label: Text(sound.label),
+                    selected: _soundId == sound.id,
+                    onSelected: (_) => setState(() => _soundId = sound.id),
+                  ),
+              ],
+            ),
+            SwitchListTile(
+              contentPadding: EdgeInsets.zero,
+              title: const Text('Alarm mode'),
+              subtitle: const Text(
+                'Plays even in silent/Do Not Disturb, like an alarm clock '
+                '(Android only — asks for a permission the first time)',
+              ),
+              value: _alarmMode,
+              onChanged: (v) => setState(() => _alarmMode = v),
+            ),
+            const SizedBox(height: AppSpacing.sm),
             Row(
               children: [
                 if (widget.existing != null)

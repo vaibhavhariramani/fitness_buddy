@@ -32,6 +32,15 @@ class WellnessReminder {
 
   final bool enabled;
 
+  /// Id into core/utils/wellness_sounds.dart's registry.
+  final String soundId;
+
+  /// When true, schedules on Android's alarm-clock path (audible even in
+  /// silent/Do Not Disturb, like a real alarm) rather than a regular
+  /// notification. See NotificationService for the platform specifics and
+  /// the exact-alarm permission this requires.
+  final bool alarmMode;
+
   const WellnessReminder({
     required this.id,
     required this.name,
@@ -39,6 +48,8 @@ class WellnessReminder {
     required this.minutesSinceMidnight,
     this.repeatDays = const [1, 2, 3, 4, 5, 6, 7],
     this.enabled = true,
+    this.soundId = 'default',
+    this.alarmMode = true,
   });
 
   bool get isDaily => repeatDays.length == 7;
@@ -49,6 +60,8 @@ class WellnessReminder {
     int? minutesSinceMidnight,
     List<int>? repeatDays,
     bool? enabled,
+    String? soundId,
+    bool? alarmMode,
   }) => WellnessReminder(
     id: id,
     name: name ?? this.name,
@@ -56,6 +69,8 @@ class WellnessReminder {
     minutesSinceMidnight: minutesSinceMidnight ?? this.minutesSinceMidnight,
     repeatDays: repeatDays ?? this.repeatDays,
     enabled: enabled ?? this.enabled,
+    soundId: soundId ?? this.soundId,
+    alarmMode: alarmMode ?? this.alarmMode,
   );
 
   Map<String, dynamic> toJson() => {
@@ -64,6 +79,8 @@ class WellnessReminder {
     'minutesSinceMidnight': minutesSinceMidnight,
     'repeatDays': repeatDays,
     'enabled': enabled,
+    'soundId': soundId,
+    'alarmMode': alarmMode,
   };
 
   factory WellnessReminder.fromJson(String id, Map<String, dynamic> json) =>
@@ -79,5 +96,7 @@ class WellnessReminder {
             (json['repeatDays'] as List?)?.map((d) => d as int).toList() ??
             const [1, 2, 3, 4, 5, 6, 7],
         enabled: json['enabled'] as bool? ?? true,
+        soundId: json['soundId'] as String? ?? 'default',
+        alarmMode: json['alarmMode'] as bool? ?? true,
       );
 }

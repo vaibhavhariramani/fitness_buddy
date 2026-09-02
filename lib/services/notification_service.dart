@@ -7,6 +7,7 @@ import 'package:timezone/data/latest_all.dart' as tz_data;
 import 'package:timezone/timezone.dart' as tz;
 
 import '../core/utils/notification_ids.dart';
+import '../core/utils/wellness_sounds.dart';
 import '../models/user_profile.dart';
 import '../models/wellness_reminder.dart';
 
@@ -144,15 +145,6 @@ class NotificationService {
     priority: Priority.high,
   );
 
-  static const _wellnessChannel = AndroidNotificationDetails(
-    'wellness_reminders',
-    'Wellness reminders',
-    channelDescription:
-        'Medicine, yoga, meditation, and other custom reminders you set',
-    importance: Importance.high,
-    priority: Priority.high,
-  );
-
   NotificationDetails get _mealDetails => const NotificationDetails(
     android: _mealChannel,
     iOS: DarwinNotificationDetails(),
@@ -168,10 +160,44 @@ class NotificationService {
     iOS: DarwinNotificationDetails(),
   );
 
-  NotificationDetails get _wellnessDetails => const NotificationDetails(
-    android: _wellnessChannel,
-    iOS: DarwinNotificationDetails(),
-  );
+  /// Unlike the other fixed channels above, wellness reminders need a
+  /// distinct channel per sound/alarm-mode combination — on Android, a
+  /// channel's sound and audio attributes are locked in the first time it's
+  /// created and silently ignored on every later call with the same
+  /// channel id, so reusing one shared channel would mean only the first
+  /// reminder's sound/alarm setting ever actually took effect.
+  NotificationDetails _wellnessDetailsFor(WellnessSound sound, bool alarmMode) {
+    final channelId = 'wellness_${sound.id}_${alarmMode ? 'alarm' : 'notify'}';
+    final channelName =
+        alarmMode
+            ? 'Wellness alarms — ${sound.label}'
+            : 'Wellness reminders — ${sound.label}';
+
+    return NotificationDetails(
+      android: AndroidNotificationDetails(
+        channelId,
+        channelName,
+        channelDescription:
+            'Medicine, yoga, meditation, and other custom reminders you set',
+        importance: alarmMode ? Importance.max : Importance.high,
+        priority: alarmMode ? Priority.max : Priority.high,
+        playSound: true,
+        sound:
+            sound.androidRawResource == null
+                ? null
+                : RawResourceAndroidNotificationSound(
+                  sound.androidRawResource!,
+                ),
+        audioAttributesUsage:
+            alarmMode
+                ? AudioAttributesUsage.alarm
+                : AudioAttributesUsage.notification,
+        category: alarmMode ? AndroidNotificationCategory.alarm : null,
+        fullScreenIntent: alarmMode,
+      ),
+      iOS: DarwinNotificationDetails(sound: sound.iosSoundFile),
+    );
+  }
 
   /// Cancels and re-schedules every reminder from scratch based on the
   /// current profile — safe to call any time settings change.
@@ -291,9 +317,21 @@ class NotificationService {
   Future<void> scheduleWellnessReminders(
     List<WellnessReminder> reminders,
   ) async {
+    // Android 12+ gates AndroidScheduleMode.alarmClock behind this
+    // permission, granted via a system Settings screen rather than an
+    // in-app dialog — request it once up front if any reminder needs it,
+    // rather than per-reminder.
+    if (reminders.any((r) => r.enabled && r.alarmMode)) {
+      await _requestExactAlarmPermission();
+    }
+
     for (final reminder in reminders) {
       await cancelWellnessReminder(reminder.id);
       if (!reminder.enabled) continue;
+      final details = _wellnessDetailsFor(
+        wellnessSoundById(reminder.soundId),
+        reminder.alarmMode,
+      );
       for (final day in reminder.repeatDays) {
         await _scheduleWeekly(
           id: wellnessNotificationId(reminder.id, day),
@@ -301,10 +339,20 @@ class NotificationService {
           minutesSinceMidnight: reminder.minutesSinceMidnight,
           title: '${reminder.type.label} reminder',
           body: reminder.name,
-          route: '/settings',
+          route: '/wellness-reminders',
+          details: details,
+          alarmMode: reminder.alarmMode,
         );
       }
     }
+  }
+
+  Future<void> _requestExactAlarmPermission() async {
+    await _plugin
+        .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin
+        >()
+        ?.requestExactAlarmsPermission();
   }
 
   /// Cancels all 7 possible day-slot ids for one reminder — cancelling an id
@@ -325,6 +373,8 @@ class NotificationService {
     required String title,
     required String body,
     required String route,
+    required NotificationDetails details,
+    bool alarmMode = false,
   }) async {
     final now = tz.TZDateTime.now(tz.local);
     var scheduled = tz.TZDateTime(
@@ -340,18 +390,31 @@ class NotificationService {
       scheduled = scheduled.add(const Duration(days: 1));
     }
 
-    await _plugin.zonedSchedule(
+    Future<void> schedule(AndroidScheduleMode mode) => _plugin.zonedSchedule(
       id,
       title,
       body,
       scheduled,
-      _wellnessDetails,
-      androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
+      details,
+      androidScheduleMode: mode,
       uiLocalNotificationDateInterpretation:
           UILocalNotificationDateInterpretation.absoluteTime,
       matchDateTimeComponents: DateTimeComponents.dayOfWeekAndTime,
       payload: route,
     );
+
+    if (!alarmMode) {
+      await schedule(AndroidScheduleMode.inexactAllowWhileIdle);
+      return;
+    }
+    try {
+      await schedule(AndroidScheduleMode.alarmClock);
+    } catch (_) {
+      // Exact-alarm permission wasn't granted (or the platform doesn't
+      // support it) — still show the reminder rather than dropping it
+      // silently, just without the alarm-clock guarantees.
+      await schedule(AndroidScheduleMode.inexactAllowWhileIdle);
+    }
   }
 
   void dispose() {

@@ -8,6 +8,7 @@ import 'package:fitness_buddy/core/utils/streak.dart';
 import 'package:fitness_buddy/core/utils/pr.dart';
 import 'package:fitness_buddy/core/utils/progression.dart';
 import 'package:fitness_buddy/core/utils/weekly_schedule.dart';
+import 'package:fitness_buddy/core/utils/wellness_sounds.dart';
 import 'package:fitness_buddy/models/workout_entry.dart';
 import 'package:fitness_buddy/shared/widgets/muscle_body_diagram.dart';
 
@@ -361,6 +362,16 @@ void main() {
           expect(fixedIds.contains(wellnessNotificationId(id, day)), isFalse);
         }
       }
+    });
+  });
+
+  group('wellnessSoundById', () {
+    test('finds a registered sound by id', () {
+      expect(wellnessSoundById('default').label, 'Default');
+    });
+
+    test('falls back to the first sound for an unknown id', () {
+      expect(wellnessSoundById('not-a-real-id'), wellnessSounds.first);
     });
   });
 }

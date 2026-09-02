@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -41,9 +42,14 @@ class FitnessBuddyApp extends ConsumerWidget {
     ref.listen(wellnessRemindersProvider, (previous, next) {
       final reminders = next.valueOrNull;
       if (reminders == null) return;
-      ref
-          .read(notificationServiceProvider)
-          .scheduleWellnessReminders(reminders);
+      final service = ref.read(notificationServiceProvider);
+      service.scheduleWellnessReminders(reminders);
+      // flutter_local_notifications has no Web implementation at all, so
+      // scheduling above can't actually fire anything there — this feeds
+      // the same list into NotificationService's own while-tab-open polling
+      // fallback instead (see its doc comment for what that can and can't
+      // do relative to a native alarm).
+      if (kIsWeb) service.updateWebReminders(reminders);
     });
 
     return MaterialApp.router(

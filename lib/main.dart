@@ -10,7 +10,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'app/app.dart';
 import 'app/router.dart';
 import 'app/theme_mode_controller.dart';
+import 'core/navigation_key.dart';
 import 'core/providers.dart';
+import 'features/settings/wellness_alarm_dialog.dart';
 import 'firebase_options.dart';
 import 'services/push_notification_service.dart';
 
@@ -60,6 +62,27 @@ Future<void> main() async {
   await notificationService.init();
   notificationService.onNotificationTapped.listen((route) {
     container.read(routerProvider).go(route);
+  });
+  // Web's while-tab-open reminder fallback (see NotificationService's
+  // _checkWebReminders doc comment) has no BuildContext of its own, so it
+  // just emits an event here — by the time any reminder actually fires,
+  // runApp below will long since have built the widget tree, so
+  // rootNavigatorKey's context is safe to use.
+  notificationService.onWebAlarmFired.listen((reminder) {
+    final context = rootNavigatorKey.currentContext;
+    if (context == null || !context.mounted) return;
+    showDialog<void>(
+      context: context,
+      barrierDismissible: !reminder.alarmMode,
+      builder:
+          (dialogContext) => WellnessAlarmDialog(
+            reminder: reminder,
+            onStop: () {
+              notificationService.stopWebAlarmSound();
+              Navigator.of(dialogContext).pop();
+            },
+          ),
+    );
   });
 
   runApp(

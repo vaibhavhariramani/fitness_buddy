@@ -48,6 +48,7 @@ dependencies:
   flutter_local_notifications: ^18.0.1
   timezone: ^0.9.4
   flutter_timezone: ^3.0.1
+  audioplayers: ^6.1.0
 
   # Workout session
   wakelock_plus: ^1.2.10
@@ -77,6 +78,7 @@ flutter:
   assets:
     - assets/data/exercises.json
     - assets/images/exercises/
+    - assets/sounds/
     - assets/branding/logo.svg
     - assets/branding/logo_mark.svg
   fonts:

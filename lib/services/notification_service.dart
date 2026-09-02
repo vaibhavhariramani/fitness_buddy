@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:math';
 
+import 'package:audioplayers/audioplayers.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:timezone/data/latest_all.dart' as tz_data;
@@ -47,6 +49,19 @@ class NotificationService {
 
   bool _initialized = false;
 
+  // --- Web wellness-reminder fallback (see _checkWebReminders' doc
+  // comment for why this whole mechanism exists and what it can't do).
+  final _webAudioPlayer = AudioPlayer();
+  final _webAlarmController = StreamController<WellnessReminder>.broadcast();
+  List<WellnessReminder> _webReminders = const [];
+  final Set<String> _webFiredTodayKeys = {};
+  Timer? _webPollTimer;
+
+  /// Emits a reminder the moment the Web polling fallback fires it, for
+  /// main.dart to show an alert dialog over whatever's on screen (mirrors
+  /// how [onNotificationTapped] is consumed).
+  Stream<WellnessReminder> get onWebAlarmFired => _webAlarmController.stream;
+
   Future<void> init() async {
     if (_initialized) return;
     _initialized = true;
@@ -73,6 +88,17 @@ class NotificationService {
         launchPayload != null) {
       // Defer until the first listener (the router) is attached.
       scheduleMicrotask(() => _tappedRouteController.add(launchPayload));
+    }
+
+    // 20s polling means any given minute (60s) is always covered by at
+    // least one check, so nothing gets missed — this only ever runs on
+    // Web; native platforms fire real OS notifications/alarms instead and
+    // never touch this path.
+    if (kIsWeb) {
+      _webPollTimer = Timer.periodic(
+        const Duration(seconds: 20),
+        (_) => _checkWebReminders(),
+      );
     }
   }
 
@@ -417,7 +443,67 @@ class NotificationService {
     }
   }
 
+  /// Feeds the Web polling fallback the latest reminder list — called from
+  /// app.dart's wellnessRemindersProvider listener, same as
+  /// [scheduleWellnessReminders] but this one actually does something on
+  /// Web. A no-op call on native platforms (the timer that would read this
+  /// list never starts there), so it's harmless to call unconditionally.
+  void updateWebReminders(List<WellnessReminder> reminders) {
+    _webReminders = reminders;
+  }
+
+  /// flutter_local_notifications has no Web implementation at all (checked
+  /// directly against the package: it declares android/ios/macos/linux
+  /// only), and browsers can't be woken up in the background the way a
+  /// native OS schedules an alarm — so [scheduleWellnessReminders] above
+  /// can't make anything actually fire on Web. This is the best available
+  /// substitute: a plain timer comparing the wall clock to
+  /// [_webReminders] every 20 seconds. It only works while this browser
+  /// tab is loaded (foreground or another tab) — never once the tab or
+  /// browser is closed, which is a hard platform limitation, not a bug.
+  void _checkWebReminders() {
+    final now = DateTime.now();
+    final todayKey = '${now.year}-${now.month}-${now.day}';
+
+    for (final reminder in _webReminders) {
+      if (!reminder.enabled) continue;
+      if (!reminder.repeatDays.contains(now.weekday)) continue;
+      final targetHour = reminder.minutesSinceMidnight ~/ 60;
+      final targetMinute = reminder.minutesSinceMidnight % 60;
+      if (now.hour != targetHour || now.minute != targetMinute) continue;
+
+      final firedKey = '${reminder.id}_$todayKey';
+      if (_webFiredTodayKeys.contains(firedKey)) continue;
+      _webFiredTodayKeys.add(firedKey);
+      _fireWebReminder(reminder);
+    }
+  }
+
+  Future<void> _fireWebReminder(WellnessReminder reminder) async {
+    final sound = wellnessSoundById(reminder.soundId);
+    if (sound.flutterAssetPath != null) {
+      try {
+        await _webAudioPlayer.setReleaseMode(
+          reminder.alarmMode ? ReleaseMode.loop : ReleaseMode.release,
+        );
+        await _webAudioPlayer.play(AssetSource(sound.flutterAssetPath!));
+      } catch (_) {
+        // Most likely the browser's autoplay policy blocking sound before
+        // any user interaction on this page load — the alert dialog below
+        // still shows either way, so the reminder isn't silently dropped.
+      }
+    }
+    _webAlarmController.add(reminder);
+  }
+
+  /// Stops whatever the Web fallback is currently playing — called when the
+  /// user dismisses the alert dialog.
+  Future<void> stopWebAlarmSound() => _webAudioPlayer.stop();
+
   void dispose() {
     _tappedRouteController.close();
+    _webAlarmController.close();
+    _webPollTimer?.cancel();
+    _webAudioPlayer.dispose();
   }
 }

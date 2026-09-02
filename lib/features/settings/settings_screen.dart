@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../app/theme_mode_controller.dart';
 import '../../core/providers.dart';
 import '../../core/utils/calculations.dart';
 import '../../models/user_profile.dart';
 import '../auth/providers/auth_controller.dart';
-import 'wellness_reminders_screen.dart';
 
 class SettingsScreen extends ConsumerStatefulWidget {
   const SettingsScreen({super.key});
@@ -388,13 +388,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               'Medicine, yoga, meditation, or anything else',
             ),
             trailing: const Icon(Icons.chevron_right),
-            onTap:
-                () => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => const WellnessRemindersScreen(),
-                  ),
-                ),
+            onTap: () => context.go('/wellness-reminders'),
           ),
           const SizedBox(height: 32),
           OutlinedButton.icon(

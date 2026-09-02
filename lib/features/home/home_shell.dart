@@ -19,6 +19,7 @@ const _navItems = [
   _NavItem('/dashboard', 'Dashboard', Icons.dashboard_outlined),
   _NavItem('/tracking', 'Tracking', Icons.checklist_outlined),
   _NavItem('/exercises', 'Exercises', Icons.fitness_center_outlined),
+  _NavItem('/wellness-reminders', 'Wellness', Icons.self_improvement_outlined),
   _NavItem('/expenses', 'Expenses', Icons.account_balance_wallet_outlined),
   _NavItem('/diet-suggestion', 'Diet Plan', Icons.restaurant_menu_outlined),
   _NavItem('/food-recommendation', 'Cook This', Icons.soup_kitchen_outlined),
@@ -35,6 +36,7 @@ const _primaryNavItems = [
 ];
 
 const _moreNavItems = [
+  _NavItem('/wellness-reminders', 'Wellness', Icons.self_improvement_outlined),
   _NavItem('/expenses', 'Expenses', Icons.account_balance_wallet_outlined),
   _NavItem('/diet-suggestion', 'Diet Plan', Icons.restaurant_menu_outlined),
   _NavItem('/food-recommendation', 'Cook This', Icons.soup_kitchen_outlined),

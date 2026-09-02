@@ -18,6 +18,7 @@ import '../features/food_recommendation/food_recommendation_screen.dart';
 import '../features/social/social_screen.dart';
 import '../features/social/chat/chat_thread_screen.dart';
 import '../features/settings/settings_screen.dart';
+import '../features/settings/wellness_reminders_screen.dart';
 
 /// Notifies go_router whenever auth or profile state changes, so its
 /// [redirect] callback is re-evaluated (e.g. right after sign-in or once
@@ -101,6 +102,10 @@ final routerProvider = Provider<GoRouter>((ref) {
                 (context, state) => ExerciseDetailsScreen(
                   exerciseId: state.pathParameters['id']!,
                 ),
+          ),
+          GoRoute(
+            path: '/wellness-reminders',
+            builder: (context, state) => const WellnessRemindersScreen(),
           ),
           GoRoute(
             path: '/expenses',

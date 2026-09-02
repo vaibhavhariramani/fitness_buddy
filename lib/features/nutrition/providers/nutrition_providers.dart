@@ -86,8 +86,22 @@ final nutritionTotalsForDateProvider = Provider.autoDispose
 
 /// Convenience alias for dashboard/analytics widgets that only ever care
 /// about today, so they don't need to know about date-scoped diary browsing.
-final todaysNutritionTotalsProvider = Provider<NutritionTotals>((ref) {
-  return ref.watch(nutritionTotalsForDateProvider(DateTime.now()));
+///
+/// Must be `autoDispose`: a plain (cached-forever) provider would call
+/// `DateTime.now()` exactly once, the first time anything reads it, and then
+/// keep watching that one frozen day for the rest of the app's process
+/// lifetime — silently going stale (or even watching the wrong calendar day
+/// after a midnight rollover) on platforms like iOS where the app can sit
+/// backgrounded for a long time without being relaunched. `autoDispose`
+/// makes it re-evaluate "today" fresh every time a screen (re)subscribes to
+/// it, e.g. navigating back to the dashboard.
+final todaysNutritionTotalsProvider = Provider.autoDispose<NutritionTotals>((
+  ref,
+) {
+  final now = DateTime.now();
+  return ref.watch(
+    nutritionTotalsForDateProvider(DateTime(now.year, now.month, now.day)),
+  );
 });
 
 /// Distinct foods logged in the last 30 days, most recent first — derived

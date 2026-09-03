@@ -49,7 +49,9 @@ android {
         // own default (flutter.minSdkVersion) is 21; API 21/22 share is
         // negligible at this point.
         minSdk = 23
-        targetSdk = flutter.targetSdkVersion
+        // Play Console now requires targetSdk 36+ (Flutter's own default,
+        // flutter.targetSdkVersion, is still 35).
+        targetSdk = 36
         versionCode = flutter.versionCode
         versionName = flutter.versionName
     }
@@ -73,6 +75,12 @@ android {
             signingConfig =
                 if (keystorePropertiesFile.exists()) signingConfigs.getByName("release")
                 else signingConfigs.getByName("debug")
+            // Bundles native (.so) debug symbols into the AAB itself so
+            // Play Console can symbolicate native crashes/ANRs without a
+            // separate manual symbol-file upload.
+            ndk {
+                debugSymbolLevel = "FULL"
+            }
         }
     }
 }

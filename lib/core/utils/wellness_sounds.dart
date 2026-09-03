@@ -36,16 +36,18 @@ const wellnessSounds = [
   WellnessSound(id: 'default', label: 'Default'),
   // Android: bundled at android/app/src/main/res/raw/gayatri_mantra.mp3 —
   // MP3 is natively supported there, no conversion needed.
-  // iOS: left unset (falls back to the platform default sound) — iOS only
-  // accepts aiff/wav/caf for notification sounds, not mp3, so the source
-  // file needs converting and adding as an Xcode bundle resource on a Mac
-  // before this can point at one there too.
+  // iOS: bundled at ios/Runner/gayatri_mantra.caf (converted from the mp3
+  // via `afconvert -f caff -d ima4`, added to the Runner target's Copy
+  // Bundle Resources) — iOS only accepts aiff/wav/caf for notification
+  // sounds, not mp3, and rejects (silently falls back to default) anything
+  // over 30s; this track is ~14s so no trimming was needed.
   // flutterAssetPath: also bundled at assets/sounds/gayatri_mantra.mp3 (a
   // second copy, registered in pubspec.yaml) for the Web playback path.
   WellnessSound(
     id: 'gayatri_mantra',
     label: 'Gayatri Mantra',
     androidRawResource: 'gayatri_mantra',
+    iosSoundFile: 'gayatri_mantra.caf',
     flutterAssetPath: 'sounds/gayatri_mantra.mp3',
   ),
 ];

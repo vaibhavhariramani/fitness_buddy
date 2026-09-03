@@ -221,7 +221,25 @@ class NotificationService {
         category: alarmMode ? AndroidNotificationCategory.alarm : null,
         fullScreenIntent: alarmMode,
       ),
-      iOS: DarwinNotificationDetails(sound: sound.iosSoundFile),
+      // presentAlert/Badge/Sound explicitly true: without them, some
+      // flutter_local_notifications/iOS versions silently suppress the
+      // banner and sound when the app happens to be in the foreground at
+      // fire time (a common gotcha — easy to hit while actively testing).
+      // interruptionLevel timeSensitive (alarm mode only) lets it break
+      // through Focus modes; note this — like every non-Critical-Alert
+      // notification — still can't override the hardware mute switch, which
+      // has no public API for third-party apps without Apple's Critical
+      // Alerts entitlement (health/safety apps only, not available here).
+      iOS: DarwinNotificationDetails(
+        sound: sound.iosSoundFile,
+        presentAlert: true,
+        presentBadge: true,
+        presentSound: true,
+        interruptionLevel:
+            alarmMode
+                ? InterruptionLevel.timeSensitive
+                : InterruptionLevel.active,
+      ),
     );
   }
 

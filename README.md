@@ -16,18 +16,32 @@
   <a href="https://fitness-buddy.web.app">
     <img src="https://img.shields.io/badge/demo-fitness--buddy.web.app-2E7D32" alt="Live demo">
   </a>
+  <a href="https://play.google.com/store/apps/details?id=com.fitnessbuddy.fitness_buddy">
+    <img src="https://img.shields.io/badge/Play%20Store-live-3DDC84?logo=google-play&logoColor=white" alt="On Google Play">
+  </a>
+  <a href="LICENSE">
+    <img src="https://img.shields.io/badge/license-MIT-blue" alt="MIT License">
+  </a>
 </p>
 
-**Live demo:** [fitness-buddy.web.app](https://fitness-buddy.web.app)
+**Live web app:** [fitness-buddy.web.app](https://fitness-buddy.web.app) · **Android:**
+[Google Play](https://play.google.com/store/apps/details?id=com.fitnessbuddy.fitness_buddy)
 
 ## Screenshots
 
-> Add your own screenshots here — drop PNGs into `docs/screenshots/` using the file names below
-> and they'll render automatically.
+<div align="center">
+<table>
+<tr>
+<td align="center"><img src="docs/screenshots/dashboard.png" alt="Dashboard" width="200"><br><sub><b>Dashboard</b> — streak, weight trend, today's nutrition</sub></td>
+<td align="center"><img src="docs/screenshots/exercises.png" alt="Exercise library" width="200"><br><sub><b>Exercise library</b> — searchable catalog with photos</sub></td>
+<td align="center"><img src="docs/screenshots/nutrition.png" alt="Nutrition tracker" width="200"><br><sub><b>Nutrition</b> — macro targets & meal log</sub></td>
+<td align="center"><img src="docs/screenshots/wellness.png" alt="Wellness reminders" width="200"><br><sub><b>Wellness reminders</b> — medicine/yoga/meditation alarms</sub></td>
+</tr>
+</table>
+</div>
 
-| Dashboard | Exercise Library | Nutrition Tracker | Active Workout |
-|---|---|---|---|
-| ![Dashboard](docs/screenshots/dashboard.png) | ![Exercises](docs/screenshots/exercises.png) | ![Nutrition](docs/screenshots/nutrition.png) | ![Workout](docs/screenshots/workout.png) |
+The app is also responsive down to phone width and up to tablet — see
+[docs/screenshots/](docs/screenshots/) for the tablet layout and more.
 
 ## Features
 
@@ -100,6 +114,10 @@ flutter run -d chrome
 
 `lib/firebase_options.dart.example` shows the shape FlutterFire CLI produces, for reference.
 
+**New to Firebase, or want the full walkthrough** (creating the project, enabling
+Auth/Firestore/Storage, deploying security rules, Android release signing)?
+See **[docs/FIREBASE_SETUP.md](docs/FIREBASE_SETUP.md)** — step by step, ~15 minutes.
+
 ## Testing
 
 ```bash
@@ -110,12 +128,23 @@ flutter test              # unit tests (calculations, streaks, PR detection)
 
 ## Deployment
 
-The web app deploys to a dedicated Firebase Hosting site (target `fitness-buddy`) inside the `expense-tracker-71917` Firebase project:
+**Web:** [fitness-buddy.web.app](https://fitness-buddy.web.app) — deploys to a dedicated
+Firebase Hosting site (target `fitness-buddy`) inside the `expense-tracker-71917` Firebase
+project:
 
 ```bash
-flutter build web
+flutter build web --no-web-resources-cdn
 firebase deploy --only hosting:fitness-buddy --project expense-tracker-71917
 ```
+
+**Android:** [Google Play](https://play.google.com/store/apps/details?id=com.fitnessbuddy.fitness_buddy) —
+published as a signed release build (`flutter build appbundle --release`); see
+[docs/FIREBASE_SETUP.md](docs/FIREBASE_SETUP.md#android-release-builds-signing) for the signing
+setup.
+
+A fork deploys to *your own* Firebase project and (if you choose to publish one) your own Play
+Store listing — nothing here points at the original app's infrastructure. See
+[docs/FIREBASE_SETUP.md](docs/FIREBASE_SETUP.md).
 
 ## CI/CD
 
@@ -139,6 +168,11 @@ from a repo secret before running any `flutter` command.
 Add both under GitHub repo → Settings → Secrets and variables → Actions → **New repository secret**.
 Until `FIREBASE_SERVICE_ACCOUNT` is added, `scan`/`build`/`smoke-test` still pass — only `deploy` fails.
 
+**Forks and external PRs can't deploy to the live app.** The `deploy` job only runs on a direct
+push to `main` on this repository — never on a `pull_request` event — and needs a repo secret
+that doesn't exist anywhere else. See [CONTRIBUTING.md](CONTRIBUTING.md#cicd-and-your-fork) for
+the full explanation.
+
 ## Security note
 
 `lib/firebase_options.dart` and `android/app/google-services.json` are intentionally excluded
@@ -146,3 +180,29 @@ from this repo and from git history — see `.gitignore`. Firebase's own docs no
 client-side identifiers aren't secret in the traditional sense (access is enforced by
 `firestore.rules`/`storage.rules`, not by hiding the API key), but they're kept out of version
 control here anyway. Generate your own via `flutterfire configure`.
+
+See **[SECURITY.md](SECURITY.md)** for the full security model — what `firestore.rules` and
+`storage.rules` actually guarantee, what they don't, and how to report a vulnerability.
+
+## Contributing
+
+Issues and PRs are welcome — see **[CONTRIBUTING.md](CONTRIBUTING.md)** for the project layout,
+dev setup, and guidelines. Good first issues: more entries in the food database, additional
+exercise photos/instructions, accessibility passes.
+
+## License
+
+[MIT](LICENSE) — free and open source. Use it, fork it, modify it, ship your own version — just
+keep the copyright notice and this license file, and credit the original project if you build
+on it. There's no requirement to share your changes back, unlike a copyleft license.
+
+## Acknowledgments
+
+- Built by [Vaibhav Hariramani](https://github.com/vaibhavhariramani).
+- Exercise photos from [free-exercise-db](https://github.com/yuhonas/free-exercise-db) (public
+  domain) and muscle-diagram anatomy from [MuscleMap](https://github.com/melihcolpan/MuscleMap)
+  (MIT) — see the license headers in `lib/shared/widgets/body_diagram_paths.dart`.
+- Nutrition data from [Open Food Facts](https://world.openfoodfacts.org/).
+- Some of this app's product direction was inspired by
+  [openGym](https://github.com/arvids-unavailable/openGym), a self-hosted workout tracker —
+  no code or UI was copied, only feature ideas adapted to this app's own Flutter/Firebase stack.

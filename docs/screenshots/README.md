@@ -1,11 +1,14 @@
 # Screenshots
 
-Drop screenshot PNGs in this folder using these file names and they'll show up automatically
-in the main [README.md](../../README.md):
+Referenced from the main [README.md](../../README.md). Current set (phone width unless noted):
 
-- `dashboard.png` — Dashboard / Analytics screen
-- `exercises.png` — Exercise library or exercise detail screen
-- `nutrition.png` — Nutrition tracker / food diary screen
-- `workout.png` — Active workout logging screen
+- `login.png` — Sign-in screen
+- `dashboard.png` — Dashboard: streak, weight trend, today's nutrition
+- `exercises.png` — Exercise library with real photos, search, and filters
+- `nutrition.png` — Daily nutrition tracking with macro bars
+- `wellness.png` — Wellness reminder editor (ringtone selection, alarm mode)
+- `dashboard_tablet.png` / `exercises_tablet.png` — same screens at tablet width, showing the
+  nav-rail layout `lib/features/home/home_shell.dart` switches to above 900px
 
-Any additional screenshots can be added and referenced directly in the README as needed.
+Add more and reference them directly in the README as needed — no fixed naming convention
+required beyond what's already linked there.

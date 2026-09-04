@@ -2,7 +2,7 @@ name: fitness_buddy
 description: "Fitness Buddy — track your body transformation and fitness progress."
 publish_to: 'none'
 
-version: 1.0.0+2
+version: 1.0.0+3
 
 environment:
   sdk: ^3.7.2

@@ -13,9 +13,9 @@ class PrivacySettings {
   final bool shareMeals;
 
   /// Whether friends can see this user's 24h stories (weight/meal photos
-  /// posted while logging, plus the auto-generated daily summary). Off by
-  /// default for the same reason as [shareMeals] — a photo-based feed is
-  /// more personal than a number, so it's opt-in.
+  /// posted while logging, plus the auto-generated daily summary). On by
+  /// default — unlike [shareMeals], stories are ephemeral (24h) and are the
+  /// main way friends stay engaged with each other, so it's opt-out.
   final bool shareStories;
 
   const PrivacySettings({
@@ -23,7 +23,7 @@ class PrivacySettings {
     this.shareWorkouts = true,
     this.shareStreak = true,
     this.shareMeals = false,
-    this.shareStories = false,
+    this.shareStories = true,
   });
 
   Map<String, dynamic> toJson() => {
@@ -41,7 +41,7 @@ class PrivacySettings {
       shareWorkouts: json['shareWorkouts'] as bool? ?? true,
       shareStreak: json['shareStreak'] as bool? ?? true,
       shareMeals: json['shareMeals'] as bool? ?? false,
-      shareStories: json['shareStories'] as bool? ?? false,
+      shareStories: json['shareStories'] as bool? ?? true,
     );
   }
 }

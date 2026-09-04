@@ -27,6 +27,22 @@ class _StoryViewerPageState extends State<StoryViewerPage>
   late final PageController _pageController = PageController();
   late AnimationController _progress;
   int _index = 0;
+  bool _didPrecache = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Backstop for StoryAvatar's proactive precache — fetches every photo
+    // in this person's story set (not just the first slide) up front, so
+    // swiping through them is instant even if the avatar-level precache
+    // hadn't finished yet (e.g. tapped right as the story bar loaded).
+    if (_didPrecache) return;
+    _didPrecache = true;
+    for (final story in widget.stories) {
+      final url = story.photoUrl;
+      if (url != null) precacheImage(CachedNetworkImageProvider(url), context);
+    }
+  }
 
   Duration _durationFor(int i) {
     final story = widget.stories[i];
@@ -195,7 +211,19 @@ class _StorySlide extends StatelessWidget {
       fit: StackFit.expand,
       children: [
         if (story.photoUrl != null)
-          CachedNetworkImage(imageUrl: story.photoUrl!, fit: BoxFit.cover)
+          CachedNetworkImage(
+            imageUrl: story.photoUrl!,
+            fit: BoxFit.cover,
+            fadeInDuration: Duration.zero,
+            fadeOutDuration: Duration.zero,
+            placeholder:
+                (context, url) => const ColoredBox(
+                  color: Colors.black,
+                  child: Center(
+                    child: CircularProgressIndicator(color: Colors.white54),
+                  ),
+                ),
+          )
         else
           const ColoredBox(color: Colors.black),
         Positioned(
@@ -322,11 +350,20 @@ class _MealOverlay extends StatelessWidget {
         Text(
           story.mealTypeLabel ?? 'Meal',
           style: const TextStyle(
-            color: Colors.white,
-            fontSize: 18,
-            fontWeight: FontWeight.w700,
+            color: Colors.white70,
+            fontSize: 13,
+            fontWeight: FontWeight.w600,
           ),
         ),
+        if (story.mealName != null)
+          Text(
+            story.mealName!,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 18,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
         Text(
           '${story.calories?.toStringAsFixed(0) ?? '—'} kcal',
           style: const TextStyle(color: Colors.white70, fontSize: 13),

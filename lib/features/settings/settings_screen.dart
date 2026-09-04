@@ -283,8 +283,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           SwitchListTile(
             title: const Text('Share my story'),
             subtitle: const Text(
-              'Off by default — lets friends see your 24h weight/meal photo '
-              'stories and daily summary',
+              'On by default — lets friends see your 24h weight/meal photo '
+              'stories and daily summary. Turn off to keep them private.',
             ),
             value: profile.privacy.shareStories,
             onChanged:

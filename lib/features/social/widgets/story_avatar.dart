@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -5,6 +6,25 @@ import '../../../core/design_system/app_colors.dart';
 import '../../../core/providers.dart';
 import '../../../models/story.dart';
 import '../stories/story_viewer_page.dart';
+
+/// URLs already handed to [precacheImage] this session — a plain top-level
+/// set (not per-widget state) so re-mounting the avatar (e.g. scrolling the
+/// stories bar off-screen and back) doesn't re-trigger a fetch Flutter's own
+/// image cache has already satisfied.
+final _precachedStoryUrls = <String>{};
+
+/// Kicks off (fire-and-forget) downloading every story photo in [stories]
+/// as soon as their existence is known — typically while the stories bar is
+/// just sitting on screen, well before the user taps an avatar — so the
+/// full-screen viewer has the image ready instead of showing a black
+/// background while it downloads.
+void _precacheStoryPhotos(List<Story> stories, BuildContext context) {
+  for (final story in stories) {
+    final url = story.photoUrl;
+    if (url == null || !_precachedStoryUrls.add(url)) continue;
+    precacheImage(CachedNetworkImageProvider(url), context);
+  }
+}
 
 /// Active (unexpired) stories for a given uid — shared by [StoryAvatar] and
 /// anything else that needs to know whether someone currently has a story.
@@ -34,6 +54,7 @@ class StoryAvatar extends ConsumerWidget {
     final stories =
         ref.watch(activeStoriesProvider(uid)).valueOrNull ?? const [];
     final hasActive = stories.isNotEmpty;
+    if (hasActive) _precacheStoryPhotos(stories, context);
 
     final avatar = CircleAvatar(
       radius: radius,

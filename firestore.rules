@@ -106,7 +106,7 @@ service cloud.firestore {
       // the Admin SDK, which bypasses these rules entirely.
       match /stories/{storyId} {
         allow read: if isOwner(uid)
-          || (isAcceptedFriend(uid) && ownerProfile(uid).data.privacy.shareStories == true);
+          || (isAcceptedFriend(uid) && ownerProfile(uid).data.privacy.get('shareStories', true) == true);
         allow write: if isOwner(uid);
       }
 

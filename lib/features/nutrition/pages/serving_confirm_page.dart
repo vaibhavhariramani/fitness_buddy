@@ -179,6 +179,7 @@ class _ServingConfirmPageState extends ConsumerState<ServingConfirmPage> {
                   id: '',
                   type: StoryType.meal,
                   photoUrl: url,
+                  mealName: food.name,
                   mealTypeLabel: widget.mealType.label,
                   calories: entry.calories,
                   proteinG: entry.proteinG,

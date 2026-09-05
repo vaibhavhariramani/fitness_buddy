@@ -27,12 +27,13 @@ const _navItems = [
   _NavItem('/settings', 'Settings', Icons.settings_outlined),
 ];
 
-/// Phone-width bottom bar only shows these three directly — everything else
-/// (including the trailing "More" sheet contents) lives in [_moreNavItems].
+/// Phone-width bottom bar only shows these four directly, plus a trailing
+/// "More" tab — everything else lives in [_moreNavItems].
 const _primaryNavItems = [
   _NavItem('/dashboard', 'Dashboard', Icons.dashboard_outlined),
   _NavItem('/tracking', 'Tracking', Icons.checklist_outlined),
   _NavItem('/exercises', 'Exercises', Icons.fitness_center_outlined),
+  _NavItem('/social', 'Social', Icons.people_outline),
 ];
 
 const _moreNavItems = [
@@ -40,7 +41,6 @@ const _moreNavItems = [
   _NavItem('/expenses', 'Expenses', Icons.account_balance_wallet_outlined),
   _NavItem('/diet-suggestion', 'Diet Plan', Icons.restaurant_menu_outlined),
   _NavItem('/food-recommendation', 'Cook This', Icons.soup_kitchen_outlined),
-  _NavItem('/social', 'Social', Icons.people_outline),
   _NavItem('/settings', 'Settings', Icons.settings_outlined),
 ];
 

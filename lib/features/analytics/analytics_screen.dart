@@ -371,6 +371,15 @@ class _TodayNutritionSection extends ConsumerWidget {
             ],
           ),
         ),
+        const SizedBox(height: AppSpacing.sm),
+        FilledButton.tonalIcon(
+          onPressed: () {
+            ref.read(pendingTrackingTabProvider.notifier).state = 1;
+            context.push('/tracking');
+          },
+          icon: const Icon(Icons.add),
+          label: const Text('Log meal'),
+        ),
       ],
     );
   }

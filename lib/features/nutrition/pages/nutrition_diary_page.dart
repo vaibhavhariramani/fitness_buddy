@@ -5,6 +5,8 @@ import 'package:intl/intl.dart';
 import '../../../core/providers.dart';
 import '../../../models/meal_entry.dart';
 import '../../../models/saved_meal.dart';
+import '../../../models/story.dart';
+import '../../../shared/utils/photo_picker.dart';
 import '../models/food.dart';
 import '../providers/nutrition_providers.dart';
 import '../utils/nutrient_scaling.dart';
@@ -57,6 +59,56 @@ class _NutritionDiaryPageState extends ConsumerState<NutritionDiaryPage> {
       isScrollControlled: true,
       builder: (context) => AddFoodSheet(mealType: mealType, initialDate: date),
     );
+  }
+
+  Future<void> _addMealPhoto(
+    BuildContext context,
+    MealType mealType,
+    DateTime date,
+  ) async {
+    final photoBytes = await pickPhotoFromCameraOrGallery(context);
+    if (photoBytes == null) return;
+
+    final uid = ref.read(authStateProvider).valueOrNull?.uid;
+    if (uid == null) return;
+
+    final entry = MealEntry(
+      id: '',
+      date: date,
+      mealType: mealType,
+      calories: 0,
+      foodName: 'Photo',
+      manualEntry: true,
+      createdAt: DateTime.now(),
+    );
+    final mealId = await ref.read(mealRepoProvider).add(uid, entry);
+    await ref.read(userRepoProvider).registerActivityAndGetStreak(uid);
+
+    try {
+      final url = await ref
+          .read(storageServiceProvider)
+          .uploadMealPhoto(uid: uid, mealId: mealId, bytes: photoBytes);
+      await ref.read(mealRepoProvider).update(uid, mealId, {'photoUrl': url});
+
+      final now = DateTime.now();
+      await ref
+          .read(storyRepoProvider)
+          .add(
+            uid,
+            Story(
+              id: '',
+              type: StoryType.meal,
+              photoUrl: url,
+              mealTypeLabel: mealType.label,
+              calories: 0,
+              createdAt: now,
+              expiresAt: now.add(const Duration(hours: 24)),
+            ),
+          );
+    } catch (_) {
+      // Best-effort — the entry itself is already saved; a failed
+      // photo/story post shouldn't be treated as a failed log.
+    }
   }
 
   Future<void> _pickDiaryDate(BuildContext context, WidgetRef ref) async {
@@ -310,6 +362,8 @@ class _NutritionDiaryPageState extends ConsumerState<NutritionDiaryPage> {
                         onAddFood:
                             () =>
                                 _openAddFoodSheet(context, type, selectedDate),
+                        onAddPhoto:
+                            () => _addMealPhoto(context, type, selectedDate),
                         onDelete: (entry) {
                           final uid =
                               ref.read(authStateProvider).valueOrNull?.uid;

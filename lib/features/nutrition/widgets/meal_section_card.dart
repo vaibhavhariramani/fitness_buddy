@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 import '../../../models/meal_entry.dart';
@@ -6,6 +7,7 @@ class MealSectionCard extends StatelessWidget {
   final MealType type;
   final List<MealEntry> entries;
   final VoidCallback onAddFood;
+  final VoidCallback onAddPhoto;
   final void Function(MealEntry entry) onDelete;
   final bool selectionMode;
   final Set<String> selectedIds;
@@ -16,6 +18,7 @@ class MealSectionCard extends StatelessWidget {
     required this.type,
     required this.entries,
     required this.onAddFood,
+    required this.onAddPhoto,
     required this.onDelete,
     this.selectionMode = false,
     this.selectedIds = const {},
@@ -55,10 +58,19 @@ class MealSectionCard extends StatelessWidget {
                         : () => onToggleSelect!(entry),
               ),
             if (!selectionMode)
-              TextButton.icon(
-                onPressed: onAddFood,
-                icon: const Icon(Icons.add),
-                label: const Text('Add food'),
+              Row(
+                children: [
+                  TextButton.icon(
+                    onPressed: onAddFood,
+                    icon: const Icon(Icons.add),
+                    label: const Text('Add food'),
+                  ),
+                  TextButton.icon(
+                    onPressed: onAddPhoto,
+                    icon: const Icon(Icons.photo_camera_outlined),
+                    label: const Text('Add photo'),
+                  ),
+                ],
               ),
           ],
         ),
@@ -96,6 +108,18 @@ class _EntryRow extends StatelessWidget {
         children: [
           if (selectionMode)
             Checkbox(value: selected, onChanged: (_) => onToggleSelect?.call()),
+          if (entry.photoUrl != null) ...[
+            ClipRRect(
+              borderRadius: BorderRadius.circular(6),
+              child: CachedNetworkImage(
+                imageUrl: entry.photoUrl!,
+                width: 40,
+                height: 40,
+                fit: BoxFit.cover,
+              ),
+            ),
+            const SizedBox(width: 8),
+          ],
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,

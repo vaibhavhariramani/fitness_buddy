@@ -39,6 +39,10 @@ final routerProvider = Provider<GoRouter>((ref) {
     navigatorKey: rootNavigatorKey,
     initialLocation: '/dashboard',
     refreshListenable: refreshNotifier,
+    // Covers unknown routes (e.g. a stale deep link, or a typed/bookmarked
+    // URL on web — Firebase Hosting rewrites every path to this app) with a
+    // real screen instead of go_router's default error page.
+    errorBuilder: (context, state) => const _NotFoundScreen(),
     redirect: (context, state) {
       final authState = ref.read(authStateProvider);
       final user = authState.valueOrNull;
@@ -140,3 +144,28 @@ final routerProvider = Provider<GoRouter>((ref) {
     ],
   );
 });
+
+class _NotFoundScreen extends StatelessWidget {
+  const _NotFoundScreen();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(Icons.search_off, size: 48),
+            const SizedBox(height: 16),
+            const Text('Page not found'),
+            const SizedBox(height: 16),
+            FilledButton(
+              onPressed: () => context.go('/dashboard'),
+              child: const Text('Go to dashboard'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}

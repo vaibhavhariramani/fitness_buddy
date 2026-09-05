@@ -42,12 +42,6 @@ Future<void> showAddToWorkoutDialog(
                   context.push('/tracking');
                 },
               ),
-              const ListTile(
-                enabled: false,
-                leading: Icon(Icons.event_note_outlined),
-                title: Text('Add to Workout Plan'),
-                subtitle: Text('Coming soon'),
-              ),
             ],
           ),
           actions: [

@@ -1,8 +1,12 @@
+import 'dart:io' show Platform;
+
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 import '../../../core/design_system/app_colors.dart';
 import '../../../core/design_system/app_spacing.dart';
@@ -49,6 +53,19 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       _showError(state.error);
     }
   }
+
+  Future<void> _submitApple() async {
+    await ref.read(authControllerProvider.notifier).signInWithApple();
+    final state = ref.read(authControllerProvider);
+    if (state.hasError && mounted) {
+      _showError(state.error);
+    }
+  }
+
+  // Apple requires apps that offer third-party sign-in (Google, here) to
+  // offer Sign in with Apple as an equivalent — only relevant on Apple
+  // platforms, so it's hidden elsewhere rather than shown non-functionally.
+  bool get _showAppleSignIn => !kIsWeb && Platform.isIOS;
 
   void _showError(Object? error) {
     final message =
@@ -242,6 +259,20 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                 icon: const Icon(Icons.g_mobiledata, size: 24),
                                 label: const Text('Continue with Google'),
                               ),
+                              if (_showAppleSignIn) ...[
+                                const SizedBox(height: AppSpacing.sm),
+                                SizedBox(
+                                  height: 44,
+                                  child: SignInWithAppleButton(
+                                    onPressed: isLoading ? () {} : _submitApple,
+                                    style:
+                                        isDark
+                                            ? SignInWithAppleButtonStyle.white
+                                            : SignInWithAppleButtonStyle.black,
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                ),
+                              ],
                             ],
                           ),
                         ),

@@ -1,8 +1,11 @@
 const {initializeApp} = require("firebase-admin/app");
 const {getFirestore, FieldValue, Timestamp} = require("firebase-admin/firestore");
 const {getMessaging} = require("firebase-admin/messaging");
+const {getAuth} = require("firebase-admin/auth");
+const {getStorage} = require("firebase-admin/storage");
 const {onDocumentCreated} = require("firebase-functions/v2/firestore");
 const {onSchedule} = require("firebase-functions/v2/scheduler");
+const {onCall, HttpsError} = require("firebase-functions/v2/https");
 const {logger} = require("firebase-functions");
 
 initializeApp();
@@ -354,4 +357,88 @@ exports.hourlyStoryMaintenance = onSchedule("every 60 minutes", async () => {
       `hourlyStoryMaintenance: deleted ${deletedCount} expired stories, ` +
       `posted ${postedCount} daily summaries`,
   );
+});
+
+// Every subcollection nested under users/{uid} that account deletion must
+// clear out. Kept as an explicit list (rather than discovered at runtime) so
+// a forgotten new subcollection fails loudly in review instead of silently
+// surviving account deletion.
+const USER_SUBCOLLECTIONS = [
+  "weightLogs", "meals", "workouts", "personalRecords", "expenses",
+  "workoutPlans", "weeklyRoutine", "weekSchedule", "wellnessReminders",
+  "customFoods", "favoriteFoods", "savedMeals", "stories", "userRecipes",
+  "fcmTokens", "notifications",
+];
+
+/**
+ * Deletes every document in `collectionRef`, 500 at a time (Firestore's
+ * batch-write limit).
+ *
+ * @param {FirebaseFirestore.CollectionReference} collectionRef Collection to
+ *   empty.
+ */
+async function deleteCollectionInBatches(collectionRef) {
+  const snap = await collectionRef.get();
+  for (let i = 0; i < snap.docs.length; i += 500) {
+    const batch = db.batch();
+    for (const doc of snap.docs.slice(i, i + 500)) batch.delete(doc.ref);
+    await batch.commit();
+  }
+}
+
+/**
+ * Permanently deletes the caller's account and every piece of data owned by
+ * it: all `users/{uid}` subcollections, the profile doc itself, the
+ * directory entry, friendships and chats they're part of, uploaded photos in
+ * Storage, and finally the Firebase Auth user — required by App Store
+ * Review Guideline 5.1.1(v), which mandates in-app account deletion for any
+ * app that offers account creation.
+ *
+ * Runs entirely under the Admin SDK, so unlike a client-side
+ * `currentUser.delete()` it isn't blocked by Firestore's `allow delete:
+ * if false` on the user doc, and doesn't need a fresh sign-in
+ * (`requires-recent-login`). Deletes data before the Auth user, and each
+ * step is individually safe to retry, so a client retry after a transient
+ * failure just re-deletes (already-empty collections and already-deleted
+ * docs are no-ops rather than errors).
+ */
+exports.deleteAccount = onCall(async (request) => {
+  if (!request.auth) {
+    throw new HttpsError("unauthenticated", "You must be signed in.");
+  }
+  const uid = request.auth.uid;
+
+  for (const sub of USER_SUBCOLLECTIONS) {
+    await deleteCollectionInBatches(
+        db.collection("users").doc(uid).collection(sub),
+    );
+  }
+  await db.collection("users").doc(uid).delete();
+  await db.collection("userDirectory").doc(uid).delete();
+
+  const friendships = await db.collection("friendships")
+      .where("uids", "array-contains", uid)
+      .get();
+  for (const doc of friendships.docs) await doc.ref.delete();
+
+  const chats = await db.collection("chats")
+      .where("participantUids", "array-contains", uid)
+      .get();
+  for (const chatDoc of chats.docs) {
+    await deleteCollectionInBatches(chatDoc.ref.collection("messages"));
+    await chatDoc.ref.delete();
+  }
+
+  try {
+    await getStorage().bucket().deleteFiles({prefix: `users/${uid}/`});
+  } catch (err) {
+    // Storage cleanup is best-effort — an orphaned photo shouldn't block the
+    // account (and the Auth identity that owns it) from being deleted.
+    logger.error(`deleteAccount: storage cleanup failed for ${uid}`, err);
+  }
+
+  await getAuth().deleteUser(uid);
+
+  logger.info(`deleteAccount: fully deleted uid=${uid}`);
+  return {success: true};
 });

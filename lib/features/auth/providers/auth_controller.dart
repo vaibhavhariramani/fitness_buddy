@@ -43,6 +43,13 @@ class AuthController extends AsyncNotifier<void> {
     );
   }
 
+  Future<void> signInWithApple() async {
+    state = const AsyncLoading();
+    state = await AsyncValue.guard(
+      () => ref.read(authServiceProvider).signInWithApple(),
+    );
+  }
+
   Future<void> sendPasswordReset(String email) async {
     state = const AsyncLoading();
     state = await AsyncValue.guard(
@@ -58,6 +65,17 @@ class AuthController extends AsyncNotifier<void> {
         await ref.read(pushNotificationServiceProvider).clearForSignOut(uid);
       }
       await ref.read(authServiceProvider).signOut();
+    });
+  }
+
+  Future<void> deleteAccount() async {
+    state = const AsyncLoading();
+    state = await AsyncValue.guard(() async {
+      final uid = ref.read(authStateProvider).valueOrNull?.uid;
+      if (uid != null) {
+        await ref.read(pushNotificationServiceProvider).clearForSignOut(uid);
+      }
+      await ref.read(authServiceProvider).deleteAccount();
     });
   }
 }

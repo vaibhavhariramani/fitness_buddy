@@ -1,3 +1,4 @@
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -123,6 +124,48 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       ),
     );
     if (picked != null) onPicked(picked.hour * 60 + picked.minute);
+  }
+
+  Future<void> _confirmDeleteAccount() async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            title: const Text('Delete account?'),
+            content: const Text(
+              'This permanently deletes your account and all of your data — '
+              'profile, weight/meal/workout history, photos, friends, and '
+              'chats. This cannot be undone.',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: const Text('Cancel'),
+              ),
+              TextButton(
+                onPressed: () => Navigator.pop(context, true),
+                style: TextButton.styleFrom(
+                  foregroundColor: Theme.of(context).colorScheme.error,
+                ),
+                child: const Text('Delete'),
+              ),
+            ],
+          ),
+    );
+    if (confirmed != true || !mounted) return;
+
+    await ref.read(authControllerProvider.notifier).deleteAccount();
+    final state = ref.read(authControllerProvider);
+    if (state.hasError && mounted) {
+      final error = state.error;
+      final message =
+          error is FirebaseFunctionsException
+              ? (error.message ?? error.code)
+              : 'Something went wrong. Please try again.';
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(message)));
+    }
   }
 
   @override
@@ -396,6 +439,16 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 () => ref.read(authControllerProvider.notifier).signOut(),
             icon: const Icon(Icons.logout),
             label: const Text('Sign out'),
+          ),
+          const SizedBox(height: 12),
+          OutlinedButton.icon(
+            onPressed: _confirmDeleteAccount,
+            style: OutlinedButton.styleFrom(
+              foregroundColor: Theme.of(context).colorScheme.error,
+              side: BorderSide(color: Theme.of(context).colorScheme.error),
+            ),
+            icon: const Icon(Icons.delete_forever_outlined),
+            label: const Text('Delete account'),
           ),
         ],
       ),

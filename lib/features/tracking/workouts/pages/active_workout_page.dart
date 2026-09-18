@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
@@ -14,11 +15,13 @@ import '../../../../models/story.dart';
 import '../../../../models/workout_entry.dart';
 import '../../../../shared/utils/photo_picker.dart';
 import '../../../../shared/widgets/app_card.dart';
+import '../../../exercises/models/exercise.dart';
 import '../../../exercises/providers/exercise_providers.dart';
 import '../../../exercises/widgets/add_to_workout_dialog.dart'
     show nearestMuscleGroup;
 import '../../../exercises/widgets/exercise_picker_sheet.dart';
 import '../../../exercises/widgets/exercise_visual.dart';
+import '../active_workout_draft.dart' as draft;
 import '../previous_performance_provider.dart';
 import '../widgets/rest_timer_sheet.dart';
 import 'workout_summary_page.dart';
@@ -55,11 +58,24 @@ class _DraftSet {
 }
 
 class _SessionExercise {
-  final String exerciseId;
-  final String name;
-  final String muscleGroup;
+  String exerciseId;
+  String name;
+  String muscleGroup;
   final int restSeconds;
   final List<_DraftSet> sets;
+  String? memo;
+  bool restTimerEnabled = true;
+
+  /// Non-null when paired with another exercise in this session as a
+  /// superset — shared by both members of the pair, cleared on both when
+  /// unpaired so a "superset" never has just one lonely member.
+  String? supersetGroupId;
+
+  /// Stable per-instance identity for the reorderable list — exerciseId
+  /// alone isn't unique (the same exercise can be added twice deliberately,
+  /// e.g. two different set/rep schemes), and list index changes on every
+  /// drag, so neither works as a Flutter list key on its own.
+  final Key listKey = UniqueKey();
 
   _SessionExercise({
     required this.exerciseId,
@@ -74,10 +90,16 @@ class ActiveWorkoutPage extends ConsumerStatefulWidget {
   final String title;
   final List<SessionExerciseSeed> seeds;
 
+  /// True when opened from the "workout in progress" notification (tap or
+  /// Resume) rather than started fresh — loads the persisted draft instead
+  /// of seeding from [seeds].
+  final bool restoreDraft;
+
   const ActiveWorkoutPage({
     super.key,
     this.title = 'Workout',
     this.seeds = const [],
+    this.restoreDraft = false,
   });
 
   @override
@@ -87,10 +109,13 @@ class ActiveWorkoutPage extends ConsumerStatefulWidget {
 class _ActiveWorkoutPageState extends ConsumerState<ActiveWorkoutPage> {
   late List<_SessionExercise> _exercises;
   DateTime _date = DateTime.now();
-  final DateTime _startedAt = DateTime.now();
+  DateTime _startedAt = DateTime.now();
+  String _displayTitle = 'Workout';
   bool _saving = false;
   bool _seeded = false;
   Uint8List? _photoBytes;
+  Timer? _elapsedTimer;
+  Duration _elapsed = Duration.zero;
 
   Future<void> _pickPhoto() async {
     final bytes = await pickPhotoFromCameraOrGallery(context);
@@ -112,15 +137,118 @@ class _ActiveWorkoutPageState extends ConsumerState<ActiveWorkoutPage> {
   void initState() {
     super.initState();
     _exercises = [];
+    _displayTitle = widget.title;
     // Gym screens lock/dim mid-set otherwise — released in dispose() no
     // matter how the session ends (finished, backed out, app killed).
     WakelockPlus.enable();
+    // Recomputed from _startedAt each tick (rather than just incrementing by
+    // 1s) so the displayed time stays correct even after the app was
+    // backgrounded and this timer was suspended for a while. Also doubles
+    // as the persistence tick — see _persistDraft.
+    _elapsedTimer = Timer.periodic(const Duration(seconds: 1), (_) {
+      if (mounted) {
+        setState(() => _elapsed = DateTime.now().difference(_startedAt));
+      }
+      _persistDraft();
+    });
+
+    if (widget.restoreDraft) {
+      _seeded = true; // widget.seeds is empty for a resumed session anyway.
+      _loadDraft();
+    } else {
+      draft.clearActiveWorkoutDraft();
+      ref.read(notificationServiceProvider).showWorkoutInProgress(widget.title);
+    }
+  }
+
+  Future<void> _loadDraft() async {
+    final loaded = await draft.loadActiveWorkoutDraft();
+    if (!mounted) return;
+    if (loaded == null) {
+      // Notification was tapped after the session was already finished or
+      // discarded elsewhere — fall back to a fresh session rather than a
+      // confusing blank "resumed" screen.
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('No workout in progress — starting fresh')),
+      );
+      ref.read(notificationServiceProvider).showWorkoutInProgress(widget.title);
+      return;
+    }
+    setState(() {
+      _displayTitle = loaded.title;
+      _date = loaded.date;
+      _startedAt = loaded.startedAt;
+      _elapsed = DateTime.now().difference(_startedAt);
+      _exercises = [
+        for (final e in loaded.exercises)
+          _SessionExercise(
+              exerciseId: e.exerciseId,
+              name: e.name,
+              muscleGroup: e.muscleGroup,
+              restSeconds: e.restSeconds,
+              sets: [
+                for (final s in e.sets)
+                  _DraftSet(reps: s.reps, weightKg: s.weightKg)
+                    ..rir = s.rir
+                    ..isWarmup = s.isWarmup
+                    ..isFailure = s.isFailure
+                    ..completed = s.completed,
+              ],
+            )
+            ..memo = e.memo
+            ..restTimerEnabled = e.restTimerEnabled
+            ..supersetGroupId = e.supersetGroupId,
+      ];
+    });
+    ref.read(notificationServiceProvider).showWorkoutInProgress(loaded.title);
+  }
+
+  void _persistDraft() {
+    if (_exercises.isEmpty) return;
+    draft.saveActiveWorkoutDraft(
+      draft.WorkoutDraft(
+        title: _displayTitle,
+        date: _date,
+        startedAt: _startedAt,
+        exercises: [
+          for (final e in _exercises)
+            draft.DraftExercise(
+              exerciseId: e.exerciseId,
+              name: e.name,
+              muscleGroup: e.muscleGroup,
+              restSeconds: e.restSeconds,
+              restTimerEnabled: e.restTimerEnabled,
+              memo: e.memo,
+              supersetGroupId: e.supersetGroupId,
+              sets: [
+                for (final s in e.sets)
+                  draft.DraftSet(
+                    reps: s.reps,
+                    weightKg: s.weightKg,
+                    rir: s.rir,
+                    isWarmup: s.isWarmup,
+                    isFailure: s.isFailure,
+                    completed: s.completed,
+                  ),
+              ],
+            ),
+        ],
+      ),
+    );
   }
 
   @override
   void dispose() {
+    _elapsedTimer?.cancel();
     WakelockPlus.disable();
     super.dispose();
+  }
+
+  String _formatElapsed(Duration d) {
+    final h = d.inHours;
+    final m = d.inMinutes.remainder(60).toString().padLeft(2, '0');
+    final s = d.inSeconds.remainder(60).toString().padLeft(2, '0');
+    return h > 0 ? '$h:$m:$s' : '$m:$s';
   }
 
   void _seedFromWidget() {
@@ -174,9 +302,32 @@ class _ActiveWorkoutPageState extends ConsumerState<ActiveWorkoutPage> {
   void _completeSet(_SessionExercise exercise, _DraftSet set) {
     AppHaptics.tap();
     setState(() => set.completed = !set.completed);
-    if (set.completed) {
+    if (set.completed && exercise.restTimerEnabled) {
       showRestTimerSheet(context, seconds: exercise.restSeconds);
     }
+  }
+
+  void _reorderExercises(int oldIndex, int newIndex) {
+    setState(() {
+      if (newIndex > oldIndex) newIndex -= 1;
+      final item = _exercises.removeAt(oldIndex);
+      _exercises.insert(newIndex, item);
+    });
+  }
+
+  void _removeExercise(_SessionExercise exercise) {
+    setState(() {
+      _exercises.remove(exercise);
+      // A superset partner left alone isn't a superset anymore.
+      final orphanedGroupId = exercise.supersetGroupId;
+      if (orphanedGroupId != null &&
+          _exercises.where((e) => e.supersetGroupId == orphanedGroupId).length <
+              2) {
+        for (final e in _exercises) {
+          if (e.supersetGroupId == orphanedGroupId) e.supersetGroupId = null;
+        }
+      }
+    });
   }
 
   Future<void> _finish() async {
@@ -230,6 +381,13 @@ class _ActiveWorkoutPageState extends ConsumerState<ActiveWorkoutPage> {
             ),
           );
       await ref.read(userRepoProvider).registerActivityAndGetStreak(uid);
+      await draft.clearActiveWorkoutDraft();
+      // Stop the periodic persistence tick now that the draft is cleared —
+      // otherwise a tick landing during the photo/story upload below could
+      // re-write the draft to disk right after clearing it, leaving a stale
+      // "resume this workout" draft behind for a workout that already saved.
+      _elapsedTimer?.cancel();
+      await ref.read(notificationServiceProvider).cancelWorkoutInProgress();
       final anyPr = saved.exercises.any((e) => e.isPr);
       anyPr ? AppHaptics.celebrate() : AppHaptics.success();
 
@@ -302,8 +460,25 @@ class _ActiveWorkoutPageState extends ConsumerState<ActiveWorkoutPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title),
+        title: Text(_displayTitle),
         actions: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
+            child: Row(
+              children: [
+                const Icon(Icons.timer_outlined, size: 18),
+                const SizedBox(width: 4),
+                Text(
+                  _formatElapsed(_elapsed),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.titleSmall?.copyWith(fontFeatures: const [
+                    FontFeature.tabularFigures(),
+                  ]),
+                ),
+              ],
+            ),
+          ),
           TextButton.icon(
             onPressed: _pickDate,
             icon: const Icon(Icons.calendar_today, size: 18),
@@ -353,10 +528,31 @@ class _ActiveWorkoutPageState extends ConsumerState<ActiveWorkoutPage> {
       body: ListView(
         padding: const EdgeInsets.all(AppSpacing.md),
         children: [
-          for (final ex in _exercises)
-            Padding(
-              padding: const EdgeInsets.only(bottom: AppSpacing.sm),
-              child: _ExerciseCard(exercise: ex, onCompleteSet: _completeSet),
+          if (_exercises.isNotEmpty)
+            ReorderableListView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              // A card full of text fields and buttons can't be a
+              // whole-card drag target (it'd fight every ordinary tap) —
+              // each card gets its own explicit drag handle instead.
+              buildDefaultDragHandles: false,
+              itemCount: _exercises.length,
+              onReorder: _reorderExercises,
+              itemBuilder: (context, index) {
+                final ex = _exercises[index];
+                return Padding(
+                  key: ex.listKey,
+                  padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+                  child: _ExerciseCard(
+                    index: index,
+                    exercise: ex,
+                    allExercises: _exercises,
+                    onCompleteSet: _completeSet,
+                    onRemove: () => _removeExercise(ex),
+                    onSessionChanged: () => setState(() {}),
+                  ),
+                );
+              },
             ),
           OutlinedButton.icon(
             onPressed: _addExercise,
@@ -396,10 +592,25 @@ class _ActiveWorkoutPageState extends ConsumerState<ActiveWorkoutPage> {
 }
 
 class _ExerciseCard extends ConsumerStatefulWidget {
+  final int index;
   final _SessionExercise exercise;
+  final List<_SessionExercise> allExercises;
   final void Function(_SessionExercise, _DraftSet) onCompleteSet;
+  final VoidCallback onRemove;
 
-  const _ExerciseCard({required this.exercise, required this.onCompleteSet});
+  /// Called after an action changes something another card's render might
+  /// depend on (superset pairing) — triggers a rebuild up at the session
+  /// level so the partner card picks up the change too.
+  final VoidCallback onSessionChanged;
+
+  const _ExerciseCard({
+    required this.index,
+    required this.exercise,
+    required this.allExercises,
+    required this.onCompleteSet,
+    required this.onRemove,
+    required this.onSessionChanged,
+  });
 
   @override
   ConsumerState<_ExerciseCard> createState() => _ExerciseCardState();
@@ -418,6 +629,263 @@ class _ExerciseCardState extends ConsumerState<_ExerciseCard> {
 
   void _removeSet(int index) {
     setState(() => widget.exercise.sets.removeAt(index));
+  }
+
+  Future<void> _replaceExercise() async {
+    final picked = await showExercisePickerSheet(context);
+    if (picked == null) return;
+    setState(() {
+      widget.exercise.exerciseId = picked.id;
+      widget.exercise.name = picked.name;
+      widget.exercise.muscleGroup = nearestMuscleGroup(picked);
+    });
+  }
+
+  Future<void> _editMemo() async {
+    final controller = TextEditingController(text: widget.exercise.memo);
+    final result = await showDialog<String>(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            title: const Text('Memo'),
+            content: TextField(
+              controller: controller,
+              autofocus: true,
+              maxLines: 3,
+              decoration: const InputDecoration(
+                hintText: 'e.g. Elbows in, pause at the bottom',
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Cancel'),
+              ),
+              FilledButton(
+                onPressed: () => Navigator.pop(context, controller.text.trim()),
+                child: const Text('Save'),
+              ),
+            ],
+          ),
+    );
+    if (result == null) return;
+    setState(() => widget.exercise.memo = result.isEmpty ? null : result);
+  }
+
+  Future<void> _toggleSuperset() async {
+    final exercise = widget.exercise;
+    if (exercise.supersetGroupId != null) {
+      final groupId = exercise.supersetGroupId;
+      setState(() {
+        exercise.supersetGroupId = null;
+        final remaining =
+            widget.allExercises.where((e) => e.supersetGroupId == groupId);
+        if (remaining.length == 1) remaining.first.supersetGroupId = null;
+      });
+      widget.onSessionChanged();
+      return;
+    }
+
+    final candidates =
+        widget.allExercises.where((e) => e != exercise).toList();
+    if (candidates.isEmpty) return;
+    final partner = await showModalBottomSheet<_SessionExercise>(
+      context: context,
+      // Without this, the sheet renders below this page's own
+      // bottomNavigationBar (the Finish Workout bar) instead of above it.
+      useRootNavigator: true,
+      builder:
+          (context) => SafeArea(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Padding(
+                  padding: EdgeInsets.all(16),
+                  child: Text('Superset with'),
+                ),
+                for (final c in candidates)
+                  ListTile(
+                    title: Text(c.name),
+                    onTap: () => Navigator.pop(context, c),
+                  ),
+              ],
+            ),
+          ),
+    );
+    if (partner == null) return;
+    final groupId = DateTime.now().microsecondsSinceEpoch.toString();
+    setState(() {
+      exercise.supersetGroupId = groupId;
+      partner.supersetGroupId = groupId;
+    });
+    widget.onSessionChanged();
+  }
+
+  void _showInstructions(Exercise exercise) {
+    showDialog<void>(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            title: Text(exercise.name),
+            content: SizedBox(
+              width: double.maxFinite,
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      '${exercise.primaryMuscleNames} · ${exercise.equipmentNames}',
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                    if (exercise.preparation.isNotEmpty) ...[
+                      const SizedBox(height: AppSpacing.md),
+                      Text(
+                        'Setup',
+                        style: Theme.of(context).textTheme.titleSmall,
+                      ),
+                      const SizedBox(height: AppSpacing.xxs),
+                      Text(exercise.preparation),
+                    ],
+                    if (exercise.execution.isNotEmpty) ...[
+                      const SizedBox(height: AppSpacing.md),
+                      Text(
+                        'How to do it',
+                        style: Theme.of(context).textTheme.titleSmall,
+                      ),
+                      const SizedBox(height: AppSpacing.xxs),
+                      Text(exercise.execution),
+                    ],
+                    if (exercise.formTips.isNotEmpty) ...[
+                      const SizedBox(height: AppSpacing.md),
+                      Text(
+                        'Form tips',
+                        style: Theme.of(context).textTheme.titleSmall,
+                      ),
+                      const SizedBox(height: AppSpacing.xxs),
+                      for (final tip in exercise.formTips) _BulletLine(tip),
+                    ],
+                    if (exercise.commonMistakes.isNotEmpty) ...[
+                      const SizedBox(height: AppSpacing.md),
+                      Text(
+                        'Common mistakes',
+                        style: Theme.of(context).textTheme.titleSmall,
+                      ),
+                      const SizedBox(height: AppSpacing.xxs),
+                      for (final m in exercise.commonMistakes) _BulletLine(m),
+                    ],
+                    if (exercise.safetyNotes.isNotEmpty) ...[
+                      const SizedBox(height: AppSpacing.md),
+                      Text(
+                        'Safety notes',
+                        style: Theme.of(context).textTheme.titleSmall,
+                      ),
+                      const SizedBox(height: AppSpacing.xxs),
+                      for (final s in exercise.safetyNotes) _BulletLine(s),
+                    ],
+                  ],
+                ),
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Close'),
+              ),
+            ],
+          ),
+    );
+  }
+
+  Future<void> _openMenu() async {
+    final exercise = widget.exercise;
+    final action = await showModalBottomSheet<_ExerciseMenuAction>(
+      context: context,
+      // Without this, the sheet renders below this page's own
+      // bottomNavigationBar (the Finish Workout bar) instead of above it —
+      // that's why the "Rest timer" toggle (the last item) was appearing
+      // hidden behind it.
+      useRootNavigator: true,
+      builder:
+          (context) => SafeArea(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ListTile(
+                  leading: const Icon(Icons.swap_horiz),
+                  title: const Text('Replace exercise'),
+                  onTap:
+                      () => Navigator.pop(
+                        context,
+                        _ExerciseMenuAction.replace,
+                      ),
+                ),
+                ListTile(
+                  leading: const Icon(Icons.delete_outline),
+                  title: const Text('Remove exercise'),
+                  onTap:
+                      () =>
+                          Navigator.pop(context, _ExerciseMenuAction.remove),
+                ),
+                ListTile(
+                  leading: const Icon(Icons.sticky_note_2_outlined),
+                  title: Text(
+                    exercise.memo == null ? 'Add memo' : 'Edit memo',
+                  ),
+                  onTap:
+                      () => Navigator.pop(context, _ExerciseMenuAction.memo),
+                ),
+                ListTile(
+                  enabled: exercise.sets.length > 1,
+                  leading: const Icon(Icons.remove_circle_outline),
+                  title: const Text('Reduce sets'),
+                  onTap:
+                      () => Navigator.pop(
+                        context,
+                        _ExerciseMenuAction.reduceSets,
+                      ),
+                ),
+                ListTile(
+                  leading: const Icon(Icons.link),
+                  title: Text(
+                    exercise.supersetGroupId == null
+                        ? 'Create superset'
+                        : 'Remove from superset',
+                  ),
+                  onTap:
+                      () => Navigator.pop(
+                        context,
+                        _ExerciseMenuAction.superset,
+                      ),
+                ),
+                SwitchListTile(
+                  secondary: const Icon(Icons.timer_outlined),
+                  title: const Text('Rest timer'),
+                  value: exercise.restTimerEnabled,
+                  onChanged: (v) {
+                    setState(() => exercise.restTimerEnabled = v);
+                    Navigator.pop(context);
+                  },
+                ),
+              ],
+            ),
+          ),
+    );
+    if (!mounted || action == null) return;
+    switch (action) {
+      case _ExerciseMenuAction.replace:
+        await _replaceExercise();
+      case _ExerciseMenuAction.remove:
+        widget.onRemove();
+      case _ExerciseMenuAction.memo:
+        await _editMemo();
+      case _ExerciseMenuAction.reduceSets:
+        _removeSet(exercise.sets.length - 1);
+      case _ExerciseMenuAction.superset:
+        await _toggleSuperset();
+    }
   }
 
   @override
@@ -442,24 +910,49 @@ class _ExerciseCardState extends ConsumerState<_ExerciseCard> {
         exercise.sets.isNotEmpty && exercise.sets.every((s) => s.completed);
 
     return AppCard(
-      accentColor: allComplete ? AppColors.workout : null,
+      accentColor:
+          allComplete
+              ? AppColors.workout
+              : exercise.supersetGroupId != null
+              ? AppColors.achievement
+              : null,
       padding: const EdgeInsets.all(AppSpacing.sm),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          if (exercise.supersetGroupId != null)
+            Padding(
+              padding: const EdgeInsets.only(bottom: AppSpacing.xxs),
+              child: Row(
+                children: [
+                  const Icon(Icons.link, size: 14, color: AppColors.achievement),
+                  const SizedBox(width: 4),
+                  Text(
+                    'Superset',
+                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                      color: AppColors.achievement,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ],
+              ),
+            ),
           Row(
             children: [
               if (catalogExercise != null)
-                SizedBox(
-                  width: 40,
-                  height: 40,
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(10),
-                    child: ExerciseVisual(
-                      exerciseId: catalogExercise.id,
-                      category: catalogExercise.category,
-                      photoAsset: catalogExercise.photoAsset,
-                      iconSize: 18,
+                GestureDetector(
+                  onTap: () => _showInstructions(catalogExercise),
+                  child: SizedBox(
+                    width: 40,
+                    height: 40,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(10),
+                      child: ExerciseVisual(
+                        exerciseId: catalogExercise.id,
+                        category: catalogExercise.category,
+                        photoAsset: catalogExercise.photoAsset,
+                        iconSize: 18,
+                      ),
                     ),
                   ),
                 ),
@@ -468,9 +961,20 @@ class _ExerciseCardState extends ConsumerState<_ExerciseCard> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      exercise.name,
-                      style: Theme.of(context).textTheme.titleSmall,
+                    Row(
+                      children: [
+                        if (!exercise.restTimerEnabled)
+                          const Padding(
+                            padding: EdgeInsets.only(right: 4),
+                            child: Icon(Icons.timer_off_outlined, size: 14),
+                          ),
+                        Flexible(
+                          child: Text(
+                            exercise.name,
+                            style: Theme.of(context).textTheme.titleSmall,
+                          ),
+                        ),
+                      ],
                     ),
                     if (previous != null && previous.sets.isNotEmpty)
                       Text(
@@ -490,15 +994,56 @@ class _ExerciseCardState extends ConsumerState<_ExerciseCard> {
                           ),
                         ),
                       ),
+                    if (exercise.memo != null && exercise.memo!.isNotEmpty)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 2),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Icon(
+                              Icons.sticky_note_2_outlined,
+                              size: 13,
+                              color: Theme.of(context).colorScheme.outline,
+                            ),
+                            const SizedBox(width: 4),
+                            Expanded(
+                              child: Text(
+                                exercise.memo!,
+                                style: Theme.of(
+                                  context,
+                                ).textTheme.bodySmall?.copyWith(
+                                  fontStyle: FontStyle.italic,
+                                  color: Theme.of(context).colorScheme.outline,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                   ],
                 ),
               ),
               if (allComplete)
-                const Icon(
-                  Icons.check_circle_rounded,
-                  color: AppColors.workout,
-                  size: 20,
+                const Padding(
+                  padding: EdgeInsets.only(right: 4),
+                  child: Icon(
+                    Icons.check_circle_rounded,
+                    color: AppColors.workout,
+                    size: 20,
+                  ),
                 ),
+              IconButton(
+                visualDensity: VisualDensity.compact,
+                icon: const Icon(Icons.more_vert),
+                onPressed: _openMenu,
+              ),
+              ReorderableDragStartListener(
+                index: widget.index,
+                child: const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 4),
+                  child: Icon(Icons.drag_handle),
+                ),
+              ),
             ],
           ),
           const SizedBox(height: AppSpacing.xs),
@@ -519,6 +1064,28 @@ class _ExerciseCardState extends ConsumerState<_ExerciseCard> {
               label: const Text('Add set'),
             ),
           ),
+        ],
+      ),
+    );
+  }
+}
+
+enum _ExerciseMenuAction { replace, remove, memo, reduceSets, superset }
+
+class _BulletLine extends StatelessWidget {
+  final String text;
+
+  const _BulletLine(this.text);
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 4),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text('•  '),
+          Expanded(child: Text(text)),
         ],
       ),
     );

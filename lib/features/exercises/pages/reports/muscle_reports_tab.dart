@@ -5,6 +5,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../models/workout_entry.dart';
 import '../../../tracking/workouts/workouts_tab.dart';
 import '../../data/muscle_group_images.dart';
+import '../../providers/exercise_providers.dart';
+import '../../widgets/add_to_workout_dialog.dart' show resolveMuscleGroup;
 import '../../widgets/category_visual.dart';
 import '../../widgets/empty_state.dart';
 import '../../widgets/muscle_group_image.dart';
@@ -34,7 +36,10 @@ class _MuscleStats {
   }
 }
 
-Map<String, _MuscleStats> _computeStats(List<WorkoutEntry> workouts) {
+Map<String, _MuscleStats> _computeStats(
+  WidgetRef ref,
+  List<WorkoutEntry> workouts,
+) {
   final now = DateTime.now();
   final weekAgo = now.subtract(const Duration(days: 7));
   final monthAgo = now.subtract(const Duration(days: 30));
@@ -42,9 +47,17 @@ Map<String, _MuscleStats> _computeStats(List<WorkoutEntry> workouts) {
 
   for (final workout in workouts) {
     for (final exercise in workout.exercises) {
-      final s = stats.putIfAbsent(
+      final catalogExercise =
+          exercise.exerciseId == null
+              ? null
+              : ref.watch(exerciseByIdProvider(exercise.exerciseId!));
+      final muscleGroup = resolveMuscleGroup(
+        catalogExercise,
         exercise.muscleGroup,
-        () => _MuscleStats(exercise.muscleGroup),
+      );
+      final s = stats.putIfAbsent(
+        muscleGroup,
+        () => _MuscleStats(muscleGroup),
       );
       s.allTimeSets += exercise.sets.length;
       s.workoutDates.add(
@@ -79,7 +92,7 @@ class MuscleReportsTab extends ConsumerWidget {
                 'Log a workout in Tracking to see your muscle group reports here.',
           );
         }
-        final stats = _computeStats(workouts);
+        final stats = _computeStats(ref, workouts);
         final ordered = muscleGroups.map((g) => stats[g]!).toList();
 
         return ListView(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/design_system/app_colors.dart';
 import '../../../../core/design_system/app_spacing.dart';
@@ -7,15 +8,19 @@ import '../../../../core/utils/pr.dart';
 import '../../../../models/workout_entry.dart';
 import '../../../../shared/widgets/app_card.dart';
 import '../../../../shared/widgets/muscle_body_diagram.dart';
+import '../../../exercises/providers/exercise_providers.dart';
+import '../../../exercises/widgets/add_to_workout_dialog.dart'
+    show resolveMuscleGroup;
+import 'workout_share_page.dart';
 
-class WorkoutSummaryPage extends StatelessWidget {
+class WorkoutSummaryPage extends ConsumerWidget {
   final WorkoutEntry entry;
   final Duration? duration;
 
   const WorkoutSummaryPage({super.key, required this.entry, this.duration});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final scheme = Theme.of(context).colorScheme;
     final totalSets = entry.exercises.fold<int>(
       0,
@@ -30,8 +35,12 @@ class WorkoutSummaryPage extends StatelessWidget {
 
     final setsByGroup = <String, int>{};
     for (final e in entry.exercises) {
-      setsByGroup[e.muscleGroup] =
-          (setsByGroup[e.muscleGroup] ?? 0) + e.sets.length;
+      final catalogExercise =
+          e.exerciseId == null
+              ? null
+              : ref.watch(exerciseByIdProvider(e.exerciseId!));
+      final group = resolveMuscleGroup(catalogExercise, e.muscleGroup);
+      setsByGroup[group] = (setsByGroup[group] ?? 0) + e.sets.length;
     }
 
     // "Best performance" — the heaviest estimated-1RM set across the
@@ -176,6 +185,18 @@ class WorkoutSummaryPage extends StatelessWidget {
               ),
             ],
             const SizedBox(height: AppSpacing.xl),
+            OutlinedButton.icon(
+              onPressed:
+                  () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => WorkoutSharePage(entry: entry),
+                    ),
+                  ),
+              icon: const Icon(Icons.ios_share),
+              label: const Text('Share workout'),
+            ),
+            const SizedBox(height: AppSpacing.sm),
             FilledButton(
               onPressed:
                   () => Navigator.popUntil(context, (route) => route.isFirst),

@@ -20,6 +20,9 @@ import '../../shared/widgets/muscle_body_diagram.dart';
 import '../../shared/widgets/progress_ring.dart';
 import '../../shared/widgets/section_header.dart';
 import '../nutrition/providers/nutrition_providers.dart';
+import '../exercises/pages/weekly_plan/weekly_plan_providers.dart';
+import '../exercises/providers/exercise_providers.dart';
+import '../exercises/widgets/add_to_workout_dialog.dart' show resolveMuscleGroup;
 import '../tracking/tracking_tab_provider.dart';
 import '../tracking/weight/weight_tab.dart';
 import '../tracking/workouts/pages/active_workout_page.dart';
@@ -81,6 +84,13 @@ class AnalyticsScreen extends ConsumerWidget {
               delay: stagger,
               child: _BodySection(profile: profile, weightLogs: weightLogs),
             ),
+            const SizedBox(height: AppSpacing.xl),
+            FadeSlideIn(
+              delay: stagger,
+              child: const _ProgressSuggestionSection(),
+            ),
+            const SizedBox(height: AppSpacing.xl),
+            FadeSlideIn(delay: stagger, child: const _ProteinInsightSection()),
             const SizedBox(height: AppSpacing.xl),
             FadeSlideIn(
               delay: stagger * 2,
@@ -439,6 +449,17 @@ class _TodayWorkoutSection extends ConsumerWidget {
     final summary = ref.watch(todaysWorkoutSummaryProvider);
     final scheme = Theme.of(context).colorScheme;
 
+    final resolvedWeek = ref.watch(resolvedWeekProvider);
+    final today = DateTime.now();
+    final todayResolved = resolvedWeek.firstWhere(
+      (d) => d.isoWeekday == today.weekday,
+      orElse: () => resolvedWeek.first,
+    );
+    final allPlans = ref.watch(availableWorkoutPlansProvider);
+    final plansById = {for (final p in allPlans) p.id: p};
+    final todayPlan =
+        todayResolved.planId == null ? null : plansById[todayResolved.planId];
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -454,12 +475,14 @@ class _TodayWorkoutSection extends ConsumerWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'No workout logged yet',
+                              todayPlan?.name ?? 'No workout planned',
                               style: Theme.of(context).textTheme.titleSmall,
                             ),
                             const SizedBox(height: AppSpacing.xxs),
                             Text(
-                              "Start today's session when you're ready.",
+                              todayPlan == null
+                                  ? "Start today's session when you're ready."
+                                  : '${todayPlan.exercises.length} exercises · ~${todayPlan.estimatedMinutes} min',
                               style: Theme.of(context).textTheme.bodySmall
                                   ?.copyWith(color: scheme.onSurfaceVariant),
                             ),
@@ -473,8 +496,25 @@ class _TodayWorkoutSection extends ConsumerWidget {
                               context,
                               MaterialPageRoute(
                                 builder:
-                                    (_) => const ActiveWorkoutPage(
-                                      title: 'Workout',
+                                    (_) => ActiveWorkoutPage(
+                                      title: todayPlan?.name ?? 'Workout',
+                                      seeds:
+                                          todayPlan == null
+                                              ? const []
+                                              : [
+                                                for (final p
+                                                    in todayPlan.exercises)
+                                                  SessionExerciseSeed(
+                                                    exerciseId: p.exerciseId,
+                                                    exerciseName:
+                                                        p.exerciseName,
+                                                    targetSets: p.sets,
+                                                    targetReps: p.targetReps,
+                                                    isTimed: p.isTimed,
+                                                    restSeconds:
+                                                        p.restSeconds,
+                                                  ),
+                                              ],
                                     ),
                               ),
                             ),
@@ -619,6 +659,122 @@ class _ConsistencyDot extends StatelessWidget {
   }
 }
 
+class _ProgressSuggestionSection extends ConsumerWidget {
+  const _ProgressSuggestionSection();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final suggestion = ref.watch(progressSuggestionProvider);
+    // Nothing honest to say yet (goal is maintain/custom, or not enough
+    // logged history) — stay out of the way rather than show a filler card.
+    if (suggestion == null) return const SizedBox.shrink();
+
+    final scheme = Theme.of(context).colorScheme;
+    final color = suggestion.isPositive ? AppColors.workout : AppColors.achievement;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SectionHeader(title: 'Progress Insight'),
+        AppCard(
+          accentColor: color,
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Icon(
+                suggestion.isPositive
+                    ? Icons.trending_up_rounded
+                    : Icons.lightbulb_outline,
+                color: color,
+              ),
+              const SizedBox(width: AppSpacing.sm),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      suggestion.title,
+                      style: Theme.of(context).textTheme.titleSmall,
+                    ),
+                    const SizedBox(height: AppSpacing.xxs),
+                    Text(
+                      suggestion.message,
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: scheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _ProteinInsightSection extends ConsumerWidget {
+  const _ProteinInsightSection();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final insight = ref.watch(proteinInsightProvider);
+    if (insight == null) return const SizedBox.shrink();
+
+    final scheme = Theme.of(context).colorScheme;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SectionHeader(title: 'Protein Insight'),
+        AppCard(
+          accentColor: AppColors.nutrition,
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Icon(Icons.egg_outlined, color: AppColors.nutrition),
+              const SizedBox(width: AppSpacing.sm),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Falling short on protein',
+                      style: Theme.of(context).textTheme.titleSmall,
+                    ),
+                    const SizedBox(height: AppSpacing.xxs),
+                    Text(
+                      "You're averaging ${insight.avgDailyProteinG.round()}g/day "
+                      'against a ${insight.targetProteinG.round()}g target this week. '
+                      'A few high-protein options to close the gap:',
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: scheme.onSurfaceVariant,
+                      ),
+                    ),
+                    const SizedBox(height: AppSpacing.xs),
+                    Wrap(
+                      spacing: AppSpacing.xs,
+                      runSpacing: AppSpacing.xs,
+                      children: [
+                        for (final food in insight.suggestions)
+                          Chip(
+                            label: Text(food),
+                            visualDensity: VisualDensity.compact,
+                          ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
 class _MuscleThisWeekSection extends ConsumerWidget {
   const _MuscleThisWeekSection();
 
@@ -657,7 +813,14 @@ class _MuscleThisWeekSection extends ConsumerWidget {
                   : Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      MuscleBodyDiagram(trainedSets: setsByGroup),
+                      GestureDetector(
+                        onTap: () {
+                          ref.read(pendingTrackingTabProvider.notifier).state =
+                              2;
+                          context.push('/tracking');
+                        },
+                        child: MuscleBodyDiagram(trainedSets: setsByGroup),
+                      ),
                       const SizedBox(width: AppSpacing.lg),
                       Expanded(
                         child: Wrap(
@@ -687,17 +850,17 @@ class _MuscleThisWeekSection extends ConsumerWidget {
   }
 }
 
-class _BodySection extends StatefulWidget {
+class _BodySection extends ConsumerStatefulWidget {
   final UserProfile profile;
   final List<WeightEntry> weightLogs;
 
   const _BodySection({required this.profile, required this.weightLogs});
 
   @override
-  State<_BodySection> createState() => _BodySectionState();
+  ConsumerState<_BodySection> createState() => _BodySectionState();
 }
 
-class _BodySectionState extends State<_BodySection> {
+class _BodySectionState extends ConsumerState<_BodySection> {
   int _rangeDays = 30;
 
   @override
@@ -806,18 +969,25 @@ class _BodySectionState extends State<_BodySection> {
                 ),
               ],
               const SizedBox(height: AppSpacing.md),
-              SizedBox(
-                height: 120,
-                child:
-                    visible.length < 2
-                        ? Center(
-                          child: Text(
-                            'Log a few more entries to see a trend.',
-                            style: Theme.of(context).textTheme.bodySmall
-                                ?.copyWith(color: scheme.onSurfaceVariant),
-                          ),
-                        )
-                        : _WeightSparkline(entries: visible),
+              GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTap: () {
+                  ref.read(pendingTrackingTabProvider.notifier).state = 0;
+                  context.push('/tracking');
+                },
+                child: SizedBox(
+                  height: 120,
+                  child:
+                      visible.length < 2
+                          ? Center(
+                            child: Text(
+                              'Log a few more entries to see a trend.',
+                              style: Theme.of(context).textTheme.bodySmall
+                                  ?.copyWith(color: scheme.onSurfaceVariant),
+                            ),
+                          )
+                          : _WeightSparkline(entries: visible),
+                ),
               ),
             ],
           ),
@@ -1082,16 +1252,17 @@ class _PrRow extends StatelessWidget {
   }
 }
 
-class _MuscleVolumeSection extends StatefulWidget {
+class _MuscleVolumeSection extends ConsumerStatefulWidget {
   final List<WorkoutEntry> workouts;
 
   const _MuscleVolumeSection({required this.workouts});
 
   @override
-  State<_MuscleVolumeSection> createState() => _MuscleVolumeSectionState();
+  ConsumerState<_MuscleVolumeSection> createState() =>
+      _MuscleVolumeSectionState();
 }
 
-class _MuscleVolumeSectionState extends State<_MuscleVolumeSection> {
+class _MuscleVolumeSectionState extends ConsumerState<_MuscleVolumeSection> {
   int? _rangeDays = 7;
 
   @override
@@ -1105,8 +1276,12 @@ class _MuscleVolumeSectionState extends State<_MuscleVolumeSection> {
     for (final workout in widget.workouts) {
       if (cutoff != null && workout.date.isBefore(cutoff)) continue;
       for (final exercise in workout.exercises) {
-        volumeByGroup[exercise.muscleGroup] =
-            (volumeByGroup[exercise.muscleGroup] ?? 0) + exercise.sets.length;
+        final catalogExercise =
+            exercise.exerciseId == null
+                ? null
+                : ref.watch(exerciseByIdProvider(exercise.exerciseId!));
+        final group = resolveMuscleGroup(catalogExercise, exercise.muscleGroup);
+        volumeByGroup[group] = (volumeByGroup[group] ?? 0) + exercise.sets.length;
       }
     }
 

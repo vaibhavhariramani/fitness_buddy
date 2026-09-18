@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 
 import '../../../core/design_system/app_colors.dart';
 import '../../../core/design_system/app_spacing.dart';
@@ -15,6 +16,8 @@ import '../../../models/workout_entry.dart';
 import '../../../shared/widgets/app_card.dart';
 import '../../../shared/widgets/empty_state.dart';
 import '../../../shared/widgets/section_header.dart';
+import '../../exercises/providers/exercise_providers.dart';
+import '../../exercises/widgets/add_to_workout_dialog.dart' show resolveMuscleGroup;
 
 DateTime _dateOnly(DateTime d) => DateTime(d.year, d.month, d.day);
 
@@ -213,7 +216,25 @@ class _FriendWeightSparkline extends StatelessWidget {
         gridData: const FlGridData(show: false),
         borderData: FlBorderData(show: false),
         titlesData: const FlTitlesData(show: false),
-        lineTouchData: const LineTouchData(enabled: false),
+        lineTouchData: LineTouchData(
+          enabled: true,
+          handleBuiltInTouches: true,
+          touchTooltipData: LineTouchTooltipData(
+            getTooltipItems:
+                (touchedSpots) =>
+                    touchedSpots.map((spot) {
+                      final entry = entries[spot.x.toInt()];
+                      return LineTooltipItem(
+                        '${entry.weightKg.toStringAsFixed(1)} kg\n${DateFormat.MMMd().format(entry.date)}',
+                        const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 12,
+                        ),
+                      );
+                    }).toList(),
+          ),
+        ),
         lineBarsData: [
           LineChartBarData(
             spots: spots,
@@ -270,8 +291,12 @@ class _TrainingSection extends ConsumerWidget {
         final volumeByGroup = <String, int>{};
         for (final w in workouts) {
           for (final e in w.exercises) {
-            volumeByGroup[e.muscleGroup] =
-                (volumeByGroup[e.muscleGroup] ?? 0) + e.sets.length;
+            final catalogExercise =
+                e.exerciseId == null
+                    ? null
+                    : ref.watch(exerciseByIdProvider(e.exerciseId!));
+            final group = resolveMuscleGroup(catalogExercise, e.muscleGroup);
+            volumeByGroup[group] = (volumeByGroup[group] ?? 0) + e.sets.length;
           }
         }
 

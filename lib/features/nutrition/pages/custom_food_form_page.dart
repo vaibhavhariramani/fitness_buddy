@@ -3,9 +3,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/providers.dart';
 import '../../../models/custom_food.dart';
+import '../models/food.dart';
 
 class CustomFoodFormPage extends ConsumerStatefulWidget {
-  const CustomFoodFormPage({super.key});
+  /// Pre-fills the name field — used when this page opens as the "not
+  /// found, add it" fallback from a food search that came up empty, so the
+  /// user doesn't have to retype what they just searched for.
+  final String? initialName;
+
+  const CustomFoodFormPage({super.key, this.initialName});
 
   @override
   ConsumerState<CustomFoodFormPage> createState() => _CustomFoodFormPageState();
@@ -15,7 +21,7 @@ class _CustomFoodFormPageState extends ConsumerState<CustomFoodFormPage> {
   NutritionBasis _basis = NutritionBasis.per100g;
   bool _saving = false;
 
-  final _nameCtrl = TextEditingController();
+  late final _nameCtrl = TextEditingController(text: widget.initialName);
   final _brandCtrl = TextEditingController();
   final _servingSizeCtrl = TextEditingController();
   final _servingDescCtrl = TextEditingController();
@@ -78,35 +84,51 @@ class _CustomFoodFormPageState extends ConsumerState<CustomFoodFormPage> {
 
     setState(() => _saving = true);
     try {
-      await ref
-          .read(customFoodRepoProvider)
-          .add(
-            uid,
+      final food = CustomFood(
+        id: '',
+        name: name,
+        brand: _brandCtrl.text.trim().isEmpty ? null : _brandCtrl.text.trim(),
+        basis: _basis,
+        servingSizeG: double.tryParse(_servingSizeCtrl.text),
+        servingDescription:
+            _servingDescCtrl.text.trim().isEmpty
+                ? null
+                : _servingDescCtrl.text.trim(),
+        calories: calories,
+        proteinG: double.tryParse(_proteinCtrl.text) ?? 0,
+        carbG: double.tryParse(_carbCtrl.text) ?? 0,
+        fatG: double.tryParse(_fatCtrl.text) ?? 0,
+        fiberG: double.tryParse(_fiberCtrl.text),
+        sugarG: double.tryParse(_sugarCtrl.text),
+        sodiumMg: double.tryParse(_sodiumCtrl.text),
+        satFatG: double.tryParse(_satFatCtrl.text),
+        createdAt: DateTime.now(),
+      );
+      final id = await ref.read(customFoodRepoProvider).add(uid, food);
+      if (mounted) {
+        Navigator.pop(
+          context,
+          Food.fromCustomFood(
             CustomFood(
-              id: '',
-              name: name,
-              brand:
-                  _brandCtrl.text.trim().isEmpty
-                      ? null
-                      : _brandCtrl.text.trim(),
-              basis: _basis,
-              servingSizeG: double.tryParse(_servingSizeCtrl.text),
-              servingDescription:
-                  _servingDescCtrl.text.trim().isEmpty
-                      ? null
-                      : _servingDescCtrl.text.trim(),
-              calories: calories,
-              proteinG: double.tryParse(_proteinCtrl.text) ?? 0,
-              carbG: double.tryParse(_carbCtrl.text) ?? 0,
-              fatG: double.tryParse(_fatCtrl.text) ?? 0,
-              fiberG: double.tryParse(_fiberCtrl.text),
-              sugarG: double.tryParse(_sugarCtrl.text),
-              sodiumMg: double.tryParse(_sodiumCtrl.text),
-              satFatG: double.tryParse(_satFatCtrl.text),
-              createdAt: DateTime.now(),
+              id: id,
+              name: food.name,
+              brand: food.brand,
+              basis: food.basis,
+              servingSizeG: food.servingSizeG,
+              servingDescription: food.servingDescription,
+              calories: food.calories,
+              proteinG: food.proteinG,
+              carbG: food.carbG,
+              fatG: food.fatG,
+              fiberG: food.fiberG,
+              sugarG: food.sugarG,
+              sodiumMg: food.sodiumMg,
+              satFatG: food.satFatG,
+              createdAt: food.createdAt,
             ),
-          );
-      if (mounted) Navigator.pop(context);
+          ),
+        );
+      }
     } finally {
       if (mounted) setState(() => _saving = false);
     }

@@ -14,6 +14,24 @@ String nearestMuscleGroup(Exercise exercise) {
   return exercise.category;
 }
 
+/// The muscle group to show for a logged exercise — prefers a live catalog
+/// lookup ([catalogExercise], resolved by the caller via
+/// `exerciseByIdProvider(log.exerciseId)`) over whatever was stored on the
+/// log at the time it was created, falling back to that stored value only
+/// when the id doesn't resolve (a genuinely custom/free-typed exercise, or
+/// one since removed from the catalog).
+///
+/// Historical logs baked in whatever the catalog said at logging time, so a
+/// workout logged before an exercise's category was correctly populated
+/// stays stuck showing that stale value (often a generic "Full body")
+/// forever unless re-derived — this is what re-derives it, everywhere
+/// muscle-group stats are aggregated for display.
+String resolveMuscleGroup(Exercise? catalogExercise, String storedMuscleGroup) {
+  return catalogExercise != null
+      ? nearestMuscleGroup(catalogExercise)
+      : storedMuscleGroup;
+}
+
 Future<void> showAddToWorkoutDialog(
   BuildContext context,
   WidgetRef ref,

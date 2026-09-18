@@ -1,8 +1,15 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/providers.dart';
+import '../../core/utils/calculations.dart';
+import '../../models/meal_entry.dart';
 import '../../models/personal_record.dart';
 import '../../models/workout_entry.dart';
+import '../exercises/providers/exercise_providers.dart';
+import '../exercises/widgets/add_to_workout_dialog.dart' show resolveMuscleGroup;
+import '../nutrition/data/common_foods.dart';
+import '../nutrition/models/food.dart';
+import '../nutrition/providers/nutrition_providers.dart';
 import '../tracking/weight/weight_tab.dart';
 import '../tracking/workouts/workouts_tab.dart';
 
@@ -149,11 +156,217 @@ final weeklyMuscleGroupsProvider = Provider.autoDispose<Map<String, int>>((
   final setsByGroup = <String, int>{};
   for (final w in thisWeek) {
     for (final e in w.exercises) {
-      setsByGroup[e.muscleGroup] =
-          (setsByGroup[e.muscleGroup] ?? 0) + e.sets.length;
+      final catalogExercise =
+          e.exerciseId == null
+              ? null
+              : ref.watch(exerciseByIdProvider(e.exerciseId!));
+      final group = resolveMuscleGroup(catalogExercise, e.muscleGroup);
+      setsByGroup[group] = (setsByGroup[group] ?? 0) + e.sets.length;
     }
   }
   return setsByGroup;
+});
+
+/// Meals logged in the last 7 days (rolling, not calendar-week), for the
+/// progress-suggestions heuristic below — a calendar-week window would be
+/// too short on a Monday to say anything useful about eating patterns.
+final _recentMealsProvider = StreamProvider.autoDispose((ref) {
+  final uid = ref.watch(authStateProvider).valueOrNull?.uid;
+  if (uid == null) return const Stream.empty();
+  final now = DateTime.now();
+  return ref
+      .watch(mealRepoProvider)
+      .watchRange(uid, now.subtract(const Duration(days: 7)), now);
+});
+
+/// A single data-driven nudge for the dashboard: "you're on track" when
+/// weight is moving the right way for the user's goal, or a concrete
+/// suggestion (call out the most-repeated food and roughly how much to trim
+/// it) when it's stalled or moving the wrong way despite a calorie gap.
+/// Null when there isn't enough logged history yet to say anything honest.
+class ProgressSuggestion {
+  final String title;
+  final String message;
+  final bool isPositive;
+
+  const ProgressSuggestion({
+    required this.title,
+    required this.message,
+    this.isPositive = false,
+  });
+}
+
+final _gramsPattern = RegExp(r'(\d+(\.\d+)?)\s*g');
+
+final progressSuggestionProvider = Provider.autoDispose<ProgressSuggestion?>((
+  ref,
+) {
+  final profile = ref.watch(userProfileProvider).valueOrNull;
+  if (profile == null) return null;
+  final goal = profile.nutritionGoal;
+  // Nothing directional to say for maintain/custom — the weight-stable
+  // signal is the point, not a problem to fix.
+  if (goal != NutritionGoal.loseWeight &&
+      goal != NutritionGoal.gainMuscle &&
+      goal != NutritionGoal.recomp) {
+    return null;
+  }
+
+  final weightLogs = ref.watch(weightLogsProvider).valueOrNull ?? const [];
+  final windowStart = DateTime.now().subtract(const Duration(days: 14));
+  final recentWeights =
+      weightLogs.where((e) => e.date.isAfter(windowStart)).toList()
+        ..sort((a, b) => a.date.compareTo(b.date));
+  if (recentWeights.length < 3) return null;
+  final weightTrendKg = recentWeights.last.weightKg - recentWeights.first.weightKg;
+
+  final meals = ref.watch(_recentMealsProvider).valueOrNull ?? const [];
+  final caloriesByDay = <DateTime, double>{};
+  for (final m in meals) {
+    final day = _dateOnly(m.date);
+    caloriesByDay[day] = (caloriesByDay[day] ?? 0) + m.calories;
+  }
+  // Fewer than 3 logged days can't support a daily-average claim.
+  if (caloriesByDay.length < 3) return null;
+  final avgDailyCalories =
+      caloriesByDay.values.reduce((a, b) => a + b) / caloriesByDay.length;
+
+  final target =
+      goal == NutritionGoal.custom
+          ? (profile.customCalorieTarget ?? profile.calorieTargets.maintenance)
+          : goal.calorieTarget(profile.calorieTargets);
+
+  const stallThresholdKg = 0.3;
+  final wantsLoss = goal == NutritionGoal.loseWeight || goal == NutritionGoal.recomp;
+  final wantsGain = goal == NutritionGoal.gainMuscle;
+  final isStalledOrWrongWay =
+      wantsLoss ? weightTrendKg > -stallThresholdKg : weightTrendKg < stallThresholdKg;
+
+  if (isStalledOrWrongWay) {
+    final overBy = avgDailyCalories - target;
+    if (wantsLoss && overBy > 100) {
+      return ProgressSuggestion(
+        title: 'Try this next',
+        message: _portionSuggestion(meals, avgDailyCalories, overBy) ??
+            "You're averaging ${avgDailyCalories.round()} kcal/day, about "
+                '${overBy.round()} kcal over your target for the last week — '
+                'trimming portions slightly should help.',
+      );
+    }
+    if (wantsGain && overBy < -100) {
+      return ProgressSuggestion(
+        title: 'Try this next',
+        message:
+            "You're averaging ${avgDailyCalories.round()} kcal/day, about "
+            '${(-overBy).round()} kcal under your target — add a bit more at '
+            'your next meal or a snack to support muscle gain.',
+      );
+    }
+  } else {
+    return ProgressSuggestion(
+      title: "You're on track",
+      message:
+          'Weight has moved ${weightTrendKg.abs().toStringAsFixed(1)} kg '
+          'toward your goal over the last 2 weeks — keep it up.',
+      isPositive: true,
+    );
+  }
+
+  return null;
+});
+
+/// Finds the most-repeated named food in [meals] and, when its logged
+/// serving includes a gram amount, suggests a concrete trimmed portion
+/// (mirroring how a person would reason about it) rather than a vague
+/// percentage. Returns null when no named food repeats enough to single out.
+String? _portionSuggestion(
+  List<MealEntry> meals,
+  double avgDailyCalories,
+  double overBy,
+) {
+  final byName = <String, List<MealEntry>>{};
+  for (final m in meals) {
+    final name = m.foodName;
+    if (name == null || name.trim().isEmpty || name == 'Photo') continue;
+    byName.putIfAbsent(name, () => []).add(m);
+  }
+  if (byName.isEmpty) return null;
+
+  final top = byName.entries.reduce(
+    (a, b) => a.value.length >= b.value.length ? a : b,
+  );
+  if (top.value.length < 3) return null; // not a real repeated pattern yet
+
+  final name = top.key;
+  final instances = top.value;
+  final avgCalPerInstance =
+      instances.map((e) => e.calories).reduce((a, b) => a + b) /
+      instances.length;
+
+  final gramsMatch = _gramsPattern.firstMatch(
+    instances.last.servingDescription ?? '',
+  );
+  final cutFraction = (overBy / avgDailyCalories).clamp(0.1, 0.5);
+  final String portionAdvice;
+  if (gramsMatch != null) {
+    final grams = double.parse(gramsMatch.group(1)!);
+    final suggestedGrams = ((grams * (1 - cutFraction)) / 10).round() * 10;
+    portionAdvice = 'try trimming it to about ${suggestedGrams}g';
+  } else {
+    final pct = (cutFraction * 100).round();
+    portionAdvice = 'try cutting the portion by about $pct%';
+  }
+
+  return "You've logged $name ${instances.length}x this week "
+      '(~${avgCalPerInstance.round()} kcal each). '
+      "You're averaging ${avgDailyCalories.round()} kcal/day, about "
+      '${overBy.round()} over your target — $portionAdvice.';
+}
+
+/// A protein shortfall nudge, separate from [progressSuggestionProvider]
+/// (which is calorie/goal-direction driven) — this fires purely on protein
+/// intake vs. target, regardless of nutrition goal, since under-eating
+/// protein matters whether you're cutting, bulking, or maintaining.
+class ProteinInsight {
+  final double avgDailyProteinG;
+  final double targetProteinG;
+  final List<String> suggestions;
+
+  const ProteinInsight({
+    required this.avgDailyProteinG,
+    required this.targetProteinG,
+    required this.suggestions,
+  });
+}
+
+final proteinInsightProvider = Provider.autoDispose<ProteinInsight?>((ref) {
+  final targets = ref.watch(activeNutritionTargetsProvider);
+  if (targets == null || targets.proteinG <= 0) return null;
+
+  final meals = ref.watch(_recentMealsProvider).valueOrNull ?? const [];
+  final proteinByDay = <DateTime, double>{};
+  for (final m in meals) {
+    final day = _dateOnly(m.date);
+    proteinByDay[day] = (proteinByDay[day] ?? 0) + m.proteinG;
+  }
+  // Fewer than 3 logged days can't support a daily-average claim.
+  if (proteinByDay.length < 3) return null;
+
+  final avgDailyProtein =
+      proteinByDay.values.reduce((a, b) => a + b) / proteinByDay.length;
+  // A little short is noise, not a pattern worth interrupting the dashboard
+  // for — only flag a real, consistent shortfall.
+  if (avgDailyProtein >= targets.proteinG * 0.85) return null;
+
+  final topProteinFoods = List<Food>.from(commonFoods)
+    ..sort((a, b) => b.proteinPer100g.compareTo(a.proteinPer100g));
+  final suggestions = topProteinFoods.take(4).map((f) => f.name).toList();
+
+  return ProteinInsight(
+    avgDailyProteinG: avgDailyProtein,
+    targetProteinG: targets.proteinG,
+    suggestions: suggestions,
+  );
 });
 
 /// The most recently-achieved personal records, newest first, for the

@@ -6,6 +6,7 @@ import '../../../models/meal_entry.dart';
 import '../models/food.dart';
 import '../providers/nutrition_providers.dart';
 import '../widgets/food_result_tile.dart';
+import 'custom_food_form_page.dart';
 import 'serving_confirm_page.dart';
 
 class FoodSearchPage extends ConsumerStatefulWidget {
@@ -54,6 +55,16 @@ class _FoodSearchPageState extends ConsumerState<FoodSearchPage> {
             ),
       ),
     );
+  }
+
+  Future<void> _addNewFood(String query) async {
+    final food = await Navigator.push<Food>(
+      context,
+      MaterialPageRoute(
+        builder: (context) => CustomFoodFormPage(initialName: query),
+      ),
+    );
+    if (food != null && mounted) _selectFood(food);
   }
 
   void _toggleFavorite(Food food, bool isFavorite) {
@@ -200,12 +211,21 @@ class _FoodSearchPageState extends ConsumerState<FoodSearchPage> {
                             state.commonResults.isEmpty &&
                             state.customResults.isEmpty &&
                             state.offResults.isEmpty)
-                          const Padding(
-                            padding: EdgeInsets.all(32),
-                            child: Center(
-                              child: Text(
-                                'No foods found. Try a different search term.',
-                              ),
+                          Padding(
+                            padding: const EdgeInsets.all(32),
+                            child: Column(
+                              children: [
+                                const Text(
+                                  'No foods found. Try a different search term, or add it yourself.',
+                                  textAlign: TextAlign.center,
+                                ),
+                                const SizedBox(height: 16),
+                                OutlinedButton.icon(
+                                  onPressed: () => _addNewFood(state.query),
+                                  icon: const Icon(Icons.add),
+                                  label: Text('Add "${state.query}"'),
+                                ),
+                              ],
                             ),
                           ),
                       ],

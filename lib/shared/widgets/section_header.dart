@@ -25,11 +25,19 @@ class SectionHeader extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(
-            title.toUpperCase(),
-            style: Theme.of(context).textTheme.labelSmall?.copyWith(
-              color: scheme.onSurfaceVariant,
-              letterSpacing: 1.0,
+          // Expanded + ellipsis so a long title (e.g. "Training Volume
+          // (effective sets)") truncates instead of overflowing the row
+          // when paired with a wide trailing widget like a 4-option range
+          // selector — a no-op for short titles that already fit.
+          Expanded(
+            child: Text(
+              title.toUpperCase(),
+              overflow: TextOverflow.ellipsis,
+              maxLines: 1,
+              style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                color: scheme.onSurfaceVariant,
+                letterSpacing: 1.0,
+              ),
             ),
           ),
           if (trailing != null) trailing!,

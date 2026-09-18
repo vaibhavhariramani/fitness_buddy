@@ -8,6 +8,9 @@ import 'package:flutter/services.dart';
 void showRestTimerSheet(BuildContext context, {int seconds = 90}) {
   showModalBottomSheet(
     context: context,
+    // Without this, the sheet attaches below ActiveWorkoutPage's own
+    // bottomNavigationBar (the Finish Workout bar) instead of above it.
+    useRootNavigator: true,
     isDismissible: true,
     enableDrag: true,
     builder: (context) => _RestTimerSheet(initialSeconds: seconds),

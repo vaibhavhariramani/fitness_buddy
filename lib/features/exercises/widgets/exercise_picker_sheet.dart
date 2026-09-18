@@ -10,6 +10,10 @@ import 'exercise_visual.dart';
 Future<Exercise?> showExercisePickerSheet(BuildContext context) {
   return showModalBottomSheet<Exercise>(
     context: context,
+    // Without this, opening the picker from a screen with its own
+    // bottomNavigationBar (e.g. ActiveWorkoutPage's Finish Workout bar)
+    // renders the sheet below that bar instead of above it.
+    useRootNavigator: true,
     isScrollControlled: true,
     builder: (context) => const _ExercisePickerSheet(),
   );

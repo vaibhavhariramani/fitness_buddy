@@ -20,6 +20,7 @@ import '../features/social/social_screen.dart';
 import '../features/social/chat/chat_thread_screen.dart';
 import '../features/settings/settings_screen.dart';
 import '../features/settings/wellness_reminders_screen.dart';
+import '../features/tracking/workouts/pages/active_workout_page.dart';
 
 /// Notifies go_router whenever auth or profile state changes, so its
 /// [redirect] callback is re-evaluated (e.g. right after sign-in or once
@@ -86,6 +87,12 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/onboarding',
         builder: (context, state) => const OnboardingScreen(),
+      ),
+      // Deep-link target for the "workout in progress" notification (tap or
+      // Resume) — loads the persisted draft rather than seeding fresh.
+      GoRoute(
+        path: '/active-workout',
+        builder: (context, state) => const ActiveWorkoutPage(restoreDraft: true),
       ),
       ShellRoute(
         builder: (context, state, child) => HomeShell(child: child),

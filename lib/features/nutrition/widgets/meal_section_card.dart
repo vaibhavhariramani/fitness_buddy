@@ -7,7 +7,6 @@ class MealSectionCard extends StatelessWidget {
   final MealType type;
   final List<MealEntry> entries;
   final VoidCallback onAddFood;
-  final VoidCallback onAddPhoto;
   final void Function(MealEntry entry) onDelete;
   final bool selectionMode;
   final Set<String> selectedIds;
@@ -18,7 +17,6 @@ class MealSectionCard extends StatelessWidget {
     required this.type,
     required this.entries,
     required this.onAddFood,
-    required this.onAddPhoto,
     required this.onDelete,
     this.selectionMode = false,
     this.selectedIds = const {},
@@ -58,19 +56,10 @@ class MealSectionCard extends StatelessWidget {
                         : () => onToggleSelect!(entry),
               ),
             if (!selectionMode)
-              Row(
-                children: [
-                  TextButton.icon(
-                    onPressed: onAddFood,
-                    icon: const Icon(Icons.add),
-                    label: const Text('Add food'),
-                  ),
-                  TextButton.icon(
-                    onPressed: onAddPhoto,
-                    icon: const Icon(Icons.photo_camera_outlined),
-                    label: const Text('Add photo'),
-                  ),
-                ],
+              TextButton.icon(
+                onPressed: onAddFood,
+                icon: const Icon(Icons.add),
+                label: const Text('Add food'),
               ),
           ],
         ),

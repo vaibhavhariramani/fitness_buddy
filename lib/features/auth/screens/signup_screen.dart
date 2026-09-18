@@ -1,7 +1,11 @@
+import 'dart:io' show Platform;
+
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 import '../../../core/design_system/app_colors.dart';
 import '../../../core/design_system/app_spacing.dart';
@@ -54,6 +58,34 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
     // On success, authStateProvider fires and the router redirect sends the
     // user to onboarding automatically.
   }
+
+  Future<void> _submitGoogle() async {
+    await ref.read(authControllerProvider.notifier).signInWithGoogle();
+    final state = ref.read(authControllerProvider);
+    if (state.hasError && mounted) {
+      _showError(state.error);
+    }
+  }
+
+  Future<void> _submitApple() async {
+    await ref.read(authControllerProvider.notifier).signInWithApple();
+    final state = ref.read(authControllerProvider);
+    if (state.hasError && mounted) {
+      _showError(state.error);
+    }
+  }
+
+  void _showError(Object? error) {
+    final message =
+        error is FirebaseAuthException
+            ? (error.message ?? error.code)
+            : 'Something went wrong. Please try again.';
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
+  }
+
+  bool get _showAppleSignIn => !kIsWeb && Platform.isIOS;
 
   @override
   Widget build(BuildContext context) {
@@ -181,6 +213,50 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                                     )
                                     : const Text('Sign up'),
                           ),
+                          const SizedBox(height: AppSpacing.md),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Divider(color: scheme.outlineVariant),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: AppSpacing.sm,
+                                ),
+                                child: Text(
+                                  'or',
+                                  style: Theme.of(
+                                    context,
+                                  ).textTheme.bodySmall?.copyWith(
+                                    color: scheme.onSurfaceVariant,
+                                  ),
+                                ),
+                              ),
+                              Expanded(
+                                child: Divider(color: scheme.outlineVariant),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: AppSpacing.md),
+                          OutlinedButton.icon(
+                            onPressed: isLoading ? null : _submitGoogle,
+                            icon: const Icon(Icons.g_mobiledata, size: 24),
+                            label: const Text('Continue with Google'),
+                          ),
+                          if (_showAppleSignIn) ...[
+                            const SizedBox(height: AppSpacing.sm),
+                            SizedBox(
+                              height: 44,
+                              child: SignInWithAppleButton(
+                                onPressed: isLoading ? () {} : _submitApple,
+                                style:
+                                    isDark
+                                        ? SignInWithAppleButtonStyle.white
+                                        : SignInWithAppleButtonStyle.black,
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                            ),
+                          ],
                           const SizedBox(height: AppSpacing.xs),
                           TextButton(
                             onPressed: isLoading ? null : () => context.pop(),

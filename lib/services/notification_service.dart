@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:audioplayers/audioplayers.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_timezone/flutter_timezone.dart';
@@ -10,8 +11,48 @@ import 'package:timezone/timezone.dart' as tz;
 
 import '../core/utils/notification_ids.dart';
 import '../core/utils/wellness_sounds.dart';
+import '../features/tracking/workouts/active_workout_draft.dart';
+import '../firebase_options.dart';
 import '../models/user_profile.dart';
 import '../models/wellness_reminder.dart';
+
+/// Notification id/action ids for the "workout in progress" notification —
+/// shown while an [ActiveWorkoutPage] session is running so the workout
+/// keeps a visible presence (and a way to resume or stop & save it) even
+/// after the app is backgrounded or closed.
+class _WorkoutNotification {
+  static const id = 9500;
+  static const categoryId = 'active_workout_category';
+  static const resumeActionId = 'resume_workout';
+  static const stopSaveActionId = 'stop_save_workout';
+  static const channelId = 'active_workout';
+}
+
+/// Handles the "Stop & Save" action when it's tapped while the app has no
+/// running Flutter engine at all — iOS/Android spin up a fresh minimal one
+/// just for this callback, so Firebase needs its own init guard here, same
+/// as [firebaseMessagingBackgroundHandler] does for FCM.
+///
+/// Kept synchronous (fire-and-forget on the async work inside) because the
+/// plugin's callback type is a plain `void Function`, not a `Future`-typed
+/// one it can await — unlike FCM's background handler, nothing here tells
+/// the OS to keep this isolate alive until the Firestore write finishes, so
+/// this is best-effort. Opening the app (via the notification's own tap
+/// target, or the "Resume" action) is the reliable way to save a session
+/// that was running when the app got killed.
+@pragma('vm:entry-point')
+void notificationBackgroundResponseHandler(NotificationResponse response) {
+  if (response.actionId == _WorkoutNotification.stopSaveActionId) {
+    _handleBackgroundStopSave();
+  }
+}
+
+Future<void> _handleBackgroundStopSave() async {
+  if (Firebase.apps.isEmpty) {
+    await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  }
+  await stopAndSaveActiveWorkoutDraft();
+}
 
 /// Fixed notification ids so re-scheduling always replaces the same slots
 /// instead of accumulating duplicates.
@@ -71,15 +112,33 @@ class NotificationService {
     tz.setLocalLocation(tz.getLocation(deviceTimeZone));
 
     const androidInit = AndroidInitializationSettings('@mipmap/ic_launcher');
-    const iosInit = DarwinInitializationSettings(
+    final iosInit = DarwinInitializationSettings(
       requestAlertPermission: false,
       requestBadgePermission: false,
       requestSoundPermission: false,
+      notificationCategories: [
+        DarwinNotificationCategory(
+          _WorkoutNotification.categoryId,
+          actions: [
+            DarwinNotificationAction.plain(
+              _WorkoutNotification.resumeActionId,
+              'Resume',
+              options: {DarwinNotificationActionOption.foreground},
+            ),
+            DarwinNotificationAction.plain(
+              _WorkoutNotification.stopSaveActionId,
+              'Stop & Save',
+            ),
+          ],
+        ),
+      ],
     );
 
     await _plugin.initialize(
-      const InitializationSettings(android: androidInit, iOS: iosInit),
+      InitializationSettings(android: androidInit, iOS: iosInit),
       onDidReceiveNotificationResponse: _handleResponse,
+      onDidReceiveBackgroundNotificationResponse:
+          notificationBackgroundResponseHandler,
     );
 
     final launchDetails = await _plugin.getNotificationAppLaunchDetails();
@@ -103,9 +162,63 @@ class NotificationService {
   }
 
   void _handleResponse(NotificationResponse response) {
+    if (response.actionId == _WorkoutNotification.stopSaveActionId) {
+      stopAndSaveActiveWorkoutDraft();
+      cancelWorkoutInProgress();
+      return;
+    }
+    // Plain tap and the "Resume" action both just open the app to the
+    // in-progress session — the payload route (/active-workout) handles
+    // both identically.
     final payload = response.payload;
     if (payload != null) _tappedRouteController.add(payload);
   }
+
+  /// Shows the persistent "workout in progress" notification with Resume /
+  /// Stop & Save actions — called once when an [ActiveWorkoutPage] session
+  /// starts (fresh or resumed). Re-showing with the same id just replaces
+  /// it, so this is also safe to call again if the title changes.
+  Future<void> showWorkoutInProgress(String title) {
+    return _plugin.show(
+      _WorkoutNotification.id,
+      'Workout in progress',
+      title,
+      NotificationDetails(
+        android: AndroidNotificationDetails(
+          _WorkoutNotification.channelId,
+          'Active workout',
+          channelDescription: 'Shows while a workout session is running',
+          ongoing: true,
+          autoCancel: false,
+          importance: Importance.low,
+          priority: Priority.low,
+          actions: const [
+            AndroidNotificationAction(
+              _WorkoutNotification.resumeActionId,
+              'Resume',
+              showsUserInterface: true,
+            ),
+            AndroidNotificationAction(
+              _WorkoutNotification.stopSaveActionId,
+              'Stop & Save',
+              showsUserInterface: false,
+            ),
+          ],
+        ),
+        iOS: DarwinNotificationDetails(
+          categoryIdentifier: _WorkoutNotification.categoryId,
+          presentAlert: true,
+          presentBadge: false,
+          presentSound: false,
+          interruptionLevel: InterruptionLevel.active,
+        ),
+      ),
+      payload: '/active-workout',
+    );
+  }
+
+  Future<void> cancelWorkoutInProgress() =>
+      _plugin.cancel(_WorkoutNotification.id);
 
   /// Lets other notification sources (e.g. a tapped FCM push) feed into the
   /// same tap-routing stream the router listens to, so there's one place

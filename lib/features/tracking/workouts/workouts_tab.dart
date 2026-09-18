@@ -4,6 +4,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../core/design_system/app_colors.dart';
 import '../../../core/design_system/app_spacing.dart';
@@ -16,7 +17,8 @@ import '../../../shared/widgets/empty_state.dart';
 import '../../exercises/models/exercise.dart';
 import '../../exercises/providers/exercise_providers.dart';
 import '../../exercises/widgets/add_to_workout_dialog.dart'
-    show nearestMuscleGroup;
+    show nearestMuscleGroup, resolveMuscleGroup;
+import 'muscle_group_backfill.dart';
 import 'pages/active_workout_page.dart';
 import 'workout_prefill_provider.dart';
 
@@ -37,10 +39,34 @@ class WorkoutsTab extends ConsumerStatefulWidget {
 
 class _WorkoutsTabState extends ConsumerState<WorkoutsTab> {
   bool _prefillHandled = false;
+  bool _backfillChecked = false;
+
+  /// Runs the muscle-group backfill once per signed-in user — guarded by a
+  /// SharedPreferences flag so it doesn't re-scan workout history on every
+  /// tab visit, only the first time after this fix ships.
+  Future<void> _maybeBackfillMuscleGroups(String uid) async {
+    final prefs = await SharedPreferences.getInstance();
+    final key = 'muscleGroupBackfillV1_$uid';
+    if (prefs.getBool(key) == true) return;
+    final catalog = await ref.read(exerciseListProvider.future);
+    await backfillWorkoutMuscleGroups(
+      workoutRepo: ref.read(workoutRepoProvider),
+      uid: uid,
+      catalog: catalog,
+    );
+    await prefs.setBool(key, true);
+  }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+    if (!_backfillChecked) {
+      final uid = ref.read(authStateProvider).valueOrNull?.uid;
+      if (uid != null) {
+        _backfillChecked = true;
+        _maybeBackfillMuscleGroups(uid);
+      }
+    }
     final prefill = ref.read(pendingWorkoutPrefillProvider);
     if (prefill != null && !_prefillHandled) {
       _prefillHandled = true;
@@ -155,7 +181,7 @@ class _WorkoutsTabState extends ConsumerState<WorkoutsTab> {
                             children: [
                               Expanded(
                                 child: Text(
-                                  '${exercise.name} (${exercise.muscleGroup}) — '
+                                  '${exercise.name} (${resolveMuscleGroup(exercise.exerciseId == null ? null : ref.watch(exerciseByIdProvider(exercise.exerciseId!)), exercise.muscleGroup)}) — '
                                   '${exercise.sets.map((s) => '${s.reps}x${s.weightKg.toStringAsFixed(0)}kg').join(', ')}',
                                   style: Theme.of(context).textTheme.bodySmall,
                                 ),

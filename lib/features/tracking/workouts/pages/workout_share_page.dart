@@ -5,6 +5,7 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 
@@ -192,133 +193,215 @@ class _ShareCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 360,
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [Color(0xFF16321A), Color(0xFF2E7D32)],
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(28),
+      child: Container(
+        width: 360,
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [Color(0xFF16321A), Color(0xFF2E7D32)],
+          ),
         ),
-        borderRadius: BorderRadius.circular(28),
+        child: Stack(
+          children: [
+            // A faint, oversized logo mark bleeding off the bottom-right
+            // corner — a subtle watermark so the card still reads as
+            // "Fitness Buddy" even if it gets re-shared or screenshotted
+            // without the app banner below.
+            Positioned(
+              right: -40,
+              bottom: -40,
+              child: Opacity(
+                opacity: 0.08,
+                child: SvgPicture.asset(
+                  'assets/branding/logo_mark.svg',
+                  width: 200,
+                  height: 200,
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (photoBytes != null) ...[
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(18),
+                      child: Image.memory(
+                        photoBytes!,
+                        height: 200,
+                        width: double.infinity,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                  ],
+                  if (prExercises.isNotEmpty) ...[
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 6,
+                      ),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFFFC107),
+                        borderRadius: BorderRadius.circular(999),
+                      ),
+                      child: const Text(
+                        '🏆 NEW PR',
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontWeight: FontWeight.w800,
+                          fontSize: 12,
+                          letterSpacing: 1,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                  ],
+                  const Text(
+                    'Workout Complete',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 26,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    '${entry.exercises.length} exercises · $totalSets sets',
+                    style: const TextStyle(color: Colors.white70, fontSize: 15),
+                  ),
+                  const SizedBox(height: 20),
+                  Center(
+                    // Scoped color overrides so the body diagram reads
+                    // clearly on a dark gradient regardless of the app's own
+                    // light/dark theme — MuscleBodyDiagram always paints
+                    // from the ambient ColorScheme.
+                    child: Theme(
+                      data: ThemeData(
+                        colorScheme: const ColorScheme.dark(
+                          surfaceContainerHighest: Color(0x33FFFFFF),
+                          outlineVariant: Color(0x66FFFFFF),
+                          primary: Color(0xFFFFC107),
+                        ),
+                      ),
+                      child: MuscleBodyDiagram(
+                        trainedSets: setsByGroup,
+                        height: 220,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Wrap(
+                    spacing: 6,
+                    runSpacing: 6,
+                    children: [
+                      for (final e in entry.exercises.take(6))
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 5,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.15),
+                            borderRadius: BorderRadius.circular(999),
+                          ),
+                          child: Text(
+                            e.name,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                  const SizedBox(height: 20),
+                  const Divider(color: Colors.white24),
+                  const SizedBox(height: 12),
+                  Row(
+                    children: [
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: SvgPicture.asset(
+                          'assets/branding/logo.svg',
+                          width: 28,
+                          height: 28,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      const Expanded(
+                        child: Text(
+                          'Fitness Buddy — join me and become workout buddies',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 4),
+                  const Text(
+                    'Search "Fitness Buddy" to download',
+                    style: TextStyle(color: Colors.white60, fontSize: 11),
+                  ),
+                  const SizedBox(height: 10),
+                  const Row(
+                    children: [
+                      _StoreBadge(icon: Icons.apple, label: 'App Store'),
+                      SizedBox(width: 8),
+                      _StoreBadge(
+                        icon: Icons.shop_outlined,
+                        label: 'Google Play',
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+    );
+  }
+}
+
+/// A minimal, non-trademarked stand-in for an app-store badge — an icon plus
+/// the store's name in a pill — since we don't ship Apple's/Google's actual
+/// badge artwork (those come with their own usage/branding guidelines) but
+/// still want to tell whoever sees the share card which stores to search.
+class _StoreBadge extends StatelessWidget {
+  final IconData icon;
+  final String label;
+
+  const _StoreBadge({required this.icon, required this.label});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          if (photoBytes != null) ...[
-            ClipRRect(
-              borderRadius: BorderRadius.circular(18),
-              child: Image.memory(
-                photoBytes!,
-                height: 200,
-                width: double.infinity,
-                fit: BoxFit.cover,
-              ),
-            ),
-            const SizedBox(height: 16),
-          ],
-          if (prExercises.isNotEmpty) ...[
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-              decoration: BoxDecoration(
-                color: const Color(0xFFFFC107),
-                borderRadius: BorderRadius.circular(999),
-              ),
-              child: const Text(
-                '🏆 NEW PR',
-                style: TextStyle(
-                  color: Colors.black,
-                  fontWeight: FontWeight.w800,
-                  fontSize: 12,
-                  letterSpacing: 1,
-                ),
-              ),
-            ),
-            const SizedBox(height: 12),
-          ],
-          const Text(
-            'Workout Complete',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 26,
-              fontWeight: FontWeight.w800,
-            ),
-          ),
-          const SizedBox(height: 4),
+          Icon(icon, size: 14, color: const Color(0xFF16321A)),
+          const SizedBox(width: 4),
           Text(
-            '${entry.exercises.length} exercises · $totalSets sets',
-            style: const TextStyle(color: Colors.white70, fontSize: 15),
-          ),
-          const SizedBox(height: 20),
-          Center(
-            // Scoped color overrides so the body diagram reads clearly on a
-            // dark gradient regardless of the app's own light/dark theme —
-            // MuscleBodyDiagram always paints from the ambient ColorScheme.
-            child: Theme(
-              data: ThemeData(
-                colorScheme: const ColorScheme.dark(
-                  surfaceContainerHighest: Color(0x33FFFFFF),
-                  outlineVariant: Color(0x66FFFFFF),
-                  primary: Color(0xFFFFC107),
-                ),
-              ),
-              child: MuscleBodyDiagram(trainedSets: setsByGroup, height: 220),
+            label,
+            style: const TextStyle(
+              color: Color(0xFF16321A),
+              fontSize: 11,
+              fontWeight: FontWeight.w700,
             ),
-          ),
-          const SizedBox(height: 16),
-          Wrap(
-            spacing: 6,
-            runSpacing: 6,
-            children: [
-              for (final e in entry.exercises.take(6))
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 5,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.15),
-                    borderRadius: BorderRadius.circular(999),
-                  ),
-                  child: Text(
-                    e.name,
-                    style: const TextStyle(color: Colors.white, fontSize: 12),
-                  ),
-                ),
-            ],
-          ),
-          const SizedBox(height: 20),
-          const Divider(color: Colors.white24),
-          const SizedBox(height: 12),
-          Row(
-            children: [
-              Container(
-                width: 28,
-                height: 28,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: const Icon(
-                  Icons.fitness_center,
-                  size: 16,
-                  color: Color(0xFF2E7D32),
-                ),
-              ),
-              const SizedBox(width: 8),
-              const Expanded(
-                child: Text(
-                  'Tracked with Fitness Buddy — join me and become workout buddies',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-            ],
           ),
         ],
       ),

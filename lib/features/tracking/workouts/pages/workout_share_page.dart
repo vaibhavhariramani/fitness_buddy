@@ -10,7 +10,6 @@ import 'package:share_plus/share_plus.dart';
 
 import '../../../../core/design_system/app_spacing.dart';
 import '../../../../models/workout_entry.dart';
-import '../../../../shared/utils/instagram_share.dart';
 import '../../../../shared/utils/photo_picker.dart';
 import '../../../../shared/widgets/muscle_body_diagram.dart';
 import '../../../exercises/providers/exercise_providers.dart';
@@ -55,55 +54,27 @@ class _WorkoutSharePageState extends ConsumerState<WorkoutSharePage> {
     return byteData!.buffer.asUint8List();
   }
 
-  /// Hands the card straight to Instagram's Stories composer (background
-  /// image pre-filled, ready to post) when Instagram is installed; falls
-  /// back to the plain OS share sheet — still usable for Instagram, just as
-  /// a normal post/DM instead of a Story — when it isn't.
-  Future<void> _shareToInstagramStories() async {
-    setState(() => _sharing = true);
-    try {
-      final bytes = await _captureImage();
-      final posted = await shareImageToInstagramStories(bytes);
-      if (!posted && mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text(
-              "Instagram isn't installed — opening the share sheet instead.",
-            ),
-          ),
-        );
-        await _shareViaSystemSheet(bytes);
-      }
-    } finally {
-      if (mounted) setState(() => _sharing = false);
-    }
-  }
-
   Future<void> _share() async {
     setState(() => _sharing = true);
     try {
       final bytes = await _captureImage();
-      await _shareViaSystemSheet(bytes);
+      final dir = await getTemporaryDirectory();
+      final file = File(
+        '${dir.path}/fitness_buddy_workout_${DateTime.now().millisecondsSinceEpoch}.png',
+      );
+      await file.writeAsBytes(bytes);
+
+      final hasPr = widget.entry.exercises.any((e) => e.isPr);
+      await Share.shareXFiles(
+        [XFile(file.path)],
+        text:
+            hasPr
+                ? 'New PR on Fitness Buddy 🏆'
+                : 'Just finished a workout on Fitness Buddy 💪',
+      );
     } finally {
       if (mounted) setState(() => _sharing = false);
     }
-  }
-
-  Future<void> _shareViaSystemSheet(Uint8List bytes) async {
-    final dir = await getTemporaryDirectory();
-    final file = File(
-      '${dir.path}/fitness_buddy_workout_${DateTime.now().millisecondsSinceEpoch}.png',
-    );
-    await file.writeAsBytes(bytes);
-
-    final hasPr = widget.entry.exercises.any((e) => e.isPr);
-    await Share.shareXFiles(
-      [XFile(file.path)],
-      text:
-          hasPr
-              ? 'New PR on Fitness Buddy 🏆'
-              : 'Just finished a workout on Fitness Buddy 💪',
-    );
   }
 
   @override
@@ -167,17 +138,9 @@ class _WorkoutSharePageState extends ConsumerState<WorkoutSharePage> {
                   ),
                   const SizedBox(height: AppSpacing.sm),
                   FilledButton.icon(
-                    onPressed: _sharing ? null : _shareToInstagramStories,
-                    icon: const Icon(Icons.camera_alt_outlined),
-                    label: Text(
-                      _sharing ? 'Preparing…' : 'Share to Instagram Stories',
-                    ),
-                  ),
-                  const SizedBox(height: AppSpacing.sm),
-                  OutlinedButton.icon(
                     onPressed: _sharing ? null : _share,
                     icon: const Icon(Icons.ios_share),
-                    label: Text(_sharing ? 'Preparing…' : 'More options'),
+                    label: Text(_sharing ? 'Preparing…' : 'Share'),
                   ),
                 ],
               ),

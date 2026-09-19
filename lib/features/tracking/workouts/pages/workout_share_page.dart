@@ -34,6 +34,7 @@ class WorkoutSharePage extends ConsumerStatefulWidget {
 
 class _WorkoutSharePageState extends ConsumerState<WorkoutSharePage> {
   final _boundaryKey = GlobalKey();
+  final _shareButtonKey = GlobalKey();
   Uint8List? _photoBytes;
   bool _sharing = false;
 
@@ -64,6 +65,17 @@ class _WorkoutSharePageState extends ConsumerState<WorkoutSharePage> {
       );
       await file.writeAsBytes(bytes);
 
+      // iOS (even on iPhone, on some OS versions) requires a non-empty
+      // sharePositionOrigin — the share sheet's popover anchor — or
+      // share_plus's platform channel throws before ever presenting
+      // anything. Anchor it to the Share button itself.
+      final buttonBox =
+          _shareButtonKey.currentContext?.findRenderObject() as RenderBox?;
+      final sharePositionOrigin =
+          buttonBox != null
+              ? buttonBox.localToGlobal(Offset.zero) & buttonBox.size
+              : null;
+
       final hasPr = widget.entry.exercises.any((e) => e.isPr);
       await Share.shareXFiles(
         [XFile(file.path)],
@@ -71,7 +83,17 @@ class _WorkoutSharePageState extends ConsumerState<WorkoutSharePage> {
             hasPr
                 ? 'New PR on Fitness Buddy 🏆'
                 : 'Just finished a workout on Fitness Buddy 💪',
+        sharePositionOrigin: sharePositionOrigin,
       );
+    } catch (e) {
+      // Surface failures instead of letting them vanish silently — an
+      // unawaited/uncaught error here otherwise just resets the button with
+      // no visible sign anything went wrong.
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Couldn\'t share: $e')));
+      }
     } finally {
       if (mounted) setState(() => _sharing = false);
     }
@@ -138,6 +160,7 @@ class _WorkoutSharePageState extends ConsumerState<WorkoutSharePage> {
                   ),
                   const SizedBox(height: AppSpacing.sm),
                   FilledButton.icon(
+                    key: _shareButtonKey,
                     onPressed: _sharing ? null : _share,
                     icon: const Icon(Icons.ios_share),
                     label: Text(_sharing ? 'Preparing…' : 'Share'),

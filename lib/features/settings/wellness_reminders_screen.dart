@@ -410,16 +410,19 @@ class _ReminderEditorSheetState extends ConsumerState<_ReminderEditorSheet> {
                   ),
               ],
             ),
-            SwitchListTile(
-              contentPadding: EdgeInsets.zero,
-              title: const Text('Alarm mode'),
-              subtitle: const Text(
-                'Plays even in silent/Do Not Disturb, like an alarm clock '
-                '(Android only — asks for a permission the first time)',
+            // iOS can't bypass silent/Do Not Disturb for a normal
+            // notification, so the toggle would promise something it can't do.
+            if (Theme.of(context).platform != TargetPlatform.iOS)
+              SwitchListTile(
+                contentPadding: EdgeInsets.zero,
+                title: const Text('Alarm mode'),
+                subtitle: const Text(
+                  'Plays even in silent/Do Not Disturb, like an alarm clock. '
+                  'Asks for a permission the first time.',
+                ),
+                value: _alarmMode,
+                onChanged: (v) => setState(() => _alarmMode = v),
               ),
-              value: _alarmMode,
-              onChanged: (v) => setState(() => _alarmMode = v),
-            ),
             const SizedBox(height: AppSpacing.sm),
             Row(
               children: [

@@ -145,14 +145,31 @@ service cloud.firestore {
       allow delete: if false;
 
       match /messages/{messageId} {
+        function chat() {
+          return get(/databases/$(database)/documents/chats/$(chatId)).data;
+        }
+
         function chatParticipants() {
-          return get(/databases/$(database)/documents/chats/$(chatId)).data.participantUids;
+          return chat().participantUids;
+        }
+
+        // A direct chat has exactly the two participants fixed at creation
+        // (see ChatRepo.getOrCreateDirectChat) — once either side blocks the
+        // other, the friendship doc is gone, so this closes off the one
+        // pre-existing chat doc a block can't otherwise revoke access to.
+        // Group chats have no single "other" party to gate on this way.
+        function canMessage() {
+          return chat().type != 'direct'
+            || isAcceptedFriend(chatParticipants()[0] == request.auth.uid
+                ? chatParticipants()[1]
+                : chatParticipants()[0]);
         }
 
         allow read: if isSignedIn() && request.auth.uid in chatParticipants();
         allow create: if isSignedIn()
           && request.auth.uid == request.resource.data.senderUid
-          && request.auth.uid in chatParticipants();
+          && request.auth.uid in chatParticipants()
+          && canMessage();
         allow update, delete: if false;
       }
     }

@@ -164,5 +164,14 @@ service cloud.firestore {
       allow read: if true;
       allow write: if false;
     }
+
+    // Moderation trail (Guideline 1.2) — a user can only ever file a report
+    // as themselves, and never read, edit, or delete any report, including
+    // their own. Reviewed via the Firebase console.
+    match /reports/{reportId} {
+      allow create: if isSignedIn()
+        && request.resource.data.reporterUid == request.auth.uid;
+      allow read, update, delete: if false;
+    }
   }
 }

@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fitness Buddy — Track workouts, meals &amp; habits in one free app</title>
+<meta name="description" content="Fitness Buddy brings workouts, nutrition, body progress and wellness reminders together — free, ad-free and open source. Available on Google Play and the web.">
+<link rel="canonical" href="https://vaibhavhariramani.github.io/fitness_buddy/">
+<meta name="theme-color" content="#2e7d32">
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<link rel="apple-touch-icon" href="assets/icon-192.png">
+<link rel="preload" href="assets/fonts/inter-var.woff2" as="font" type="font/woff2" crossorigin>
+
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Fitness Buddy">
+<meta property="og:title" content="Fitness Buddy — Track workouts, meals &amp; habits in one free app">
+<meta property="og:description" content="Workouts, nutrition, body progress and wellness reminders in one clean, ad-free app. Free and open source.">
+<meta property="og:url" content="https://vaibhavhariramani.github.io/fitness_buddy/">
+<meta property="og:image" content="https://vaibhavhariramani.github.io/fitness_buddy/assets/img/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Fitness Buddy — Track workouts, meals &amp; habits in one free app">
+<meta name="twitter:description" content="Workouts, nutrition, body progress and wellness reminders in one clean, ad-free app.">
+<meta name="twitter:image" content="https://vaibhavhariramani.github.io/fitness_buddy/assets/img/og.png">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Fitness Buddy",
+  "applicationCategory": "HealthApplication",
+  "operatingSystem": "Android, Web",
+  "description": "Track workouts, nutrition, body progress and wellness reminders in one free, ad-free app.",
+  "url": "https://vaibhavhariramani.github.io/fitness_buddy/",
+  "downloadUrl": "https://play.google.com/store/apps/details?id=com.fitnessbuddy.fitness_buddy",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+  "author": { "@type": "Person", "name": "Vaibhav Hariramani" },
+  "license": "https://opensource.org/licenses/MIT"
+}
+</script>
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body>
+
+<!-- shared icon sprite -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <symbol id="i-dumbbell" viewBox="0 0 24 24"><path d="M6.5 6.5v11M17.5 6.5v11M3.5 9v6M20.5 9v6M6.5 12h11"/></symbol>
+  <symbol id="i-book" viewBox="0 0 24 24"><path d="M3 5.5A2.5 2.5 0 0 1 5.5 3H11v16H5.5A2.5 2.5 0 0 0 3 21.5z"/><path d="M21 5.5A2.5 2.5 0 0 0 18.5 3H13v16h5.5a2.5 2.5 0 0 1 2.5 2.5z"/></symbol>
+  <symbol id="i-calendar" viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="16.5" rx="3"/><path d="M8 2.5v4M16 2.5v4M3 10h18"/></symbol>
+  <symbol id="i-apple" viewBox="0 0 24 24"><path d="M12 7c-2-2-6-1.5-6.5 3-.5 4.5 2 9.5 4.5 9.5 1 0 1.5-.5 2-.5s1 .5 2 .5c2.5 0 5-5 4.5-9.5C18 5.5 14 5 12 7z"/><path d="M12 7c0-2 1-3.5 3-4"/></symbol>
+  <symbol id="i-chart" viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="m7 15 4-4 3 3 5-6"/></symbol>
+  <symbol id="i-bell" viewBox="0 0 24 24"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></symbol>
+  <symbol id="i-users" viewBox="0 0 24 24"><circle cx="9" cy="7" r="4"/><path d="M2 21v-1a6 6 0 0 1 6-6h2a6 6 0 0 1 6 6v1"/><circle cx="18" cy="8" r="3"/><path d="M18.5 14.2A5 5 0 0 1 22 19v2"/></symbol>
+  <symbol id="i-wallet" viewBox="0 0 24 24"><rect x="2.5" y="6" width="19" height="14" rx="3"/><path d="M2.5 9.5V7a3 3 0 0 1 3-3H17"/><circle cx="17" cy="13" r="1.2"/></symbol>
+  <symbol id="i-toggle" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="10" rx="5"/><circle cx="16" cy="12" r="2.5"/></symbol>
+  <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13M10 11v6M14 11v6"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 2.5 4.5 5.5v6c0 4.6 3.2 8.4 7.5 10 4.3-1.6 7.5-5.4 7.5-10v-6z"/><path d="m9 12 2.2 2.2L15.5 10"/></symbol>
+  <symbol id="i-scan" viewBox="0 0 24 24"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2M7 8v8M11 8v8M15 8v8"/></symbol>
+  <symbol id="i-timer" viewBox="0 0 24 24"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2M9.5 2.5h5"/></symbol>
+</svg>
+
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="nav">
+  <div class="wrap nav__row">
+    <a class="brand" href="#top" aria-label="Fitness Buddy home">
+      <img src="assets/icon-192.png" alt="" width="32" height="32"> Fitness Buddy
+    </a>
+    <nav class="nav__links" aria-label="Primary">
+      <a href="#features">Features</a>
+      <a href="#how">How it works</a>
+      <a href="#privacy">Privacy</a>
+      <a href="#open-source">Open source</a>
+    </nav>
+    <a class="btn btn--primary btn--sm" href="https://fitness-buddy.web.app">Open web app</a>
+  </div>
+</header>
+
+<main id="main">
+
+  <!-- ============ HERO ============ -->
+  <section class="hero" id="top">
+    <div class="wrap hero__grid">
+      <div class="hero__copy">
+        <span class="eyebrow"><i></i> Free · No ads · Open source</span>
+        <h1><span class="ln">Train smarter.</span><span class="ln">Eat better.</span><span class="ln grad">Stay consistent.</span></h1>
+        <p class="hero__sub">Fitness Buddy brings your workouts, nutrition, body progress and wellness reminders together in one clean app — built to keep you showing up.</p>
+        <div class="cta-row">
+          <a class="btn btn--dark" href="https://play.google.com/store/apps/details?id=com.fitnessbuddy.fitness_buddy">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M5 3.5v17a1 1 0 0 0 1.5.86l14-8.5a1 1 0 0 0 0-1.72l-14-8.5A1 1 0 0 0 5 3.5z"/></svg>
+            Get it on Google Play
+          </a>
+          <a class="btn btn--ghost" href="https://fitness-buddy.web.app">Open the web app</a>
+        </div>
+        <p class="hero__note">iOS version coming soon to the App Store.</p>
+      </div>
+
+      <div class="hero__visual" role="group" aria-label="Fitness Buddy app screenshots">
+        <div class="phone p-left"><div class="phone__screen"><img src="assets/img/dashboard.webp" width="640" height="1384" alt="Dashboard with weight goal progress and today's nutrition ring"></div></div>
+        <div class="phone p-right"><div class="phone__screen"><img src="assets/img/nutrition.webp" width="640" height="1384" alt="Daily nutrition tracker with calorie ring and macro progress bars"></div></div>
+        <div class="phone p-mid"><div class="phone__screen"><img src="assets/img/exercises.webp" width="640" height="1384" alt="Exercise library grid with photos, muscle groups and difficulty"></div></div>
+        <div class="chip chip--a"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-scan"/></svg> Barcode scanning</div>
+        <div class="chip chip--b"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-timer"/></svg> Rest timer &amp; PR tracking</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ STATS ============ -->
+  <section class="stats" aria-label="At a glance">
+    <div class="wrap">
+      <div class="stats__grid reveal">
+        <div class="stat"><b>70</b><span>exercises with photos &amp; form tips</span></div>
+        <div class="stat"><b>100+</b><span>built-in Indian &amp; Western foods</span></div>
+        <div class="stat"><b>$0</b><span>no ads, no subscriptions</span></div>
+        <div class="stat"><b>MIT</b><span>open source on GitHub</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ FEATURES ============ -->
+  <section class="section" id="features">
+    <div class="wrap">
+      <div class="section__head reveal">
+        <div class="kicker">Features</div>
+        <h2>Everything you track, in one place</h2>
+        <p>Stop juggling a workout logger, a calorie counter, a habit app and a spreadsheet. Fitness Buddy does it all — and it all talks to each other.</p>
+      </div>
+
+      <div class="grid">
+        <article class="card a-green reveal">
+          <div class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-dumbbell"/></svg></div>
+          <h3>Workout logging</h3>
+          <p>Log every set with a smart rest timer, last-time performance, RIR tracking and automatic personal-record detection.</p>
+        </article>
+        <article class="card a-green reveal" style="--d:.06s">
+          <div class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-book"/></svg></div>
+          <h3>Exercise library</h3>
+          <p>70 exercises with photos, step-by-step instructions, form tips, muscle diagrams and easy substitutions.</p>
+        </article>
+        <article class="card a-blue reveal" style="--d:.12s">
+          <div class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-calendar"/></svg></div>
+          <h3>Weekly planner</h3>
+          <p>Build routines, schedule your week and start a guided session from any plan — moving a day around is one tap.</p>
+        </article>
+        <article class="card a-orange reveal" style="--d:.18s">
+          <div class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-apple"/></svg></div>
+          <h3>Nutrition tracking</h3>
+          <p>Search Open Food Facts, scan barcodes or use Quick Add. Attach photos to meals and hit daily calorie and macro targets.</p>
+        </article>
+        <article class="card a-blue reveal">
+          <div class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-chart"/></svg></div>
+          <h3>Body progress</h3>
+          <p>Weight trend, goal progress and personalised BMI, maintenance calories and macro targets — calculated for you.</p>
+        </article>
+        <article class="card a-violet reveal" style="--d:.06s">
+          <div class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-bell"/></svg></div>
+          <h3>Wellness reminders</h3>
+          <p>Never forget medicine, yoga or meditation. Pick repeat days and a reminder sound that suits you.</p>
+        </article>
+        <article class="card a-violet reveal" style="--d:.12s">
+          <div class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-users"/></svg></div>
+          <h3>Friends &amp; stories</h3>
+          <p>Add friends, chat, and share 24-hour stories or a workout card to your favourite apps — on your terms.</p>
+        </article>
+        <article class="card a-orange reveal" style="--d:.18s">
+          <div class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-wallet"/></svg></div>
+          <h3>Expenses &amp; meal ideas</h3>
+          <p>Track spending next to your fitness, get a diet plan from your goals, and see what you can “Cook This” from what you have.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ HOW IT WORKS ============ -->
+  <section class="section section--alt" id="how">
+    <div class="wrap">
+      <div class="section__head reveal">
+        <div class="kicker">How it works</div>
+        <h2>From sign-up to streak in five steps</h2>
+        <p>A simple daily loop that fits around your life — no setup marathon, no learning curve.</p>
+      </div>
+
+      <div class="flow reveal" data-flow>
+        <ol class="steps">
+          <li>
+            <button class="step" type="button" aria-pressed="true">
+              <span class="step__num">1</span>
+              <span><strong>Set your goals</strong>
+                <small>Sign in with email, Google or Apple, then tell us your weight, height and target.</small>
+                <small class="more">Fitness Buddy instantly calculates your BMI, maintenance calories and daily calorie &amp; macro targets.</small></span>
+              <span class="step__bar"></span>
+            </button>
+          </li>
+          <li>
+            <button class="step" type="button" aria-pressed="false">
+              <span class="step__num">2</span>
+              <span><strong>Plan your training</strong>
+                <small>Browse 70 exercises with photos and form tips, build routines and schedule your week.</small>
+                <small class="more">Start a guided session from any plan — with a rest timer, last-time performance and effort tracking built in.</small></span>
+              <span class="step__bar"></span>
+            </button>
+          </li>
+          <li>
+            <button class="step" type="button" aria-pressed="false">
+              <span class="step__num">3</span>
+              <span><strong>Log meals in seconds</strong>
+                <small>Search foods, scan a barcode, or use Quick Add for exact macros.</small>
+                <small class="more">100+ Indian and Western staples are built in, backed by Open Food Facts search. Add a photo to any meal.</small></span>
+              <span class="step__bar"></span>
+            </button>
+          </li>
+          <li>
+            <button class="step" type="button" aria-pressed="false">
+              <span class="step__num">4</span>
+              <span><strong>Never miss a habit</strong>
+                <small>Set reminders for medicine, yoga, meditation — anything you want a nudge for.</small>
+                <small class="more">Choose repeat days and a reminder sound; your reminders follow your account across devices.</small></span>
+              <span class="step__bar"></span>
+            </button>
+          </li>
+          <li>
+            <button class="step" type="button" aria-pressed="false">
+              <span class="step__num">5</span>
+              <span><strong>See real progress</strong>
+                <small>Your dashboard pulls it together: streaks, weight trend, records, muscle volume and today's nutrition.</small>
+                <small class="more">Share a workout card or a 24-hour story with friends — you decide exactly what they can see.</small></span>
+              <span class="step__bar"></span>
+            </button>
+          </li>
+        </ol>
+
+        <div class="flow__stage">
+          <div class="phone">
+            <div class="phone__screen">
+              <img data-step-img class="is-active" src="assets/img/login.webp" width="640" height="1384" alt="Sign-in screen">
+              <img data-step-img src="assets/img/exercises.webp" width="640" height="1384" alt="Exercise library">
+              <img data-step-img src="assets/img/nutrition.webp" width="640" height="1384" alt="Nutrition tracker">
+              <img data-step-img src="assets/img/wellness.webp" width="640" height="1384" alt="Wellness reminders list">
+              <img data-step-img src="assets/img/dashboard.webp" width="640" height="1384" alt="Progress dashboard">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ PRIVACY ============ -->
+  <section class="section" id="privacy">
+    <div class="wrap">
+      <div class="section__head reveal">
+        <div class="kicker">Privacy</div>
+        <h2>Your data stays yours</h2>
+        <p>Health data is personal. Fitness Buddy is built so you're always in control of it.</p>
+      </div>
+      <div class="trio">
+        <article class="card a-green reveal">
+          <div class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-toggle"/></svg></div>
+          <h3>You choose what friends see</h3>
+          <p>Weight, workouts, streaks, meals and stories each have their own switch. Friends only ever see what you turn on.</p>
+        </article>
+        <article class="card a-violet reveal" style="--d:.08s">
+          <div class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-trash"/></svg></div>
+          <h3>Delete anytime</h3>
+          <p>One tap in Settings deletes your account and all your data immediately — no waiting period, no email required.</p>
+        </article>
+        <article class="card a-blue reveal" style="--d:.16s">
+          <div class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-shield"/></svg></div>
+          <h3>No ads. No tracking.</h3>
+          <p>No ad networks and no analytics SDKs. It's free, with no paywalls — and you can read every line of the source.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ OPEN SOURCE ============ -->
+  <section class="section section--alt" id="open-source">
+    <div class="wrap">
+      <div class="oss reveal">
+        <div>
+          <h2>Free and open source</h2>
+          <p>Fitness Buddy is MIT-licensed. Read the code, fork it, and run your own copy on your own Firebase project in about 15 minutes — the setup guide walks through every step.</p>
+          <div class="cta-row">
+            <a class="btn btn--light" href="https://github.com/vaibhavhariramani/fitness_buddy">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+              View on GitHub
+            </a>
+            <a class="btn btn--ghost" href="https://github.com/vaibhavhariramani/fitness_buddy/blob/main/docs/FIREBASE_SETUP.md">Setup guide</a>
+          </div>
+        </div>
+        <div class="code" role="img" aria-label="Terminal commands to clone and run Fitness Buddy"><span class="c"># clone and run against your own Firebase project</span>
+git clone https://github.com/vaibhavhariramani/fitness_buddy
+cd fitness_buddy
+flutter pub get
+flutterfire configure   <span class="c"># links your Firebase project</span>
+flutter run -d chrome</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ FINAL CTA ============ -->
+  <section class="final">
+    <div class="wrap reveal">
+      <h2>Ready to start your <span class="grad">streak</span>?</h2>
+      <p>Free on Android and on the web. Sign up in under a minute — no card, no trial, no catch.</p>
+      <div class="cta-row">
+        <a class="btn btn--dark" href="https://play.google.com/store/apps/details?id=com.fitnessbuddy.fitness_buddy">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M5 3.5v17a1 1 0 0 0 1.5.86l14-8.5a1 1 0 0 0 0-1.72l-14-8.5A1 1 0 0 0 5 3.5z"/></svg>
+          Get it on Google Play
+        </a>
+        <a class="btn btn--primary" href="https://fitness-buddy.web.app">Open the web app</a>
+        <span class="btn btn--soon" aria-disabled="true">App Store — coming soon</span>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="wrap foot__row">
+    <div>
+      <a class="brand" href="#top"><img src="assets/icon-192.png" alt="" width="32" height="32"> Fitness Buddy</a>
+      <p>© <span id="year">2026</span> Vaibhav Hariramani · MIT License</p>
+      <p style="margin-top:6px;max-width:34em">Fitness Buddy is a tracking tool, not a medical device. Talk to a qualified professional before changing your diet or training.</p>
+    </div>
+    <nav class="foot__links" aria-label="Footer">
+      <a href="https://fitness-buddy.web.app/privacy.html">Privacy Policy</a>
+      <a href="https://fitness-buddy.web.app/terms.html">Terms</a>
+      <a href="https://fitness-buddy.web.app/support.html">Support</a>
+      <a href="https://fitness-buddy.web.app/delete-account.html">Delete account</a>
+      <a href="https://github.com/vaibhavhariramani/fitness_buddy">Source</a>
+      <a href="https://github.com/vaibhavhariramani/fitness_buddy/blob/main/LICENSE">License</a>
+    </nav>
+  </div>
+</footer>
+
+<script src="assets/site.js" defer></script>
+</body>
+</html>

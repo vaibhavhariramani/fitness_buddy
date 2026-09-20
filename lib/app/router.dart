@@ -92,7 +92,8 @@ final routerProvider = Provider<GoRouter>((ref) {
       // Resume) — loads the persisted draft rather than seeding fresh.
       GoRoute(
         path: '/active-workout',
-        builder: (context, state) => const ActiveWorkoutPage(restoreDraft: true),
+        builder:
+            (context, state) => const ActiveWorkoutPage(restoreDraft: true),
       ),
       ShellRoute(
         builder: (context, state, child) => HomeShell(child: child),

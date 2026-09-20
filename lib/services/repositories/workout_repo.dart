@@ -35,7 +35,9 @@ class WorkoutRepo {
   Stream<List<PersonalRecord>> watchPersonalRecords(String uid) {
     return _prCol(uid).snapshots().map(
       (snap) =>
-          snap.docs.map((d) => PersonalRecord.fromJson(d.id, d.data())).toList(),
+          snap.docs
+              .map((d) => PersonalRecord.fromJson(d.id, d.data()))
+              .toList(),
     );
   }
 

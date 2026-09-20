@@ -169,7 +169,9 @@ class _ActiveWorkoutPageState extends ConsumerState<ActiveWorkoutPage> {
       // discarded elsewhere — fall back to a fresh session rather than a
       // confusing blank "resumed" screen.
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('No workout in progress — starting fresh')),
+        const SnackBar(
+          content: Text('No workout in progress — starting fresh'),
+        ),
       );
       ref.read(notificationServiceProvider).showWorkoutInProgress(widget.title);
       return;
@@ -442,11 +444,9 @@ class _ActiveWorkoutPageState extends ConsumerState<ActiveWorkoutPage> {
                 const SizedBox(width: 4),
                 Text(
                   _formatElapsed(_elapsed),
-                  style: Theme.of(
-                    context,
-                  ).textTheme.titleSmall?.copyWith(fontFeatures: const [
-                    FontFeature.tabularFigures(),
-                  ]),
+                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                    fontFeatures: const [FontFeature.tabularFigures()],
+                  ),
                 ),
               ],
             ),
@@ -650,16 +650,16 @@ class _ExerciseCardState extends ConsumerState<_ExerciseCard> {
       final groupId = exercise.supersetGroupId;
       setState(() {
         exercise.supersetGroupId = null;
-        final remaining =
-            widget.allExercises.where((e) => e.supersetGroupId == groupId);
+        final remaining = widget.allExercises.where(
+          (e) => e.supersetGroupId == groupId,
+        );
         if (remaining.length == 1) remaining.first.supersetGroupId = null;
       });
       widget.onSessionChanged();
       return;
     }
 
-    final candidates =
-        widget.allExercises.where((e) => e != exercise).toList();
+    final candidates = widget.allExercises.where((e) => e != exercise).toList();
     if (candidates.isEmpty) return;
     final partner = await showModalBottomSheet<_SessionExercise>(
       context: context,
@@ -789,25 +789,18 @@ class _ExerciseCardState extends ConsumerState<_ExerciseCard> {
                   leading: const Icon(Icons.swap_horiz),
                   title: const Text('Replace exercise'),
                   onTap:
-                      () => Navigator.pop(
-                        context,
-                        _ExerciseMenuAction.replace,
-                      ),
+                      () => Navigator.pop(context, _ExerciseMenuAction.replace),
                 ),
                 ListTile(
                   leading: const Icon(Icons.delete_outline),
                   title: const Text('Remove exercise'),
                   onTap:
-                      () =>
-                          Navigator.pop(context, _ExerciseMenuAction.remove),
+                      () => Navigator.pop(context, _ExerciseMenuAction.remove),
                 ),
                 ListTile(
                   leading: const Icon(Icons.sticky_note_2_outlined),
-                  title: Text(
-                    exercise.memo == null ? 'Add memo' : 'Edit memo',
-                  ),
-                  onTap:
-                      () => Navigator.pop(context, _ExerciseMenuAction.memo),
+                  title: Text(exercise.memo == null ? 'Add memo' : 'Edit memo'),
+                  onTap: () => Navigator.pop(context, _ExerciseMenuAction.memo),
                 ),
                 ListTile(
                   enabled: exercise.sets.length > 1,
@@ -827,10 +820,8 @@ class _ExerciseCardState extends ConsumerState<_ExerciseCard> {
                         : 'Remove from superset',
                   ),
                   onTap:
-                      () => Navigator.pop(
-                        context,
-                        _ExerciseMenuAction.superset,
-                      ),
+                      () =>
+                          Navigator.pop(context, _ExerciseMenuAction.superset),
                 ),
                 SwitchListTile(
                   secondary: const Icon(Icons.timer_outlined),
@@ -897,7 +888,11 @@ class _ExerciseCardState extends ConsumerState<_ExerciseCard> {
               padding: const EdgeInsets.only(bottom: AppSpacing.xxs),
               child: Row(
                 children: [
-                  const Icon(Icons.link, size: 14, color: AppColors.achievement),
+                  const Icon(
+                    Icons.link,
+                    size: 14,
+                    color: AppColors.achievement,
+                  ),
                   const SizedBox(width: 4),
                   Text(
                     'Superset',
@@ -1055,10 +1050,7 @@ class _BulletLine extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: 4),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text('•  '),
-          Expanded(child: Text(text)),
-        ],
+        children: [const Text('•  '), Expanded(child: Text(text))],
       ),
     );
   }

@@ -16,10 +16,13 @@ class AuthService {
   // configured. Web sign-in/out goes through FirebaseAuth's popup flow instead.
   final GoogleSignIn? _googleSignIn;
 
-  AuthService({FirebaseAuth? auth, FirebaseFunctions? functions, GoogleSignIn? googleSignIn})
-    : _auth = auth ?? FirebaseAuth.instance,
-      _functions = functions ?? FirebaseFunctions.instance,
-      _googleSignIn = googleSignIn ?? (kIsWeb ? null : GoogleSignIn());
+  AuthService({
+    FirebaseAuth? auth,
+    FirebaseFunctions? functions,
+    GoogleSignIn? googleSignIn,
+  }) : _auth = auth ?? FirebaseAuth.instance,
+       _functions = functions ?? FirebaseFunctions.instance,
+       _googleSignIn = googleSignIn ?? (kIsWeb ? null : GoogleSignIn());
 
   Stream<User?> get authStateChanges => _auth.authStateChanges();
 
@@ -70,13 +73,15 @@ class AuthService {
     // Apple, so it can verify the ID token was issued for this request.
     final rawNonce = _generateNonce();
     final appleCredential = await SignInWithApple.getAppleIDCredential(
-      scopes: [AppleIDAuthorizationScopes.email, AppleIDAuthorizationScopes.fullName],
+      scopes: [
+        AppleIDAuthorizationScopes.email,
+        AppleIDAuthorizationScopes.fullName,
+      ],
       nonce: sha256.convert(utf8.encode(rawNonce)).toString(),
     );
-    final oauthCredential = OAuthProvider('apple.com').credential(
-      idToken: appleCredential.identityToken,
-      rawNonce: rawNonce,
-    );
+    final oauthCredential = OAuthProvider(
+      'apple.com',
+    ).credential(idToken: appleCredential.identityToken, rawNonce: rawNonce);
     final userCredential = await _auth.signInWithCredential(oauthCredential);
     // Apple only returns the name on the very first authorization, and
     // Firebase doesn't populate displayName from the Apple credential itself.

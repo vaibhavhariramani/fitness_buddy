@@ -49,7 +49,9 @@ void notificationBackgroundResponseHandler(NotificationResponse response) {
 
 Future<void> _handleBackgroundStopSave() async {
   if (Firebase.apps.isEmpty) {
-    await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
   }
   await stopAndSaveActiveWorkoutDraft();
 }

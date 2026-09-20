@@ -198,15 +198,14 @@ class _StoryViewerPageState extends State<StoryViewerPage>
                             onPressed: () {
                               _setPaused(true);
                               Navigator.push<void>(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder:
-                                          (context) => StorySharePage(
-                                            story: widget.stories[_index],
-                                          ),
-                                    ),
-                                  )
-                                  .then((_) => _setPaused(false));
+                                context,
+                                MaterialPageRoute(
+                                  builder:
+                                      (context) => StorySharePage(
+                                        story: widget.stories[_index],
+                                      ),
+                                ),
+                              ).then((_) => _setPaused(false));
                             },
                           ),
                         IconButton(

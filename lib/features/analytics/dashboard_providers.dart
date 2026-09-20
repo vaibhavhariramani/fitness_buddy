@@ -9,7 +9,8 @@ import '../../models/meal_entry.dart';
 import '../../models/personal_record.dart';
 import '../../models/workout_entry.dart';
 import '../exercises/providers/exercise_providers.dart';
-import '../exercises/widgets/add_to_workout_dialog.dart' show resolveMuscleGroup;
+import '../exercises/widgets/add_to_workout_dialog.dart'
+    show resolveMuscleGroup;
 import '../nutrition/data/common_foods.dart';
 import '../nutrition/models/food.dart';
 import '../nutrition/providers/nutrition_providers.dart';
@@ -182,7 +183,8 @@ final progressSuggestionProvider = Provider.autoDispose<ProgressSuggestion?>((
       weightLogs.where((e) => e.date.isAfter(windowStart)).toList()
         ..sort((a, b) => a.date.compareTo(b.date));
   if (recentWeights.length < 3) return null;
-  final weightTrendKg = recentWeights.last.weightKg - recentWeights.first.weightKg;
+  final weightTrendKg =
+      recentWeights.last.weightKg - recentWeights.first.weightKg;
 
   final meals = ref.watch(_recentMealsProvider).valueOrNull ?? const [];
   final caloriesByDay = <DateTime, double>{};
@@ -201,17 +203,21 @@ final progressSuggestionProvider = Provider.autoDispose<ProgressSuggestion?>((
           : goal.calorieTarget(profile.calorieTargets);
 
   const stallThresholdKg = 0.3;
-  final wantsLoss = goal == NutritionGoal.loseWeight || goal == NutritionGoal.recomp;
+  final wantsLoss =
+      goal == NutritionGoal.loseWeight || goal == NutritionGoal.recomp;
   final wantsGain = goal == NutritionGoal.gainMuscle;
   final isStalledOrWrongWay =
-      wantsLoss ? weightTrendKg > -stallThresholdKg : weightTrendKg < stallThresholdKg;
+      wantsLoss
+          ? weightTrendKg > -stallThresholdKg
+          : weightTrendKg < stallThresholdKg;
 
   if (isStalledOrWrongWay) {
     final overBy = avgDailyCalories - target;
     if (wantsLoss && overBy > 100) {
       return ProgressSuggestion(
         title: 'Try this next',
-        message: _portionSuggestion(meals, avgDailyCalories, overBy) ??
+        message:
+            _portionSuggestion(meals, avgDailyCalories, overBy) ??
             "You're averaging ${avgDailyCalories.round()} kcal/day, about "
                 '${overBy.round()} kcal over your target for the last week — '
                 'trimming portions slightly should help.',

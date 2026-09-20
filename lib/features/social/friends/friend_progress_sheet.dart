@@ -18,7 +18,8 @@ import '../../../shared/widgets/app_card.dart';
 import '../../../shared/widgets/empty_state.dart';
 import '../../../shared/widgets/section_header.dart';
 import '../../exercises/providers/exercise_providers.dart';
-import '../../exercises/widgets/add_to_workout_dialog.dart' show resolveMuscleGroup;
+import '../../exercises/widgets/add_to_workout_dialog.dart'
+    show resolveMuscleGroup;
 
 /// A friend's shared progress as a real report — weight trend, today's
 /// training, muscle-group volume, and today's meal photos (each gated by

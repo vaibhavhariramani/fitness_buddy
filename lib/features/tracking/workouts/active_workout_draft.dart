@@ -140,9 +140,7 @@ Future<WorkoutDraft?> loadActiveWorkoutDraft() async {
   final raw = prefs.getString(_draftPrefsKey);
   if (raw == null) return null;
   try {
-    return WorkoutDraft.fromJson(
-      jsonDecode(raw) as Map<String, dynamic>,
-    );
+    return WorkoutDraft.fromJson(jsonDecode(raw) as Map<String, dynamic>);
   } catch (_) {
     // Corrupt/outdated draft shape — treat as "nothing to resume" rather
     // than crashing whoever's reading it (foreground page or the

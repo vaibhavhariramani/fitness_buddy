@@ -22,7 +22,8 @@ import '../../shared/widgets/section_header.dart';
 import '../nutrition/providers/nutrition_providers.dart';
 import '../exercises/pages/weekly_plan/weekly_plan_providers.dart';
 import '../exercises/providers/exercise_providers.dart';
-import '../exercises/widgets/add_to_workout_dialog.dart' show resolveMuscleGroup;
+import '../exercises/widgets/add_to_workout_dialog.dart'
+    show resolveMuscleGroup;
 import '../tracking/tracking_tab_provider.dart';
 import '../tracking/weight/weight_tab.dart';
 import '../tracking/workouts/pages/active_workout_page.dart';
@@ -511,8 +512,7 @@ class _TodayWorkoutSection extends ConsumerWidget {
                                                     targetSets: p.sets,
                                                     targetReps: p.targetReps,
                                                     isTimed: p.isTimed,
-                                                    restSeconds:
-                                                        p.restSeconds,
+                                                    restSeconds: p.restSeconds,
                                                   ),
                                               ],
                                     ),
@@ -670,7 +670,8 @@ class _ProgressSuggestionSection extends ConsumerWidget {
     if (suggestion == null) return const SizedBox.shrink();
 
     final scheme = Theme.of(context).colorScheme;
-    final color = suggestion.isPositive ? AppColors.workout : AppColors.achievement;
+    final color =
+        suggestion.isPositive ? AppColors.workout : AppColors.achievement;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -1281,7 +1282,8 @@ class _MuscleVolumeSectionState extends ConsumerState<_MuscleVolumeSection> {
                 ? null
                 : ref.watch(exerciseByIdProvider(exercise.exerciseId!));
         final group = resolveMuscleGroup(catalogExercise, exercise.muscleGroup);
-        volumeByGroup[group] = (volumeByGroup[group] ?? 0) + exercise.sets.length;
+        volumeByGroup[group] =
+            (volumeByGroup[group] ?? 0) + exercise.sets.length;
       }
     }
 

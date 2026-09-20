@@ -1,7 +1,8 @@
 import '../../../models/workout_entry.dart';
 import '../../../services/repositories/workout_repo.dart';
 import '../../exercises/models/exercise.dart';
-import '../../exercises/widgets/add_to_workout_dialog.dart' show resolveMuscleGroup;
+import '../../exercises/widgets/add_to_workout_dialog.dart'
+    show resolveMuscleGroup;
 
 /// One-time data fix for logs written before an exercise's catalog category
 /// was correctly populated (or before it existed in the catalog at all) —
@@ -28,7 +29,10 @@ Future<int> backfillWorkoutMuscleGroups({
     for (final exercise in workout.exercises) {
       final catalogExercise =
           exercise.exerciseId == null ? null : byId[exercise.exerciseId];
-      final resolved = resolveMuscleGroup(catalogExercise, exercise.muscleGroup);
+      final resolved = resolveMuscleGroup(
+        catalogExercise,
+        exercise.muscleGroup,
+      );
       if (resolved == exercise.muscleGroup) {
         newExercises.add(exercise);
         continue;

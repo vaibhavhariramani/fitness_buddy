@@ -55,10 +55,7 @@ Map<String, _MuscleStats> _computeStats(
         catalogExercise,
         exercise.muscleGroup,
       );
-      final s = stats.putIfAbsent(
-        muscleGroup,
-        () => _MuscleStats(muscleGroup),
-      );
+      final s = stats.putIfAbsent(muscleGroup, () => _MuscleStats(muscleGroup));
       s.allTimeSets += exercise.sets.length;
       s.workoutDates.add(
         '${workout.date.year}-${workout.date.month}-${workout.date.day}',

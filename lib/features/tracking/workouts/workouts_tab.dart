@@ -9,7 +9,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../../core/design_system/app_colors.dart';
 import '../../../core/design_system/app_spacing.dart';
 import '../../../core/providers.dart';
-import '../../../models/story.dart';
 import '../../../models/workout_entry.dart';
 import '../../../shared/utils/photo_picker.dart';
 import '../../../shared/widgets/app_card.dart';
@@ -21,6 +20,7 @@ import '../../exercises/widgets/add_to_workout_dialog.dart'
 import 'muscle_group_backfill.dart';
 import 'pages/active_workout_page.dart';
 import 'workout_prefill_provider.dart';
+import 'workout_story.dart';
 
 final workoutHistoryProvider = StreamProvider.autoDispose<List<WorkoutEntry>>((
   ref,
@@ -314,44 +314,15 @@ class _LogWorkoutSheetState extends ConsumerState<LogWorkoutSheet> {
       final saved = await ref.read(workoutRepoProvider).logWorkout(uid, entry);
       await ref.read(userRepoProvider).registerActivityAndGetStreak(uid);
 
-      if (_photoBytes != null) {
-        try {
-          final url = await ref
-              .read(storageServiceProvider)
-              .uploadWorkoutPhoto(
-                uid: uid,
-                workoutId: saved.id,
-                bytes: _photoBytes!,
-              );
-          await ref.read(workoutRepoProvider).update(uid, saved.id, {
-            'photoUrl': url,
-          });
-
-          final setCount = saved.exercises.fold<int>(
-            0,
-            (n, e) => n + e.sets.length,
-          );
-          final anyPr = saved.exercises.any((e) => e.isPr);
-          final now = DateTime.now();
-          await ref
-              .read(storyRepoProvider)
-              .add(
-                uid,
-                Story(
-                  id: '',
-                  type: StoryType.workout,
-                  photoUrl: url,
-                  workoutExerciseCount: saved.exercises.length,
-                  workoutSetCount: setCount,
-                  workoutHasPr: anyPr,
-                  createdAt: now,
-                  expiresAt: now.add(const Duration(hours: 24)),
-                ),
-              );
-        } catch (_) {
-          // Best-effort — the workout itself is already saved above; a
-          // failed photo/story post shouldn't be treated as a failed log.
-        }
+      try {
+        await postWorkoutStory(
+          ref: ref,
+          uid: uid,
+          saved: saved,
+          photoBytes: _photoBytes,
+        );
+      } catch (_) {
+        // Best-effort — see postWorkoutStory's doc comment.
       }
 
       if (mounted) Navigator.pop(context);

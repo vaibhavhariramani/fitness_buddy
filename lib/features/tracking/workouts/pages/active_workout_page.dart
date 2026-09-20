@@ -11,7 +11,6 @@ import '../../../../core/design_system/app_haptics.dart';
 import '../../../../core/design_system/app_spacing.dart';
 import '../../../../core/providers.dart';
 import '../../../../core/utils/progression.dart';
-import '../../../../models/story.dart';
 import '../../../../models/workout_entry.dart';
 import '../../../../shared/utils/photo_picker.dart';
 import '../../../../shared/widgets/app_card.dart';
@@ -24,6 +23,7 @@ import '../../../exercises/widgets/exercise_visual.dart';
 import '../active_workout_draft.dart' as draft;
 import '../previous_performance_provider.dart';
 import '../widgets/rest_timer_sheet.dart';
+import '../workout_story.dart';
 import 'workout_summary_page.dart';
 
 /// What to seed a new active workout session with — a plan's exercises, or
@@ -391,43 +391,15 @@ class _ActiveWorkoutPageState extends ConsumerState<ActiveWorkoutPage> {
       final anyPr = saved.exercises.any((e) => e.isPr);
       anyPr ? AppHaptics.celebrate() : AppHaptics.success();
 
-      if (_photoBytes != null) {
-        try {
-          final url = await ref
-              .read(storageServiceProvider)
-              .uploadWorkoutPhoto(
-                uid: uid,
-                workoutId: saved.id,
-                bytes: _photoBytes!,
-              );
-          await ref.read(workoutRepoProvider).update(uid, saved.id, {
-            'photoUrl': url,
-          });
-
-          final setCount = saved.exercises.fold<int>(
-            0,
-            (n, e) => n + e.sets.length,
-          );
-          final now = DateTime.now();
-          await ref
-              .read(storyRepoProvider)
-              .add(
-                uid,
-                Story(
-                  id: '',
-                  type: StoryType.workout,
-                  photoUrl: url,
-                  workoutExerciseCount: saved.exercises.length,
-                  workoutSetCount: setCount,
-                  workoutHasPr: anyPr,
-                  createdAt: now,
-                  expiresAt: now.add(const Duration(hours: 24)),
-                ),
-              );
-        } catch (_) {
-          // Best-effort — the workout itself is already saved above; a
-          // failed photo/story post shouldn't be treated as a failed log.
-        }
+      try {
+        await postWorkoutStory(
+          ref: ref,
+          uid: uid,
+          saved: saved,
+          photoBytes: _photoBytes,
+        );
+      } catch (_) {
+        // Best-effort — see postWorkoutStory's doc comment.
       }
 
       if (mounted) {

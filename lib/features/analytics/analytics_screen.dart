@@ -90,14 +90,14 @@ class AnalyticsScreen extends ConsumerWidget {
               child: const _ProgressSuggestionSection(),
             ),
             const SizedBox(height: AppSpacing.xl),
+            FadeSlideIn(delay: stagger * 2, child: _TodayNutritionSection()),
+            const SizedBox(height: AppSpacing.xl),
             FadeSlideIn(delay: stagger, child: const _ProteinInsightSection()),
             const SizedBox(height: AppSpacing.xl),
             FadeSlideIn(
               delay: stagger * 2,
               child: const _MuscleThisWeekSection(),
             ),
-            const SizedBox(height: AppSpacing.xl),
-            FadeSlideIn(delay: stagger * 3, child: _TodayNutritionSection()),
             const SizedBox(height: AppSpacing.xl),
             FadeSlideIn(
               delay: stagger * 4,

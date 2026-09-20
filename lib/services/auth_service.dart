@@ -69,6 +69,17 @@ class AuthService {
   }
 
   Future<UserCredential> signInWithApple() async {
+    if (kIsWeb) {
+      // The sign_in_with_apple plugin's web flow needs its own Services ID
+      // wiring; FirebaseAuth's popup flow reuses the Apple provider already
+      // configured in the Firebase console (Services ID + key), and handles
+      // the nonce and name for us.
+      final provider =
+          OAuthProvider('apple.com')
+            ..addScope('email')
+            ..addScope('name');
+      return _auth.signInWithPopup(provider);
+    }
     // Firebase requires the raw nonce alongside the SHA-256 of it sent to
     // Apple, so it can verify the ID token was issued for this request.
     final rawNonce = _generateNonce();

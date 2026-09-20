@@ -85,7 +85,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
     ).showSnackBar(SnackBar(content: Text(message)));
   }
 
-  bool get _showAppleSignIn => !kIsWeb && Platform.isIOS;
+  bool get _showAppleSignIn => kIsWeb || Platform.isIOS;
 
   @override
   Widget build(BuildContext context) {

@@ -63,9 +63,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   }
 
   // Apple requires apps that offer third-party sign-in (Google, here) to
-  // offer Sign in with Apple as an equivalent — only relevant on Apple
-  // platforms, so it's hidden elsewhere rather than shown non-functionally.
-  bool get _showAppleSignIn => !kIsWeb && Platform.isIOS;
+  // offer Sign in with Apple as an equivalent. Shown on iOS (native flow) and
+  // on web (Firebase popup flow); hidden on Android/desktop rather than shown
+  // non-functionally.
+  bool get _showAppleSignIn => kIsWeb || Platform.isIOS;
 
   void _showError(Object? error) {
     final message =

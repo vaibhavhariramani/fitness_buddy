@@ -9,6 +9,7 @@ import '../../../core/design_system/app_spacing.dart';
 import '../../../core/design_system/app_text_styles.dart';
 import '../../../core/providers.dart';
 import '../../../core/utils/streak.dart';
+import '../../../core/utils/workout_summary.dart';
 import '../../../models/meal_entry.dart';
 import '../../../models/user_profile.dart';
 import '../../../models/weight_entry.dart';
@@ -18,8 +19,6 @@ import '../../../shared/widgets/empty_state.dart';
 import '../../../shared/widgets/section_header.dart';
 import '../../exercises/providers/exercise_providers.dart';
 import '../../exercises/widgets/add_to_workout_dialog.dart' show resolveMuscleGroup;
-
-DateTime _dateOnly(DateTime d) => DateTime(d.year, d.month, d.day);
 
 /// A friend's shared progress as a real report — weight trend, today's
 /// training, muscle-group volume, and today's meal photos (each gated by
@@ -273,20 +272,10 @@ class _TrainingSection extends ConsumerWidget {
       stream: ref.read(workoutRepoProvider).watchAll(friendUid),
       builder: (context, snapshot) {
         final workouts = snapshot.data ?? const <WorkoutEntry>[];
-        final today = _dateOnly(DateTime.now());
-        final todays =
-            workouts.where((w) => _dateOnly(w.date) == today).toList();
-
-        var exerciseCount = 0;
-        var setCount = 0;
-        var prCount = 0;
-        for (final w in todays) {
-          exerciseCount += w.exercises.length;
-          for (final e in w.exercises) {
-            setCount += e.sets.length;
-            if (e.isPr) prCount++;
-          }
-        }
+        final todaysSummary = summarizeTodaysWorkouts(workouts);
+        final exerciseCount = todaysSummary?.exerciseCount ?? 0;
+        final setCount = todaysSummary?.setCount ?? 0;
+        final prCount = todaysSummary?.prCount ?? 0;
 
         final volumeByGroup = <String, int>{};
         for (final w in workouts) {
@@ -307,7 +296,7 @@ class _TrainingSection extends ConsumerWidget {
             AppCard(
               accentColor: AppColors.workout,
               child:
-                  todays.isEmpty
+                  todaysSummary == null
                       ? Text(
                         'No workout logged today.',
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(

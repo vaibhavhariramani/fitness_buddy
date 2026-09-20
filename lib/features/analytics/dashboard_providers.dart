@@ -2,6 +2,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/providers.dart';
 import '../../core/utils/calculations.dart';
+import '../../core/utils/date_utils.dart';
+import '../../core/utils/weekly_schedule.dart';
+import '../../core/utils/workout_summary.dart';
 import '../../models/meal_entry.dart';
 import '../../models/personal_record.dart';
 import '../../models/workout_entry.dart';
@@ -13,19 +16,12 @@ import '../nutrition/providers/nutrition_providers.dart';
 import '../tracking/weight/weight_tab.dart';
 import '../tracking/workouts/workouts_tab.dart';
 
-DateTime _dateOnly(DateTime d) => DateTime(d.year, d.month, d.day);
-
-DateTime _mondayOf(DateTime d) {
-  final day = _dateOnly(d);
-  return day.subtract(Duration(days: day.weekday - 1));
-}
-
 /// This calendar week's meals (Monday..today+future), for the weekly
 /// consistency row — `todaysMealsProvider` only covers today.
 final weeklyMealsProvider = StreamProvider.autoDispose((ref) {
   final uid = ref.watch(authStateProvider).valueOrNull?.uid;
   if (uid == null) return const Stream.empty();
-  final monday = _mondayOf(DateTime.now());
+  final monday = mondayOfWeek(DateTime.now());
   final end = monday.add(const Duration(days: 7));
   return ref.watch(mealRepoProvider).watchRange(uid, monday, end);
 });
@@ -55,13 +51,13 @@ final weeklyConsistencyProvider = Provider.autoDispose<List<WeeklyDayStatus>>((
   final workouts = ref.watch(workoutHistoryProvider).valueOrNull ?? const [];
   final meals = ref.watch(weeklyMealsProvider).valueOrNull ?? const [];
 
-  final monday = _mondayOf(DateTime.now());
-  final today = _dateOnly(DateTime.now());
+  final monday = mondayOfWeek(DateTime.now());
+  final today = dateOnly(DateTime.now());
 
   final activeDates = <DateTime>{
-    for (final e in weightLogs) _dateOnly(e.date),
-    for (final e in workouts) _dateOnly(e.date),
-    for (final e in meals) _dateOnly(e.date),
+    for (final e in weightLogs) dateOnly(e.date),
+    for (final e in workouts) dateOnly(e.date),
+    for (final e in meals) dateOnly(e.date),
   };
 
   return List.generate(7, (i) {
@@ -75,44 +71,12 @@ final weeklyConsistencyProvider = Provider.autoDispose<List<WeeklyDayStatus>>((
   });
 });
 
-/// Any workout(s) logged today, combined into one summary — exercises,
-/// total sets, and PRs earned today. Null when nothing's been logged yet.
-class TodaysWorkoutSummary {
-  final int exerciseCount;
-  final int setCount;
-  final int prCount;
-
-  const TodaysWorkoutSummary({
-    required this.exerciseCount,
-    required this.setCount,
-    required this.prCount,
-  });
-}
-
 final todaysWorkoutSummaryProvider =
     Provider.autoDispose<TodaysWorkoutSummary?>((ref) {
       final workouts =
           ref.watch(workoutHistoryProvider).valueOrNull ??
           const <WorkoutEntry>[];
-      final today = _dateOnly(DateTime.now());
-      final todays = workouts.where((w) => _dateOnly(w.date) == today).toList();
-      if (todays.isEmpty) return null;
-
-      var exerciseCount = 0;
-      var setCount = 0;
-      var prCount = 0;
-      for (final w in todays) {
-        exerciseCount += w.exercises.length;
-        for (final e in w.exercises) {
-          setCount += e.sets.length;
-          if (e.isPr) prCount++;
-        }
-      }
-      return TodaysWorkoutSummary(
-        exerciseCount: exerciseCount,
-        setCount: setCount,
-        prCount: prCount,
-      );
+      return summarizeTodaysWorkouts(workouts);
     });
 
 /// Workouts + PRs logged within this calendar week, for the streak card.
@@ -131,8 +95,8 @@ final weeklyTrainingStatsProvider = Provider.autoDispose<WeeklyTrainingStats>((
 ) {
   final workouts =
       ref.watch(workoutHistoryProvider).valueOrNull ?? const <WorkoutEntry>[];
-  final monday = _mondayOf(DateTime.now());
-  final thisWeek = workouts.where((w) => !_dateOnly(w.date).isBefore(monday));
+  final monday = mondayOfWeek(DateTime.now());
+  final thisWeek = workouts.where((w) => !dateOnly(w.date).isBefore(monday));
 
   var prCount = 0;
   for (final w in thisWeek) {
@@ -150,8 +114,8 @@ final weeklyMuscleGroupsProvider = Provider.autoDispose<Map<String, int>>((
 ) {
   final workouts =
       ref.watch(workoutHistoryProvider).valueOrNull ?? const <WorkoutEntry>[];
-  final monday = _mondayOf(DateTime.now());
-  final thisWeek = workouts.where((w) => !_dateOnly(w.date).isBefore(monday));
+  final monday = mondayOfWeek(DateTime.now());
+  final thisWeek = workouts.where((w) => !dateOnly(w.date).isBefore(monday));
 
   final setsByGroup = <String, int>{};
   for (final w in thisWeek) {
@@ -223,7 +187,7 @@ final progressSuggestionProvider = Provider.autoDispose<ProgressSuggestion?>((
   final meals = ref.watch(_recentMealsProvider).valueOrNull ?? const [];
   final caloriesByDay = <DateTime, double>{};
   for (final m in meals) {
-    final day = _dateOnly(m.date);
+    final day = dateOnly(m.date);
     caloriesByDay[day] = (caloriesByDay[day] ?? 0) + m.calories;
   }
   // Fewer than 3 logged days can't support a daily-average claim.
@@ -346,7 +310,7 @@ final proteinInsightProvider = Provider.autoDispose<ProteinInsight?>((ref) {
   final meals = ref.watch(_recentMealsProvider).valueOrNull ?? const [];
   final proteinByDay = <DateTime, double>{};
   for (final m in meals) {
-    final day = _dateOnly(m.date);
+    final day = dateOnly(m.date);
     proteinByDay[day] = (proteinByDay[day] ?? 0) + m.proteinG;
   }
   // Fewer than 3 logged days can't support a daily-average claim.

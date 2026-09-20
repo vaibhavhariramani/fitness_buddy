@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '../../core/utils/date_utils.dart';
 import '../../models/meal_entry.dart';
 
 class MealRepo {
@@ -32,17 +33,8 @@ class MealRepo {
   }
 
   Stream<List<MealEntry>> watchForDate(String uid, DateTime date) {
-    final start = DateTime(date.year, date.month, date.day);
-    final end = start.add(const Duration(days: 1));
-    return _col(uid)
-        .where('date', isGreaterThanOrEqualTo: Timestamp.fromDate(start))
-        .where('date', isLessThan: Timestamp.fromDate(end))
-        .orderBy('date')
-        .snapshots()
-        .map(
-          (snap) =>
-              snap.docs.map((d) => MealEntry.fromJson(d.id, d.data())).toList(),
-        );
+    final start = dateOnly(date);
+    return watchRange(uid, start, start.add(const Duration(days: 1)));
   }
 
   Stream<List<MealEntry>> watchRange(String uid, DateTime start, DateTime end) {

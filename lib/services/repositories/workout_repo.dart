@@ -12,14 +12,13 @@ class WorkoutRepo {
   CollectionReference<Map<String, dynamic>> _workoutsCol(String uid) =>
       _db.collection('users').doc(uid).collection('workouts');
 
+  CollectionReference<Map<String, dynamic>> _prCol(String uid) =>
+      _db.collection('users').doc(uid).collection('personalRecords');
+
   DocumentReference<Map<String, dynamic>> _prDoc(
     String uid,
     String exerciseName,
-  ) => _db
-      .collection('users')
-      .doc(uid)
-      .collection('personalRecords')
-      .doc(exerciseName.toLowerCase().trim());
+  ) => _prCol(uid).doc(exerciseName.toLowerCase().trim());
 
   Stream<List<WorkoutEntry>> watchAll(String uid) {
     return _workoutsCol(uid)
@@ -34,17 +33,10 @@ class WorkoutRepo {
   }
 
   Stream<List<PersonalRecord>> watchPersonalRecords(String uid) {
-    return _db
-        .collection('users')
-        .doc(uid)
-        .collection('personalRecords')
-        .snapshots()
-        .map(
-          (snap) =>
-              snap.docs
-                  .map((d) => PersonalRecord.fromJson(d.id, d.data()))
-                  .toList(),
-        );
+    return _prCol(uid).snapshots().map(
+      (snap) =>
+          snap.docs.map((d) => PersonalRecord.fromJson(d.id, d.data())).toList(),
+    );
   }
 
   /// Saves a workout, checking each exercise's heaviest set against the

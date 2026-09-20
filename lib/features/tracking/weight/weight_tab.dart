@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
 import '../../../core/providers.dart';
+import '../../../core/utils/date_utils.dart';
 import '../../../models/story.dart';
 import '../../../models/weight_entry.dart';
 import '../../../shared/utils/photo_picker.dart';
@@ -113,9 +114,7 @@ class WeightTab extends ConsumerWidget {
     // fails, so this runs first and unconditionally.
     // Only overwrite the profile's "current" weight if this entry isn't
     // backdated — an old log shouldn't override today's actual current weight.
-    if (!date.isBefore(
-      DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day),
-    )) {
+    if (!date.isBefore(dateOnly(DateTime.now()))) {
       await ref.read(userRepoProvider).updateProfile(uid, {
         'currentWeightKg': weight,
       });

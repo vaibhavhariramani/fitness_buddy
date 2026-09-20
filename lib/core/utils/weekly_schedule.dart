@@ -3,6 +3,8 @@
 /// day, otherwise the permanent weekly routine's plan for that day.
 library;
 
+import 'date_utils.dart';
+
 /// Resolves what plan (if any) applies to [isoWeekday] (1=Monday..7=Sunday)
 /// for one specific week, given the permanent [routine] and this week's
 /// [overrides]. Returns a WorkoutPlan id, or null for a rest day.
@@ -22,6 +24,6 @@ String? resolveDayPlan({
 /// The Monday (date-only, local time) that starts the calendar week
 /// containing [date].
 DateTime mondayOfWeek(DateTime date) {
-  final dateOnly = DateTime(date.year, date.month, date.day);
-  return dateOnly.subtract(Duration(days: dateOnly.weekday - 1));
+  final day = dateOnly(date);
+  return day.subtract(Duration(days: day.weekday - 1));
 }

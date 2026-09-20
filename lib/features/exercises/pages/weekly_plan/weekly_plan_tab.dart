@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import '../../../../core/design_system/app_colors.dart';
 import '../../../../core/design_system/app_spacing.dart';
 import '../../../../core/providers.dart';
+import '../../../../core/utils/date_utils.dart';
 import '../../../../models/workout_plan.dart';
 import '../../../../shared/widgets/app_card.dart';
 import '../../../tracking/workouts/pages/active_workout_page.dart';
@@ -14,8 +15,6 @@ import 'weekly_plan_providers.dart';
 import 'weekly_routine_editor_screen.dart';
 
 const _dayNames = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-
-DateTime _dateOnly(DateTime d) => DateTime(d.year, d.month, d.day);
 
 class WeeklyPlanTab extends ConsumerWidget {
   const WeeklyPlanTab({super.key});
@@ -27,7 +26,7 @@ class WeeklyPlanTab extends ConsumerWidget {
         ref.watch(workoutPlansProvider).valueOrNull ?? const <WorkoutPlan>[];
     final allPlans = ref.watch(availableWorkoutPlansProvider);
     final plansById = {for (final p in allPlans) p.id: p};
-    final today = _dateOnly(DateTime.now());
+    final today = dateOnly(DateTime.now());
 
     return Scaffold(
       body: ListView(
@@ -57,7 +56,7 @@ class WeeklyPlanTab extends ConsumerWidget {
               child: _DayCard(
                 day: day,
                 plan: day.planId == null ? null : plansById[day.planId],
-                isToday: _dateOnly(day.date) == today,
+                isToday: dateOnly(day.date) == today,
                 customPlans: customPlans,
               ),
             ),

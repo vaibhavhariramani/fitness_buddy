@@ -3,6 +3,8 @@
 /// the app on Firebase's free Spark plan (no Cloud Functions needed).
 library;
 
+import 'date_utils.dart';
+
 class StreakResult {
   final int streakCount;
   final DateTime lastLogDate;
@@ -13,8 +15,6 @@ class StreakResult {
 class StreakCalculator {
   const StreakCalculator._();
 
-  static DateTime _dateOnly(DateTime d) => DateTime(d.year, d.month, d.day);
-
   /// Call this at the moment of any log write (weight/meal/workout).
   /// [previousStreak] and [previousLastLogDate] come from the user's stored
   /// profile; [today] defaults to DateTime.now() and is injectable for tests.
@@ -23,13 +23,13 @@ class StreakCalculator {
     required DateTime? previousLastLogDate,
     DateTime? today,
   }) {
-    final now = _dateOnly(today ?? DateTime.now());
+    final now = dateOnly(today ?? DateTime.now());
 
     if (previousLastLogDate == null) {
       return StreakResult(streakCount: 1, lastLogDate: now);
     }
 
-    final last = _dateOnly(previousLastLogDate);
+    final last = dateOnly(previousLastLogDate);
     final dayGap = now.difference(last).inDays;
 
     if (dayGap == 0) {
@@ -51,8 +51,8 @@ class StreakCalculator {
     DateTime? today,
   }) {
     if (lastLogDate == null) return 0;
-    final now = _dateOnly(today ?? DateTime.now());
-    final last = _dateOnly(lastLogDate);
+    final now = dateOnly(today ?? DateTime.now());
+    final last = dateOnly(lastLogDate);
     final dayGap = now.difference(last).inDays;
     if (dayGap > 1) return 0;
     return storedStreak;

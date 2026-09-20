@@ -40,12 +40,14 @@ class StoryAvatar extends ConsumerWidget {
   final String uid;
   final String displayName;
   final double radius;
+  final bool isOwnStory;
 
   const StoryAvatar({
     super.key,
     required this.uid,
     required this.displayName,
     this.radius = 28,
+    this.isOwnStory = false,
   });
 
   @override
@@ -78,6 +80,7 @@ class StoryAvatar extends ConsumerWidget {
                       (context) => StoryViewerPage(
                         stories: stories,
                         ownerName: displayName,
+                        isOwnStory: isOwnStory,
                       ),
                 ),
               )

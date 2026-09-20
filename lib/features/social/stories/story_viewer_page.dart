@@ -1,8 +1,12 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/design_system/app_colors.dart';
+import '../../../core/design_system/app_spacing.dart';
 import '../../../models/story.dart';
+import '../../../shared/widgets/app_share_branding.dart';
+import '../../../shared/widgets/share_capture_mixin.dart';
 import 'widgets/macro_pie_chart.dart';
 
 /// Full-screen WhatsApp/Instagram-style viewer for one person's active
@@ -12,10 +16,16 @@ class StoryViewerPage extends StatefulWidget {
   final List<Story> stories;
   final String ownerName;
 
+  /// Whether these are the signed-in user's own stories — only then do we
+  /// show a share button, since sharing someone else's story outside the
+  /// app isn't ours to offer.
+  final bool isOwnStory;
+
   const StoryViewerPage({
     super.key,
     required this.stories,
     required this.ownerName,
+    this.isOwnStory = false,
   });
 
   @override
@@ -179,6 +189,26 @@ class _StoryViewerPageState extends State<StoryViewerPage>
                             ),
                           ),
                         ),
+                        if (widget.isOwnStory)
+                          IconButton(
+                            icon: const Icon(
+                              Icons.ios_share,
+                              color: Colors.white,
+                            ),
+                            onPressed: () {
+                              _setPaused(true);
+                              Navigator.push<void>(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder:
+                                          (context) => StorySharePage(
+                                            story: widget.stories[_index],
+                                          ),
+                                    ),
+                                  )
+                                  .then((_) => _setPaused(false));
+                            },
+                          ),
                         IconButton(
                           icon: const Icon(Icons.close, color: Colors.white),
                           onPressed: () => Navigator.pop(context),
@@ -466,6 +496,101 @@ class _SummaryRow extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// Lets a user share one of their own stories outside the app — same
+/// pattern as [WorkoutSharePage]: preview the card (the story's own visual,
+/// plus an app banner asking whoever sees it to join), then hand it to the
+/// OS share sheet so it can go to Instagram/WhatsApp/etc.
+class StorySharePage extends ConsumerStatefulWidget {
+  final Story story;
+
+  const StorySharePage({super.key, required this.story});
+
+  @override
+  ConsumerState<StorySharePage> createState() => _StorySharePageState();
+}
+
+class _StorySharePageState extends ConsumerState<StorySharePage>
+    with ShareCaptureMixin {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Share story')),
+      body: SafeArea(
+        child: Column(
+          children: [
+            Expanded(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(AppSpacing.lg),
+                child: Center(
+                  child: RepaintBoundary(
+                    key: boundaryKey,
+                    child: _StoryShareCard(story: widget.story),
+                  ),
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(
+                AppSpacing.lg,
+                AppSpacing.sm,
+                AppSpacing.lg,
+                AppSpacing.lg,
+              ),
+              child: FilledButton.icon(
+                key: shareButtonKey,
+                onPressed:
+                    sharing
+                        ? null
+                        : () => shareCapturedImage(
+                          fileNamePrefix: 'fitness_buddy_story',
+                          text: 'Check out my update on Fitness Buddy 💪',
+                        ),
+                icon: const Icon(Icons.ios_share),
+                label: Text(sharing ? 'Preparing…' : 'Share'),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _StoryShareCard extends StatelessWidget {
+  final Story story;
+
+  const _StoryShareCard({required this.story});
+
+  @override
+  Widget build(BuildContext context) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(28),
+      child: ColoredBox(
+        color: Colors.black,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SizedBox(
+              width: 320,
+              height: 480,
+              child: Stack(
+                fit: StackFit.expand,
+                children: [_StorySlide(story: story), const AppWatermark()],
+              ),
+            ),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(20),
+              color: kShareBrandDark,
+              child: const AppShareBanner(),
+            ),
+          ],
+        ),
       ),
     );
   }

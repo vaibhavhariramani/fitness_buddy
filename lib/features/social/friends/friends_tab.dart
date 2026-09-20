@@ -220,7 +220,12 @@ class _StoriesBar extends ConsumerWidget {
       child: ListView(
         scrollDirection: Axis.horizontal,
         children: [
-          _StoryBarItem(uid: myUid, label: 'Your story', displayName: myName),
+          _StoryBarItem(
+            uid: myUid,
+            label: 'Your story',
+            displayName: myName,
+            isOwnStory: true,
+          ),
           for (final f in friends)
             _FriendStoryBarItem(otherUid: f.otherUid(myUid)),
         ],
@@ -251,11 +256,13 @@ class _StoryBarItem extends StatelessWidget {
   final String uid;
   final String label;
   final String displayName;
+  final bool isOwnStory;
 
   const _StoryBarItem({
     required this.uid,
     required this.label,
     required this.displayName,
+    this.isOwnStory = false,
   });
 
   @override
@@ -266,7 +273,11 @@ class _StoryBarItem extends StatelessWidget {
         width: 64,
         child: Column(
           children: [
-            StoryAvatar(uid: uid, displayName: displayName),
+            StoryAvatar(
+              uid: uid,
+              displayName: displayName,
+              isOwnStory: isOwnStory,
+            ),
             const SizedBox(height: 4),
             Text(
               label,

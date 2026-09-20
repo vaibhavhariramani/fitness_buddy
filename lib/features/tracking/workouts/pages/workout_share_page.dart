@@ -1,18 +1,14 @@
-import 'dart:io';
 import 'dart:typed_data';
-import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:share_plus/share_plus.dart';
 
 import '../../../../core/design_system/app_spacing.dart';
 import '../../../../models/workout_entry.dart';
 import '../../../../shared/utils/photo_picker.dart';
+import '../../../../shared/widgets/app_share_branding.dart';
 import '../../../../shared/widgets/muscle_body_diagram.dart';
+import '../../../../shared/widgets/share_capture_mixin.dart';
 import '../../../exercises/providers/exercise_providers.dart';
 import '../../../exercises/widgets/add_to_workout_dialog.dart'
     show resolveMuscleGroup;
@@ -33,71 +29,14 @@ class WorkoutSharePage extends ConsumerStatefulWidget {
   ConsumerState<WorkoutSharePage> createState() => _WorkoutSharePageState();
 }
 
-class _WorkoutSharePageState extends ConsumerState<WorkoutSharePage> {
-  final _boundaryKey = GlobalKey();
-  final _shareButtonKey = GlobalKey();
+class _WorkoutSharePageState extends ConsumerState<WorkoutSharePage>
+    with ShareCaptureMixin {
   Uint8List? _photoBytes;
-  bool _sharing = false;
 
   Future<void> _pickPhoto() async {
     final bytes = await pickPhotoFromCameraOrGallery(context);
     if (bytes == null) return;
     setState(() => _photoBytes = bytes);
-  }
-
-  Future<Uint8List> _captureImage() async {
-    // A frame to let the just-added photo actually paint before capture.
-    await WidgetsBinding.instance.endOfFrame;
-    final boundary =
-        _boundaryKey.currentContext!.findRenderObject()
-            as RenderRepaintBoundary;
-    final image = await boundary.toImage(pixelRatio: 3.0);
-    final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
-    return byteData!.buffer.asUint8List();
-  }
-
-  Future<void> _share() async {
-    setState(() => _sharing = true);
-    try {
-      final bytes = await _captureImage();
-      final dir = await getTemporaryDirectory();
-      final file = File(
-        '${dir.path}/fitness_buddy_workout_${DateTime.now().millisecondsSinceEpoch}.png',
-      );
-      await file.writeAsBytes(bytes);
-
-      // iOS (even on iPhone, on some OS versions) requires a non-empty
-      // sharePositionOrigin — the share sheet's popover anchor — or
-      // share_plus's platform channel throws before ever presenting
-      // anything. Anchor it to the Share button itself.
-      final buttonBox =
-          _shareButtonKey.currentContext?.findRenderObject() as RenderBox?;
-      final sharePositionOrigin =
-          buttonBox != null
-              ? buttonBox.localToGlobal(Offset.zero) & buttonBox.size
-              : null;
-
-      final hasPr = widget.entry.exercises.any((e) => e.isPr);
-      await Share.shareXFiles(
-        [XFile(file.path)],
-        text:
-            hasPr
-                ? 'New PR on Fitness Buddy 🏆'
-                : 'Just finished a workout on Fitness Buddy 💪',
-        sharePositionOrigin: sharePositionOrigin,
-      );
-    } catch (e) {
-      // Surface failures instead of letting them vanish silently — an
-      // unawaited/uncaught error here otherwise just resets the button with
-      // no visible sign anything went wrong.
-      if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Couldn\'t share: $e')));
-      }
-    } finally {
-      if (mounted) setState(() => _sharing = false);
-    }
   }
 
   @override
@@ -119,6 +58,8 @@ class _WorkoutSharePageState extends ConsumerState<WorkoutSharePage> {
       setsByGroup[group] = (setsByGroup[group] ?? 0) + e.sets.length;
     }
 
+    final hasPr = prExercises.isNotEmpty;
+
     return Scaffold(
       appBar: AppBar(title: const Text('Share workout')),
       body: SafeArea(
@@ -129,7 +70,7 @@ class _WorkoutSharePageState extends ConsumerState<WorkoutSharePage> {
                 padding: const EdgeInsets.all(AppSpacing.lg),
                 child: Center(
                   child: RepaintBoundary(
-                    key: _boundaryKey,
+                    key: boundaryKey,
                     child: _ShareCard(
                       entry: entry,
                       prExercises: prExercises,
@@ -151,7 +92,7 @@ class _WorkoutSharePageState extends ConsumerState<WorkoutSharePage> {
               child: Column(
                 children: [
                   OutlinedButton.icon(
-                    onPressed: _sharing ? null : _pickPhoto,
+                    onPressed: sharing ? null : _pickPhoto,
                     icon: const Icon(Icons.photo_library_outlined),
                     label: Text(
                       _photoBytes == null
@@ -161,10 +102,19 @@ class _WorkoutSharePageState extends ConsumerState<WorkoutSharePage> {
                   ),
                   const SizedBox(height: AppSpacing.sm),
                   FilledButton.icon(
-                    key: _shareButtonKey,
-                    onPressed: _sharing ? null : _share,
+                    key: shareButtonKey,
+                    onPressed:
+                        sharing
+                            ? null
+                            : () => shareCapturedImage(
+                              fileNamePrefix: 'fitness_buddy_workout',
+                              text:
+                                  hasPr
+                                      ? 'New PR on Fitness Buddy 🏆'
+                                      : 'Just finished a workout on Fitness Buddy 💪',
+                            ),
                     icon: const Icon(Icons.ios_share),
-                    label: Text(_sharing ? 'Preparing…' : 'Share'),
+                    label: Text(sharing ? 'Preparing…' : 'Share'),
                   ),
                 ],
               ),
@@ -201,27 +151,12 @@ class _ShareCard extends StatelessWidget {
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [Color(0xFF16321A), Color(0xFF2E7D32)],
+            colors: [kShareBrandDark, Color(0xFF2E7D32)],
           ),
         ),
         child: Stack(
           children: [
-            // A faint, oversized logo mark bleeding off the bottom-right
-            // corner — a subtle watermark so the card still reads as
-            // "Fitness Buddy" even if it gets re-shared or screenshotted
-            // without the app banner below.
-            Positioned(
-              right: -40,
-              bottom: -40,
-              child: Opacity(
-                opacity: 0.08,
-                child: SvgPicture.asset(
-                  'assets/branding/logo_mark.svg',
-                  width: 200,
-                  height: 200,
-                ),
-              ),
-            ),
+            const AppWatermark(),
             Padding(
               padding: const EdgeInsets.all(24),
               child: Column(
@@ -323,87 +258,12 @@ class _ShareCard extends StatelessWidget {
                   const SizedBox(height: 20),
                   const Divider(color: Colors.white24),
                   const SizedBox(height: 12),
-                  Row(
-                    children: [
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(8),
-                        child: SvgPicture.asset(
-                          'assets/branding/logo.svg',
-                          width: 28,
-                          height: 28,
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      const Expanded(
-                        child: Text(
-                          'Fitness Buddy — join me and become workout buddies',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 4),
-                  const Text(
-                    'Search "Fitness Buddy" to download',
-                    style: TextStyle(color: Colors.white60, fontSize: 11),
-                  ),
-                  const SizedBox(height: 10),
-                  const Row(
-                    children: [
-                      _StoreBadge(icon: Icons.apple, label: 'App Store'),
-                      SizedBox(width: 8),
-                      _StoreBadge(
-                        icon: Icons.shop_outlined,
-                        label: 'Google Play',
-                      ),
-                    ],
-                  ),
+                  const AppShareBanner(),
                 ],
               ),
             ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-/// A minimal, non-trademarked stand-in for an app-store badge — an icon plus
-/// the store's name in a pill — since we don't ship Apple's/Google's actual
-/// badge artwork (those come with their own usage/branding guidelines) but
-/// still want to tell whoever sees the share card which stores to search.
-class _StoreBadge extends StatelessWidget {
-  final IconData icon;
-  final String label;
-
-  const _StoreBadge({required this.icon, required this.label});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, size: 14, color: const Color(0xFF16321A)),
-          const SizedBox(width: 4),
-          Text(
-            label,
-            style: const TextStyle(
-              color: Color(0xFF16321A),
-              fontSize: 11,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-        ],
       ),
     );
   }

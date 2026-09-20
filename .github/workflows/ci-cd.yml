@@ -15,7 +15,12 @@ jobs:
     name: Scan code
     runs-on: ubuntu-latest
     steps:
+      # Full history: gitleaks-action scans the commit range of a push, and a
+      # shallow clone breaks it ("failed to scan Git repository") whenever a
+      # push contains more than one commit.
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       # lib/firebase_options.dart is gitignored (not a secret itself, but
       # kept out of the public repo) — reconstructed here from a repo

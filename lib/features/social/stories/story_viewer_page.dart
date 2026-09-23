@@ -6,6 +6,7 @@ import '../../../core/design_system/app_colors.dart';
 import '../../../core/design_system/app_spacing.dart';
 import '../../../models/story.dart';
 import '../../../shared/widgets/app_share_branding.dart';
+import '../../../shared/widgets/muscle_body_diagram.dart';
 import '../../../shared/widgets/share_capture_mixin.dart';
 import 'widgets/macro_pie_chart.dart';
 
@@ -56,7 +57,11 @@ class _StoryViewerPageState extends State<StoryViewerPage>
 
   Duration _durationFor(int i) {
     final story = widget.stories[i];
-    return story.type == StoryType.dailySummary
+    // Both carry more to read than a single stat — a muscle diagram plus
+    // exercise chips, or the daily recap — so they get longer than the
+    // 5s default.
+    return story.type == StoryType.dailySummary ||
+            story.type == StoryType.workout
         ? const Duration(seconds: 7)
         : const Duration(seconds: 5);
   }
@@ -235,6 +240,9 @@ class _StorySlide extends StatelessWidget {
     if (story.type == StoryType.dailySummary) {
       return _DailySummarySlide(story: story);
     }
+    if (story.type == StoryType.workout) {
+      return _WorkoutReportSlide(story: story);
+    }
 
     return Stack(
       fit: StackFit.expand,
@@ -273,7 +281,6 @@ class _StorySlide extends StatelessWidget {
             ),
             child: switch (story.type) {
               StoryType.weight => _WeightOverlay(story: story),
-              StoryType.workout => _WorkoutOverlay(story: story),
               _ => _MealOverlay(story: story),
             },
           ),
@@ -316,50 +323,142 @@ class _WeightOverlay extends StatelessWidget {
   }
 }
 
-class _WorkoutOverlay extends StatelessWidget {
+/// The full report for a workout story — not just an exercise/set count, but
+/// the same muscle-group body diagram used on the dashboard and the "Muscle
+/// Reports" tab, scoped to this one session, plus every exercise name. Gets
+/// its own full-screen slide (like [_DailySummarySlide]) rather than a small
+/// bottom-overlay caption, since most workout stories have no photo to
+/// caption in the first place (see [postWorkoutStory]) — the report *is*
+/// the content.
+class _WorkoutReportSlide extends StatelessWidget {
   final Story story;
 
-  const _WorkoutOverlay({required this.story});
+  const _WorkoutReportSlide({required this.story});
 
   @override
   Widget build(BuildContext context) {
     final exerciseCount = story.workoutExerciseCount;
     final setCount = story.workoutSetCount;
+    final setsByGroup = story.workoutSetsByGroup ?? const <String, int>{};
+    final exerciseNames = story.workoutExerciseNames ?? const <String>[];
+
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-      decoration: BoxDecoration(
-        color: Colors.black.withValues(alpha: 0.5),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.white24),
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [kShareBrandDark, Color(0xFF2E7D32)],
+        ),
       ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const Text('💪', style: TextStyle(fontSize: 20)),
-          const SizedBox(width: 8),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+      child: Center(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(32),
+          child: Column(
             mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                exerciseCount == null
-                    ? 'Workout'
-                    : '$exerciseCount exercise${exerciseCount == 1 ? '' : 's'}'
-                        '${setCount != null ? ' · $setCount sets' : ''}',
-                style: const TextStyle(
+              if (story.photoUrl != null) ...[
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(18),
+                  child: CachedNetworkImage(
+                    imageUrl: story.photoUrl!,
+                    height: 180,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                const SizedBox(height: 20),
+              ],
+              if (story.workoutHasPr == true) ...[
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFFFC107),
+                    borderRadius: BorderRadius.circular(999),
+                  ),
+                  child: const Text(
+                    '🏆 NEW PR',
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.w800,
+                      fontSize: 12,
+                      letterSpacing: 1,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 12),
+              ],
+              const Text(
+                'Workout Complete',
+                style: TextStyle(
                   color: Colors.white,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w700,
+                  fontSize: 26,
+                  fontWeight: FontWeight.w800,
                 ),
               ),
-              if (story.workoutHasPr == true)
-                const Text(
-                  '🏆 New PR',
-                  style: TextStyle(color: Colors.white70, fontSize: 12),
+              const SizedBox(height: 4),
+              Text(
+                exerciseCount == null
+                    ? 'Workout logged'
+                    : '$exerciseCount exercise${exerciseCount == 1 ? '' : 's'}'
+                        '${setCount != null ? ' · $setCount sets' : ''}',
+                style: const TextStyle(color: Colors.white70, fontSize: 15),
+              ),
+              if (setsByGroup.isNotEmpty) ...[
+                const SizedBox(height: 24),
+                Center(
+                  // Scoped color overrides so the body diagram reads clearly
+                  // on this dark gradient regardless of the app's own
+                  // light/dark theme — MuscleBodyDiagram always paints from
+                  // the ambient ColorScheme.
+                  child: Theme(
+                    data: ThemeData(
+                      colorScheme: const ColorScheme.dark(
+                        surfaceContainerHighest: Color(0x33FFFFFF),
+                        outlineVariant: Color(0x66FFFFFF),
+                        primary: Color(0xFFFFC107),
+                      ),
+                    ),
+                    child: MuscleBodyDiagram(
+                      trainedSets: setsByGroup,
+                      height: 210,
+                    ),
+                  ),
                 ),
+              ],
+              if (exerciseNames.isNotEmpty) ...[
+                const SizedBox(height: 20),
+                Wrap(
+                  spacing: 6,
+                  runSpacing: 6,
+                  children: [
+                    for (final name in exerciseNames)
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 5,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withValues(alpha: 0.15),
+                          borderRadius: BorderRadius.circular(999),
+                        ),
+                        child: Text(
+                          name,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+              ],
             ],
           ),
-        ],
+        ),
       ),
     );
   }

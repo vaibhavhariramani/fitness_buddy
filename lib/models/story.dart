@@ -40,6 +40,16 @@ class Story {
   final int? workoutSetCount;
   final bool? workoutHasPr;
 
+  /// Muscle group -> sets performed, for the body-diagram report (same
+  /// aggregation as the dashboard's weekly diagram and the external share
+  /// card, just scoped to this one workout). Null for stories posted before
+  /// this field existed.
+  final Map<String, int>? workoutSetsByGroup;
+
+  /// Every exercise name logged in the workout, for the full report — not
+  /// just the count.
+  final List<String>? workoutExerciseNames;
+
   // StoryType.dailySummary
   final String? displayName;
   final int? streakCount;
@@ -68,6 +78,8 @@ class Story {
     this.workoutExerciseCount,
     this.workoutSetCount,
     this.workoutHasPr,
+    this.workoutSetsByGroup,
+    this.workoutExerciseNames,
     this.displayName,
     this.streakCount,
     this.summaryWeightKg,
@@ -91,6 +103,8 @@ class Story {
     'workoutExerciseCount': workoutExerciseCount,
     'workoutSetCount': workoutSetCount,
     'workoutHasPr': workoutHasPr,
+    'workoutSetsByGroup': workoutSetsByGroup,
+    'workoutExerciseNames': workoutExerciseNames,
     'displayName': displayName,
     'streakCount': streakCount,
     'summaryWeightKg': summaryWeightKg,
@@ -115,6 +129,13 @@ class Story {
     workoutExerciseCount: (json['workoutExerciseCount'] as num?)?.toInt(),
     workoutSetCount: (json['workoutSetCount'] as num?)?.toInt(),
     workoutHasPr: json['workoutHasPr'] as bool?,
+    workoutSetsByGroup: (json['workoutSetsByGroup'] as Map?)?.map(
+      (k, v) => MapEntry(k as String, (v as num).toInt()),
+    ),
+    workoutExerciseNames:
+        (json['workoutExerciseNames'] as List?)
+            ?.map((e) => e as String)
+            .toList(),
     displayName: json['displayName'] as String?,
     streakCount: (json['streakCount'] as num?)?.toInt(),
     summaryWeightKg: (json['summaryWeightKg'] as num?)?.toDouble(),

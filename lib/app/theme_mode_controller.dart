@@ -16,9 +16,11 @@ class ThemeModeController extends StateNotifier<ThemeMode> {
 
   static ThemeMode loadInitial(SharedPreferences prefs) {
     final stored = prefs.getString(_themeModePrefsKey);
+    // Dark by default on a fresh install (no stored preference yet) — once
+    // the user picks a mode via the toggle, that explicit choice always wins.
     return ThemeMode.values.firstWhere(
       (mode) => mode.name == stored,
-      orElse: () => ThemeMode.system,
+      orElse: () => ThemeMode.dark,
     );
   }
 }

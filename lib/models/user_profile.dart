@@ -6,10 +6,9 @@ class PrivacySettings {
   final bool shareWorkouts;
   final bool shareStreak;
 
-  /// Whether today's meal photos are visible to accepted friends. Unlike the
-  /// other flags (which default on for backward compatibility), this
-  /// defaults OFF — food photos are more personal than a weight number or a
-  /// workout count, so sharing them is opt-in.
+  /// Whether today's meal photos are visible to accepted friends. On by
+  /// default, same as the other flags — friends only ever exist by mutual
+  /// acceptance, so sharing defaults on and is opt-out per field.
   final bool shareMeals;
 
   /// Whether friends can see this user's 24h stories (weight/meal photos
@@ -22,7 +21,7 @@ class PrivacySettings {
     this.shareWeight = true,
     this.shareWorkouts = true,
     this.shareStreak = true,
-    this.shareMeals = false,
+    this.shareMeals = true,
     this.shareStories = true,
   });
 
@@ -40,7 +39,7 @@ class PrivacySettings {
       shareWeight: json['shareWeight'] as bool? ?? true,
       shareWorkouts: json['shareWorkouts'] as bool? ?? true,
       shareStreak: json['shareStreak'] as bool? ?? true,
-      shareMeals: json['shareMeals'] as bool? ?? false,
+      shareMeals: json['shareMeals'] as bool? ?? true,
       shareStories: json['shareStories'] as bool? ?? true,
     );
   }

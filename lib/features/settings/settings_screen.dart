@@ -319,7 +319,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           SwitchListTile(
             title: const Text("Share today's meal photos"),
             subtitle: const Text(
-              'Off by default — opt in to let friends see them',
+              'On by default — turn off to keep your meal photos private',
             ),
             value: profile.privacy.shareMeals,
             onChanged:

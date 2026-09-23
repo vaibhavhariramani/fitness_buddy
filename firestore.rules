@@ -51,7 +51,7 @@ service cloud.firestore {
 
       match /meals/{mealId} {
         allow read: if isOwner(uid)
-          || (isAcceptedFriend(uid) && ownerProfile(uid).data.privacy.shareMeals == true);
+          || (isAcceptedFriend(uid) && ownerProfile(uid).data.privacy.get('shareMeals', true) == true);
         allow write: if isOwner(uid);
       }
 

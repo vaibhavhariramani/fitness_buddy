@@ -140,10 +140,43 @@ class AuthService {
   /// so it isn't blocked by Firestore's owner-delete rules or Firebase
   /// Auth's `requires-recent-login` check for stale sessions.
   Future<void> deleteAccount() async {
+    await _revokeAppleTokenIfNeeded();
     await _functions.httpsCallable('deleteAccount').call();
     if (!kIsWeb) {
       await _googleSignIn!.signOut();
     }
     await _auth.signOut();
+  }
+
+  /// Apple requires that deleting an account created with Sign in with Apple
+  /// also revoke the associated Apple token (App Store Review Guideline
+  /// 5.1.1(v)) — the account must not just disappear from our own backend.
+  ///
+  /// Revocation needs a *fresh* authorization code; the one from the user's
+  /// original sign-in is long since expired and single-use, so this shows
+  /// the native Apple sign-in sheet again right before deleting and revokes
+  /// with that code. It never calls [FirebaseAuth.signInWithCredential], so
+  /// it only reads a fresh code from Apple — it doesn't touch or replace the
+  /// current session.
+  ///
+  /// iOS/macOS only: on web, `sign_in_with_apple`'s popup flow doesn't
+  /// return an authorization code to revoke, and non-Apple accounts have
+  /// nothing to revoke.
+  Future<void> _revokeAppleTokenIfNeeded() async {
+    final isAppleUser =
+        _auth.currentUser?.providerData.any(
+          (p) => p.providerId == 'apple.com',
+        ) ??
+        false;
+    if (!isAppleUser || kIsWeb) return;
+
+    final rawNonce = _generateNonce();
+    final appleCredential = await SignInWithApple.getAppleIDCredential(
+      scopes: [AppleIDAuthorizationScopes.email],
+      nonce: sha256.convert(utf8.encode(rawNonce)).toString(),
+    );
+    await _auth.revokeTokenWithAuthorizationCode(
+      appleCredential.authorizationCode,
+    );
   }
 }

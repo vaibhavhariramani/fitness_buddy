@@ -50,6 +50,12 @@ class Story {
   /// just the count.
   final List<String>? workoutExerciseNames;
 
+  /// Index-aligned with [workoutExerciseNames] — each exercise's set count
+  /// and averaged weight/reps ("3 x 25kg x 12 reps"), same format as the
+  /// post-workout report and shareable card. Null for stories posted before
+  /// this field existed.
+  final List<String>? workoutExerciseSummaries;
+
   // StoryType.dailySummary
   final String? displayName;
   final int? streakCount;
@@ -80,6 +86,7 @@ class Story {
     this.workoutHasPr,
     this.workoutSetsByGroup,
     this.workoutExerciseNames,
+    this.workoutExerciseSummaries,
     this.displayName,
     this.streakCount,
     this.summaryWeightKg,
@@ -105,6 +112,7 @@ class Story {
     'workoutHasPr': workoutHasPr,
     'workoutSetsByGroup': workoutSetsByGroup,
     'workoutExerciseNames': workoutExerciseNames,
+    'workoutExerciseSummaries': workoutExerciseSummaries,
     'displayName': displayName,
     'streakCount': streakCount,
     'summaryWeightKg': summaryWeightKg,
@@ -134,6 +142,10 @@ class Story {
     ),
     workoutExerciseNames:
         (json['workoutExerciseNames'] as List?)
+            ?.map((e) => e as String)
+            .toList(),
+    workoutExerciseSummaries:
+        (json['workoutExerciseSummaries'] as List?)
             ?.map((e) => e as String)
             .toList(),
     displayName: json['displayName'] as String?,

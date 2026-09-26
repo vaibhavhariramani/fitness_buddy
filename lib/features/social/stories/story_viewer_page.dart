@@ -341,6 +341,7 @@ class _WorkoutReportSlide extends StatelessWidget {
     final setCount = story.workoutSetCount;
     final setsByGroup = story.workoutSetsByGroup ?? const <String, int>{};
     final exerciseNames = story.workoutExerciseNames ?? const <String>[];
+    final exerciseSummaries = story.workoutExerciseSummaries;
 
     return Container(
       decoration: const BoxDecoration(
@@ -431,26 +432,40 @@ class _WorkoutReportSlide extends StatelessWidget {
               ],
               if (exerciseNames.isNotEmpty) ...[
                 const SizedBox(height: 20),
-                Wrap(
-                  spacing: 6,
-                  runSpacing: 6,
+                Column(
                   children: [
-                    for (final name in exerciseNames)
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 10,
-                          vertical: 5,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: 0.15),
-                          borderRadius: BorderRadius.circular(999),
-                        ),
-                        child: Text(
-                          name,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 12,
-                          ),
+                    for (var i = 0; i < exerciseNames.length; i++)
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 6),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: _WorkoutReportBox(
+                                child: Text(
+                                  exerciseNames[i],
+                                  overflow: TextOverflow.ellipsis,
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            if (exerciseSummaries != null &&
+                                i < exerciseSummaries.length) ...[
+                              const SizedBox(width: 6),
+                              _WorkoutReportBox(
+                                child: Text(
+                                  exerciseSummaries[i],
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ],
                         ),
                       ),
                   ],
@@ -460,6 +475,27 @@ class _WorkoutReportSlide extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+/// A small white-on-gradient pill for the workout report's boxed exercise
+/// name/set-summary pairs — matches the shareable workout card's styling
+/// (fixed dark gradient regardless of the app's theme).
+class _WorkoutReportBox extends StatelessWidget {
+  final Widget child;
+
+  const _WorkoutReportBox({required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.15),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: child,
     );
   }
 }

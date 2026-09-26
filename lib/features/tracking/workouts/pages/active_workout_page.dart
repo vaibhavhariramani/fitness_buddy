@@ -22,6 +22,7 @@ import '../../../exercises/widgets/exercise_picker_sheet.dart';
 import '../../../exercises/widgets/exercise_visual.dart';
 import '../active_workout_draft.dart' as draft;
 import '../previous_performance_provider.dart';
+import '../rest_timer_default_controller.dart';
 import '../widgets/rest_timer_sheet.dart';
 import '../workout_story.dart';
 import 'workout_summary_page.dart';
@@ -64,7 +65,7 @@ class _SessionExercise {
   final int restSeconds;
   final List<_DraftSet> sets;
   String? memo;
-  bool restTimerEnabled = true;
+  bool restTimerEnabled;
 
   /// Non-null when paired with another exercise in this session as a
   /// superset — shared by both members of the pair, cleared on both when
@@ -83,6 +84,7 @@ class _SessionExercise {
     required this.muscleGroup,
     required this.restSeconds,
     required this.sets,
+    this.restTimerEnabled = true,
   });
 }
 
@@ -260,6 +262,7 @@ class _ActiveWorkoutPageState extends ConsumerState<ActiveWorkoutPage> {
   void _seedFromWidget() {
     if (_seeded) return;
     _seeded = true;
+    final restTimerDefault = ref.read(restTimerDefaultProvider);
     for (final seed in widget.seeds) {
       final exercise = ref.read(exerciseByIdProvider(seed.exerciseId));
       final previous = ref.read(previousPerformanceProvider(seed.exerciseId));
@@ -274,6 +277,7 @@ class _ActiveWorkoutPageState extends ConsumerState<ActiveWorkoutPage> {
           muscleGroup:
               exercise == null ? 'Full body' : nearestMuscleGroup(exercise),
           restSeconds: seed.restSeconds,
+          restTimerEnabled: restTimerDefault,
           sets: List.generate(
             seed.targetSets,
             (_) => _DraftSet(reps: seed.targetReps, weightKg: defaultWeight),
@@ -299,6 +303,7 @@ class _ActiveWorkoutPageState extends ConsumerState<ActiveWorkoutPage> {
           name: exercise.name,
           muscleGroup: nearestMuscleGroup(exercise),
           restSeconds: 90,
+          restTimerEnabled: ref.read(restTimerDefaultProvider),
           sets: [_DraftSet(reps: defaultReps, weightKg: defaultWeight)],
         ),
       );

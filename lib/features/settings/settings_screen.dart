@@ -9,6 +9,7 @@ import '../../core/providers.dart';
 import '../../core/utils/calculations.dart';
 import '../../models/user_profile.dart';
 import '../auth/providers/auth_controller.dart';
+import '../tracking/workouts/rest_timer_default_controller.dart';
 
 class SettingsScreen extends ConsumerStatefulWidget {
   const SettingsScreen({super.key});
@@ -265,6 +266,19 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 (selection) => ref
                     .read(themeModeProvider.notifier)
                     .setThemeMode(selection.first),
+          ),
+          const SizedBox(height: 32),
+          Text('Workouts', style: Theme.of(context).textTheme.titleMedium),
+          SwitchListTile(
+            title: const Text('Rest timer on by default'),
+            subtitle: const Text(
+              'Off by default — starts the countdown after every completed '
+              'set on newly added exercises. Can still be toggled per '
+              'exercise from its menu during a workout.',
+            ),
+            value: ref.watch(restTimerDefaultProvider),
+            onChanged:
+                (v) => ref.read(restTimerDefaultProvider.notifier).setEnabled(v),
           ),
           const SizedBox(height: 32),
           Text(

@@ -63,6 +63,8 @@ Future<void> postWorkoutStory({
           workoutHasPr: anyPr,
           workoutSetsByGroup: setsByGroup,
           workoutExerciseNames: saved.exercises.map((e) => e.name).toList(),
+          workoutExerciseSummaries:
+              saved.exercises.map((e) => e.setSummary).toList(),
           createdAt: now,
           expiresAt: now.add(const Duration(hours: 24)),
         ),

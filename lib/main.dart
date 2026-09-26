@@ -13,6 +13,7 @@ import 'app/theme_mode_controller.dart';
 import 'core/navigation_key.dart';
 import 'core/providers.dart';
 import 'features/settings/wellness_alarm_dialog.dart';
+import 'features/tracking/workouts/rest_timer_default_controller.dart';
 import 'firebase_options.dart';
 import 'services/push_notification_service.dart';
 
@@ -46,6 +47,9 @@ Future<void> main() async {
 
   final prefs = await SharedPreferences.getInstance();
   final initialThemeMode = ThemeModeController.loadInitial(prefs);
+  final initialRestTimerDefault = RestTimerDefaultController.loadInitial(
+    prefs,
+  );
 
   // An explicit container (rather than a plain `ProviderScope`) so the
   // notification tap handler below — which fires from outside the widget
@@ -54,6 +58,9 @@ Future<void> main() async {
     overrides: [
       themeModeProvider.overrideWith(
         (ref) => ThemeModeController(prefs, initialThemeMode),
+      ),
+      restTimerDefaultProvider.overrideWith(
+        (ref) => RestTimerDefaultController(prefs, initialRestTimerDefault),
       ),
     ],
   );

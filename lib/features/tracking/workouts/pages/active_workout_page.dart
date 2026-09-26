@@ -157,6 +157,7 @@ class _ActiveWorkoutPageState extends ConsumerState<ActiveWorkoutPage> {
       _loadDraft();
     } else {
       draft.clearActiveWorkoutDraft();
+      ref.read(draft.activeWorkoutSessionProvider.notifier).clear();
       ref.read(notificationServiceProvider).showWorkoutInProgress(widget.title);
     }
   }
@@ -207,36 +208,39 @@ class _ActiveWorkoutPageState extends ConsumerState<ActiveWorkoutPage> {
 
   void _persistDraft() {
     if (_exercises.isEmpty) return;
-    draft.saveActiveWorkoutDraft(
-      draft.WorkoutDraft(
-        title: _displayTitle,
-        date: _date,
-        startedAt: _startedAt,
-        exercises: [
-          for (final e in _exercises)
-            draft.DraftExercise(
-              exerciseId: e.exerciseId,
-              name: e.name,
-              muscleGroup: e.muscleGroup,
-              restSeconds: e.restSeconds,
-              restTimerEnabled: e.restTimerEnabled,
-              memo: e.memo,
-              supersetGroupId: e.supersetGroupId,
-              sets: [
-                for (final s in e.sets)
-                  draft.DraftSet(
-                    reps: s.reps,
-                    weightKg: s.weightKg,
-                    rir: s.rir,
-                    isWarmup: s.isWarmup,
-                    isFailure: s.isFailure,
-                    completed: s.completed,
-                  ),
-              ],
-            ),
-        ],
-      ),
+    final snapshot = draft.WorkoutDraft(
+      title: _displayTitle,
+      date: _date,
+      startedAt: _startedAt,
+      exercises: [
+        for (final e in _exercises)
+          draft.DraftExercise(
+            exerciseId: e.exerciseId,
+            name: e.name,
+            muscleGroup: e.muscleGroup,
+            restSeconds: e.restSeconds,
+            restTimerEnabled: e.restTimerEnabled,
+            memo: e.memo,
+            supersetGroupId: e.supersetGroupId,
+            sets: [
+              for (final s in e.sets)
+                draft.DraftSet(
+                  reps: s.reps,
+                  weightKg: s.weightKg,
+                  rir: s.rir,
+                  isWarmup: s.isWarmup,
+                  isFailure: s.isFailure,
+                  completed: s.completed,
+                ),
+            ],
+          ),
+      ],
     );
+    draft.saveActiveWorkoutDraft(snapshot);
+    // Keeps HomeShell's "workout in progress" bar in sync — it deliberately
+    // stays populated across this page being popped (back button), which is
+    // exactly the "still running in the background" state that bar shows.
+    ref.read(draft.activeWorkoutSessionProvider.notifier).update(snapshot);
   }
 
   @override
@@ -384,6 +388,7 @@ class _ActiveWorkoutPageState extends ConsumerState<ActiveWorkoutPage> {
           );
       await ref.read(userRepoProvider).registerActivityAndGetStreak(uid);
       await draft.clearActiveWorkoutDraft();
+      ref.read(draft.activeWorkoutSessionProvider.notifier).clear();
       // Stop the periodic persistence tick now that the draft is cleared —
       // otherwise a tick landing during the photo/story upload below could
       // re-write the draft to disk right after clearing it, leaving a stale
@@ -541,23 +546,28 @@ class _ActiveWorkoutPageState extends ConsumerState<ActiveWorkoutPage> {
                   : 'Photo selected',
             ),
           ),
-        ],
-      ),
-      bottomNavigationBar: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(AppSpacing.md),
-          child: FilledButton(
-            onPressed: _saving ? null : _finish,
-            child:
-                _saving
-                    ? const SizedBox(
-                      height: 20,
-                      width: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
-                    : const Text('Finish Workout'),
+          const SizedBox(height: AppSpacing.md),
+          // Finish Workout lives in the scrollable list itself (rather than
+          // a fixed bottomNavigationBar) so it's always reachable by
+          // scrolling even while the keyboard covers the bottom of the
+          // screen — a fixed footer can end up hidden behind the keyboard
+          // on some devices while editing a set deep in a long exercise list.
+          SizedBox(
+            width: double.infinity,
+            child: FilledButton(
+              onPressed: _saving ? null : _finish,
+              child:
+                  _saving
+                      ? const SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                      : const Text('Finish Workout'),
+            ),
           ),
-        ),
+          SizedBox(height: MediaQuery.viewInsetsOf(context).bottom),
+        ],
       ),
     );
   }
@@ -663,8 +673,6 @@ class _ExerciseCardState extends ConsumerState<_ExerciseCard> {
     if (candidates.isEmpty) return;
     final partner = await showModalBottomSheet<_SessionExercise>(
       context: context,
-      // Without this, the sheet renders below this page's own
-      // bottomNavigationBar (the Finish Workout bar) instead of above it.
       useRootNavigator: true,
       builder:
           (context) => SafeArea(
@@ -775,10 +783,6 @@ class _ExerciseCardState extends ConsumerState<_ExerciseCard> {
     final exercise = widget.exercise;
     final action = await showModalBottomSheet<_ExerciseMenuAction>(
       context: context,
-      // Without this, the sheet renders below this page's own
-      // bottomNavigationBar (the Finish Workout bar) instead of above it —
-      // that's why the "Rest timer" toggle (the last item) was appearing
-      // hidden behind it.
       useRootNavigator: true,
       builder:
           (context) => SafeArea(

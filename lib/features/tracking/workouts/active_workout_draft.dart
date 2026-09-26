@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../models/workout_entry.dart';
@@ -152,6 +153,30 @@ Future<WorkoutDraft?> loadActiveWorkoutDraft() async {
 Future<void> clearActiveWorkoutDraft() async {
   final prefs = await SharedPreferences.getInstance();
   await prefs.remove(_draftPrefsKey);
+}
+
+/// In-memory mirror of the on-disk draft, so [HomeShell] can show a
+/// "workout in progress" bar from any tab — including right after the app
+/// launches, before [ActiveWorkoutPage] is reopened — without polling
+/// SharedPreferences on every rebuild. [ActiveWorkoutPage] keeps this in
+/// sync with the disk copy on every persistence tick and clears it once the
+/// workout is actually saved; it deliberately stays populated when the page
+/// is merely popped (back button), since that's the "still running" state
+/// this bar exists to surface.
+final activeWorkoutSessionProvider =
+    StateNotifierProvider<ActiveWorkoutSessionNotifier, WorkoutDraft?>(
+      (ref) => ActiveWorkoutSessionNotifier(),
+    );
+
+class ActiveWorkoutSessionNotifier extends StateNotifier<WorkoutDraft?> {
+  ActiveWorkoutSessionNotifier() : super(null) {
+    loadActiveWorkoutDraft().then((loaded) {
+      if (mounted) state = loaded;
+    });
+  }
+
+  void update(WorkoutDraft draft) => state = draft;
+  void clear() => state = null;
 }
 
 /// Saves whatever's in the persisted draft as a finished workout. Used by

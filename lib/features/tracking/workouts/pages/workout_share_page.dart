@@ -231,26 +231,37 @@ class _ShareCard extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  Wrap(
-                    spacing: 6,
-                    runSpacing: 6,
+                  Column(
                     children: [
                       for (final e in entry.exercises.take(6))
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 10,
-                            vertical: 5,
-                          ),
-                          decoration: BoxDecoration(
-                            color: Colors.white.withValues(alpha: 0.15),
-                            borderRadius: BorderRadius.circular(999),
-                          ),
-                          child: Text(
-                            e.name,
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 12,
-                            ),
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 6),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: _ShareBox(
+                                  child: Text(
+                                    e.name,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 6),
+                              _ShareBox(
+                                child: Text(
+                                  e.setSummary,
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                     ],
@@ -265,6 +276,28 @@ class _ShareCard extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+/// A small white-on-gradient pill for the share card's boxed exercise
+/// name/set-summary pairs — the card's own hardcoded white/alpha styling
+/// (it renders on a fixed dark gradient regardless of the app's theme), as
+/// distinct from [_ReportBox] on the theme-driven summary page.
+class _ShareBox extends StatelessWidget {
+  final Widget child;
+
+  const _ShareBox({required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.15),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: child,
     );
   }
 }

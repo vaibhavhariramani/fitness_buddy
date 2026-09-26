@@ -20,6 +20,7 @@ import '../../shared/widgets/muscle_body_diagram.dart';
 import '../../shared/widgets/progress_ring.dart';
 import '../../shared/widgets/section_header.dart';
 import '../nutrition/providers/nutrition_providers.dart';
+import '../exercises/exercises_tab_provider.dart';
 import '../exercises/pages/weekly_plan/weekly_plan_providers.dart';
 import '../exercises/providers/exercise_providers.dart';
 import '../exercises/widgets/add_to_workout_dialog.dart'
@@ -816,9 +817,10 @@ class _MuscleThisWeekSection extends ConsumerWidget {
                     children: [
                       GestureDetector(
                         onTap: () {
-                          ref.read(pendingTrackingTabProvider.notifier).state =
-                              2;
-                          context.push('/tracking');
+                          ref
+                              .read(pendingExercisesTabProvider.notifier)
+                              .state = 3; // Muscle Reports tab
+                          context.push('/exercises');
                         },
                         child: MuscleBodyDiagram(trainedSets: setsByGroup),
                       ),

@@ -90,9 +90,11 @@ class AuthService {
       ],
       nonce: sha256.convert(utf8.encode(rawNonce)).toString(),
     );
-    final oauthCredential = OAuthProvider(
-      'apple.com',
-    ).credential(idToken: appleCredential.identityToken, rawNonce: rawNonce);
+    final oauthCredential = OAuthProvider('apple.com').credential(
+      idToken: appleCredential.identityToken,
+      accessToken: appleCredential.authorizationCode,
+      rawNonce: rawNonce,
+    );
     final userCredential = await _auth.signInWithCredential(oauthCredential);
     // Apple only returns the name on the very first authorization, and
     // Firebase doesn't populate displayName from the Apple credential itself.

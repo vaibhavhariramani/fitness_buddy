@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/design_system/app_colors.dart';
+import '../../../../core/design_system/app_radius.dart';
 import '../../../../core/design_system/app_spacing.dart';
 import '../../../../core/design_system/app_text_styles.dart';
 import '../../../../core/utils/pr.dart';
@@ -184,6 +185,81 @@ class WorkoutSummaryPage extends ConsumerWidget {
                 ),
               ),
             ],
+            if (entry.exercises.isNotEmpty) ...[
+              const SizedBox(height: AppSpacing.md),
+              AppCard(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Exercises', style: Theme.of(context).textTheme.titleSmall),
+                    const SizedBox(height: AppSpacing.sm),
+                    for (final e in entry.exercises)
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                          vertical: AppSpacing.xs,
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(
+                              e.isPr
+                                  ? Icons.emoji_events_rounded
+                                  : Icons.check_circle_outline,
+                              size: 18,
+                              color:
+                                  e.isPr
+                                      ? AppColors.achievement
+                                      : scheme.onSurfaceVariant,
+                            ),
+                            const SizedBox(width: AppSpacing.sm),
+                            Expanded(
+                              child: _ReportBox(
+                                child: Row(
+                                  children: [
+                                    Expanded(
+                                      child: Text(
+                                        e.name,
+                                        overflow: TextOverflow.ellipsis,
+                                        style:
+                                            Theme.of(
+                                              context,
+                                            ).textTheme.bodyMedium,
+                                      ),
+                                    ),
+                                    if (e.isPr)
+                                      Padding(
+                                        padding: const EdgeInsets.only(
+                                          left: AppSpacing.xs,
+                                        ),
+                                        child: Text(
+                                          'PR',
+                                          style: Theme.of(
+                                            context,
+                                          ).textTheme.labelSmall?.copyWith(
+                                            color: AppColors.achievement,
+                                            fontWeight: FontWeight.w700,
+                                          ),
+                                        ),
+                                      ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: AppSpacing.xs),
+                            _ReportBox(
+                              child: Text(
+                                e.setSummary,
+                                style: AppTextStyles.statSmall(
+                                  scheme.onSurface,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            ],
             const SizedBox(height: AppSpacing.xl),
             OutlinedButton.icon(
               onPressed:
@@ -212,6 +288,30 @@ class WorkoutSummaryPage extends ConsumerWidget {
     final minutes = d.inMinutes;
     if (minutes < 1) return '<1 min';
     return '$minutes min';
+  }
+}
+
+/// A small bordered surface for the report's "boxed" stat pairs (exercise
+/// name, set summary) — distinct from [AppCard], which is the full-width
+/// section container these boxes sit inside.
+class _ReportBox extends StatelessWidget {
+  final Widget child;
+
+  const _ReportBox({required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.sm,
+        vertical: AppSpacing.xs,
+      ),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surfaceContainerHighest,
+        borderRadius: AppRadius.compactRadius,
+      ),
+      child: child,
+    );
   }
 }
 

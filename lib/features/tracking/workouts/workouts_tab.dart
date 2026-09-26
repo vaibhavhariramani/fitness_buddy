@@ -110,10 +110,11 @@ class _WorkoutsTabState extends ConsumerState<WorkoutsTab> {
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed:
-            () => showModalBottomSheet(
-              context: context,
-              isScrollControlled: true,
-              builder: (context) => const LogWorkoutSheet(),
+            () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const ActiveWorkoutPage(title: 'Workout'),
+              ),
             ),
         icon: const Icon(Icons.add),
         label: const Text('Log workout'),

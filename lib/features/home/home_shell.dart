@@ -6,6 +6,8 @@ import '../../app/theme_mode_controller.dart';
 import '../../core/providers.dart';
 import '../auth/providers/auth_controller.dart';
 import '../notifications/notification_bell.dart';
+import '../tracking/workouts/active_workout_draft.dart';
+import '../tracking/workouts/widgets/active_workout_bar.dart';
 
 class _NavItem {
   final String path;
@@ -95,6 +97,7 @@ class HomeShell extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final profile = ref.watch(userProfileProvider).valueOrNull;
+    final activeWorkout = ref.watch(activeWorkoutSessionProvider);
     final isWide = MediaQuery.sizeOf(context).width >= 900;
     final currentIndex = _currentIndex(context);
     final primaryIndex = _primaryIndex(context);
@@ -136,94 +139,110 @@ class HomeShell extends ConsumerWidget {
                   ),
                 ],
               ),
-      body:
-          isWide
-              ? Column(
-                children: [
-                  Material(
-                    elevation: 1,
-                    child: SizedBox(
-                      height: 56,
-                      child: Row(
-                        children: [
-                          const SizedBox(width: 16),
-                          Text(
-                            'Fitness Buddy',
-                            style: Theme.of(context).textTheme.titleMedium,
-                          ),
-                          const Spacer(),
-                          const NotificationBell(),
-                          const SizedBox(width: 8),
-                        ],
-                      ),
-                    ),
-                  ),
-                  Expanded(
-                    child: Row(
+      body: Column(
+        children: [
+          Expanded(
+            child:
+                isWide
+                    ? Column(
                       children: [
-                        // NavigationRail doesn't scroll on its own — with 8
-                        // destinations plus the leading avatar/buttons, it
-                        // can be taller than the viewport on shorter windows
-                        // and overflow. Wrapping it this way (the pattern
-                        // NavigationRail's own docs recommend) lets it
-                        // scroll instead.
-                        LayoutBuilder(
-                          builder: (context, constraints) {
-                            return SingleChildScrollView(
-                              child: ConstrainedBox(
-                                constraints: BoxConstraints(
-                                  minHeight: constraints.maxHeight,
+                        Material(
+                          elevation: 1,
+                          child: SizedBox(
+                            height: 56,
+                            child: Row(
+                              children: [
+                                const SizedBox(width: 16),
+                                Text(
+                                  'Fitness Buddy',
+                                  style:
+                                      Theme.of(context).textTheme.titleMedium,
                                 ),
-                                child: IntrinsicHeight(
-                                  child: NavigationRail(
-                                    selectedIndex: currentIndex,
-                                    onDestinationSelected:
-                                        (i) => context.go(_navItems[i].path),
-                                    labelType: NavigationRailLabelType.all,
-                                    leading: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        const SizedBox(height: 12),
-                                        CircleAvatar(
-                                          child: Text(
-                                            (profile?.displayName.isNotEmpty ??
-                                                    false)
-                                                ? profile!.displayName[0]
-                                                    .toUpperCase()
-                                                : '?',
-                                          ),
-                                        ),
-                                        const SizedBox(height: 8),
-                                        themeToggle,
-                                        IconButton(
-                                          icon: const Icon(Icons.logout),
-                                          tooltip: 'Sign out',
-                                          onPressed:
-                                              () =>
-                                                  ref
-                                                      .read(
-                                                        authControllerProvider
-                                                            .notifier,
-                                                      )
-                                                      .signOut(),
-                                        ),
-                                      ],
-                                    ),
-                                    destinations: destinations,
-                                  ),
-                                ),
-                              ),
-                            );
-                          },
+                                const Spacer(),
+                                const NotificationBell(),
+                                const SizedBox(width: 8),
+                              ],
+                            ),
+                          ),
                         ),
-                        const VerticalDivider(width: 1),
-                        Expanded(child: child),
+                        Expanded(
+                          child: Row(
+                            children: [
+                              // NavigationRail doesn't scroll on its own —
+                              // with 8 destinations plus the leading
+                              // avatar/buttons, it can be taller than the
+                              // viewport on shorter windows and overflow.
+                              // Wrapping it this way (the pattern
+                              // NavigationRail's own docs recommend) lets it
+                              // scroll instead.
+                              LayoutBuilder(
+                                builder: (context, constraints) {
+                                  return SingleChildScrollView(
+                                    child: ConstrainedBox(
+                                      constraints: BoxConstraints(
+                                        minHeight: constraints.maxHeight,
+                                      ),
+                                      child: IntrinsicHeight(
+                                        child: NavigationRail(
+                                          selectedIndex: currentIndex,
+                                          onDestinationSelected:
+                                              (i) => context.go(
+                                                _navItems[i].path,
+                                              ),
+                                          labelType:
+                                              NavigationRailLabelType.all,
+                                          leading: Column(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              const SizedBox(height: 12),
+                                              CircleAvatar(
+                                                child: Text(
+                                                  (profile
+                                                              ?.displayName
+                                                              .isNotEmpty ??
+                                                          false)
+                                                      ? profile!.displayName[0]
+                                                          .toUpperCase()
+                                                      : '?',
+                                                ),
+                                              ),
+                                              const SizedBox(height: 8),
+                                              themeToggle,
+                                              IconButton(
+                                                icon: const Icon(
+                                                  Icons.logout,
+                                                ),
+                                                tooltip: 'Sign out',
+                                                onPressed:
+                                                    () =>
+                                                        ref
+                                                            .read(
+                                                              authControllerProvider
+                                                                  .notifier,
+                                                            )
+                                                            .signOut(),
+                                              ),
+                                            ],
+                                          ),
+                                          destinations: destinations,
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
+                              const VerticalDivider(width: 1),
+                              Expanded(child: child),
+                            ],
+                          ),
+                        ),
                       ],
-                    ),
-                  ),
-                ],
-              )
-              : child,
+                    )
+                    : child,
+          ),
+          if (activeWorkout != null) ActiveWorkoutBar(draft: activeWorkout),
+        ],
+      ),
       bottomNavigationBar:
           isWide
               ? null

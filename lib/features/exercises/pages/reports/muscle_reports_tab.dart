@@ -2,7 +2,15 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/design_system/app_colors.dart';
+import '../../../../core/design_system/app_spacing.dart';
+import '../../../../core/design_system/app_text_styles.dart';
+import '../../../../models/personal_record.dart';
 import '../../../../models/workout_entry.dart';
+import '../../../../shared/widgets/app_card.dart';
+import '../../../../shared/widgets/muscle_body_diagram.dart';
+import '../../../../shared/widgets/section_header.dart';
+import '../../../analytics/dashboard_providers.dart';
 import '../../../tracking/workouts/workouts_tab.dart';
 import '../../data/muscle_group_images.dart';
 import '../../providers/exercise_providers.dart';
@@ -91,26 +99,214 @@ class MuscleReportsTab extends ConsumerWidget {
         }
         final stats = _computeStats(ref, workouts);
         final ordered = muscleGroups.map((g) => stats[g]!).toList();
+        final weeklySetsByGroup = {
+          for (final s in ordered)
+            if (s.weeklySets > 0) s.muscleGroup: s.weeklySets,
+        };
+        final totalWeeklySets = weeklySetsByGroup.values.fold(0, (a, b) => a + b);
 
         return ListView(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(AppSpacing.md),
           children: [
-            Text(
-              'This week, by muscle group',
-              style: Theme.of(context).textTheme.titleMedium,
+            _WeeklyHeroCard(
+              weeklySetsByGroup: weeklySetsByGroup,
+              totalWeeklySets: totalWeeklySets,
             ),
-            const SizedBox(height: 8),
-            SizedBox(height: 180, child: _WeeklySetsChart(stats: ordered)),
-            const SizedBox(height: 20),
-            Text(
-              'Muscle group detail',
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
-            const SizedBox(height: 8),
+            const SizedBox(height: AppSpacing.lg),
+            const SectionHeader(title: 'Personal Records'),
+            const _PersonalRecordsSection(),
+            const SizedBox(height: AppSpacing.lg),
+            const SectionHeader(title: 'Weekly Volume'),
+            AppCard(child: SizedBox(height: 180, child: _WeeklySetsChart(stats: ordered))),
+            const SizedBox(height: AppSpacing.lg),
+            const SectionHeader(title: 'Muscle Detail'),
             for (final s in ordered) _MuscleCard(stats: s),
           ],
         );
       },
+    );
+  }
+}
+
+/// This week's training at a glance — the body diagram plus a per-group
+/// breakdown, styled as the report's hero so the most "premium"-feeling
+/// visual (the diagram) is the first thing seen, matching the treatment the
+/// dashboard's own "Muscles Trained This Week" widget already uses.
+class _WeeklyHeroCard extends StatelessWidget {
+  final Map<String, int> weeklySetsByGroup;
+  final int totalWeeklySets;
+
+  const _WeeklyHeroCard({
+    required this.weeklySetsByGroup,
+    required this.totalWeeklySets,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    return AppCard(
+      accentColor: AppColors.workout,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Expanded(
+                child: Text(
+                  'This Week',
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+              ),
+              Text(
+                '$totalWeeklySets',
+                style: AppTextStyles.statMedium(AppColors.workout),
+              ),
+              const SizedBox(width: 4),
+              Padding(
+                padding: const EdgeInsets.only(bottom: 3),
+                child: Text(
+                  'sets',
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: scheme.onSurfaceVariant,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: AppSpacing.md),
+          if (totalWeeklySets == 0)
+            Text(
+              'No sets logged this week yet.',
+              style: Theme.of(
+                context,
+              ).textTheme.bodyMedium?.copyWith(color: scheme.onSurfaceVariant),
+            )
+          else
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                MuscleBodyDiagram(trainedSets: weeklySetsByGroup, height: 160),
+                const SizedBox(width: AppSpacing.lg),
+                Expanded(
+                  child: Wrap(
+                    spacing: AppSpacing.xs,
+                    runSpacing: AppSpacing.xs,
+                    children: [
+                      for (final entry in weeklySetsByGroup.entries)
+                        Chip(
+                          avatar: CircleAvatar(
+                            backgroundColor: categoryColor(entry.key),
+                            radius: 6,
+                          ),
+                          label: Text('${entry.key} · ${entry.value}'),
+                          visualDensity: VisualDensity.compact,
+                        ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+/// The most recent personal records — reuses the same stream the dashboard's
+/// PR highlights row is built from, so this report and the dashboard never
+/// disagree about what counts as a PR.
+class _PersonalRecordsSection extends ConsumerWidget {
+  const _PersonalRecordsSection();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final scheme = Theme.of(context).colorScheme;
+    final recordsAsync = ref.watch(recentPersonalRecordsProvider);
+    return recordsAsync.when(
+      loading:
+          () => const Padding(
+            padding: EdgeInsets.symmetric(vertical: AppSpacing.md),
+            child: Center(child: CircularProgressIndicator()),
+          ),
+      error: (e, _) => const SizedBox.shrink(),
+      data: (records) {
+        if (records.isEmpty) {
+          return AppCard(
+            child: Row(
+              children: [
+                Icon(Icons.emoji_events_outlined, color: scheme.onSurfaceVariant),
+                const SizedBox(width: AppSpacing.sm),
+                Expanded(
+                  child: Text(
+                    'No PRs yet — keep training to set your first one.',
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: scheme.onSurfaceVariant,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          );
+        }
+        final recent = records.take(6).toList();
+        return AppCard(
+          accentColor: AppColors.achievement,
+          child: Column(
+            children: [
+              for (var i = 0; i < recent.length; i++) ...[
+                if (i > 0) const Divider(height: AppSpacing.lg),
+                _PersonalRecordRow(record: recent[i]),
+              ],
+            ],
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _PersonalRecordRow extends StatelessWidget {
+  final PersonalRecord record;
+
+  const _PersonalRecordRow({required this.record});
+
+  String _daysAgoLabel(DateTime achievedAt) {
+    final days = DateTime.now().difference(achievedAt).inDays;
+    if (days <= 0) return 'today';
+    if (days == 1) return 'yesterday';
+    return '$days days ago';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    return Row(
+      children: [
+        const Icon(Icons.emoji_events_rounded, color: AppColors.achievement),
+        const SizedBox(width: AppSpacing.sm),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                record.exerciseName,
+                style: Theme.of(context).textTheme.titleSmall,
+              ),
+              Text(
+                _daysAgoLabel(record.achievedAt),
+                style: Theme.of(
+                  context,
+                ).textTheme.bodySmall?.copyWith(color: scheme.onSurfaceVariant),
+              ),
+            ],
+          ),
+        ),
+        Text(
+          '${record.bestWeightKg.toStringAsFixed(0)}kg × ${record.bestReps}',
+          style: AppTextStyles.statSmall(scheme.onSurface),
+        ),
+      ],
     );
   }
 }
@@ -193,10 +389,10 @@ class _MuscleCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      margin: const EdgeInsets.only(bottom: 12),
-      child: Padding(
-        padding: const EdgeInsets.all(12),
+    return Padding(
+      padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+      child: AppCard(
+        accentColor: categoryColor(stats.muscleGroup),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -217,7 +413,7 @@ class _MuscleCard extends StatelessWidget {
                         ),
               ),
             ),
-            const SizedBox(width: 12),
+            const SizedBox(width: AppSpacing.md),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,

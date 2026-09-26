@@ -66,6 +66,19 @@ class ExerciseLog {
     this.notes,
   });
 
+  /// "3 x 25kg x 12 reps" — averages weight/reps across this exercise's sets
+  /// rather than listing each one, so a set that varied slightly (a drop
+  /// set, a rep or two short on the last set) still reads as one clean line.
+  /// Shared by the post-workout report and the shareable workout card.
+  String get setSummary {
+    final avgWeight =
+        sets.map((s) => s.weightKg).reduce((a, b) => a + b) / sets.length;
+    final avgReps =
+        (sets.map((s) => s.reps).reduce((a, b) => a + b) / sets.length)
+            .round();
+    return '${sets.length} x ${avgWeight.toStringAsFixed(0)}kg x $avgReps reps';
+  }
+
   Map<String, dynamic> toJson() => {
     'name': name,
     'muscleGroup': muscleGroup,

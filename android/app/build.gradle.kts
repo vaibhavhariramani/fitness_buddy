@@ -81,6 +81,15 @@ android {
             ndk {
                 debugSymbolLevel = "FULL"
             }
+            // R8 runs by default on this build type (Flutter's Gradle
+            // plugin turns it on) — proguard-rules.pro adds the keep rules
+            // flutter_local_notifications' Gson reflection needs, which R8
+            // otherwise strips and crashes on the first cancel()/cancelAll()
+            // call in a release build.
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro",
+            )
         }
     }
 }

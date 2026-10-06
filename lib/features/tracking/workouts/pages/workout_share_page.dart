@@ -175,10 +175,10 @@ class _ShareCard extends StatelessWidget {
                 child: Image.memory(photoBytes!, fit: BoxFit.cover),
               ),
               Positioned.fill(
-                child: ColoredBox(color: Colors.black.withValues(alpha: 0.55)),
+                child: ColoredBox(color: Colors.black.withValues(alpha: 0.35)),
               ),
               Positioned.fill(
-                child: Center(child: Opacity(opacity: 0.3, child: diagram)),
+                child: Center(child: Opacity(opacity: 0.85, child: diagram)),
               ),
             ],
             const AppWatermark(),

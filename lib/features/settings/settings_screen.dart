@@ -289,7 +289,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               'Show today\'s steps and last night\'s sleep on your dashboard. '
               'Read on this device only — never uploaded.',
             ),
-            value: ref.watch(healthConnectedProvider).valueOrNull ?? false,
+            value: ref.watch(healthConnectedProvider).valueOrNull ?? true,
             onChanged: (v) async {
               final service = ref.read(healthServiceProvider);
               if (v) {

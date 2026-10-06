@@ -118,6 +118,7 @@ class _ActiveWorkoutPageState extends ConsumerState<ActiveWorkoutPage> {
   Uint8List? _photoBytes;
   Timer? _elapsedTimer;
   Duration _elapsed = Duration.zero;
+  late final StateController<bool> _onScreen;
 
   Future<void> _pickPhoto() async {
     final bytes = await pickPhotoFromCameraOrGallery(context);
@@ -154,8 +155,9 @@ class _ActiveWorkoutPageState extends ConsumerState<ActiveWorkoutPage> {
       _persistDraft();
     });
 
+    _onScreen = ref.read(draft.activeWorkoutOnScreenProvider.notifier);
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) ref.read(draft.activeWorkoutOnScreenProvider.notifier).state = true;
+      if (mounted) _onScreen.state = true;
     });
 
     if (widget.restoreDraft) {
@@ -253,7 +255,10 @@ class _ActiveWorkoutPageState extends ConsumerState<ActiveWorkoutPage> {
   void dispose() {
     _elapsedTimer?.cancel();
     WakelockPlus.disable();
-    ref.read(draft.activeWorkoutOnScreenProvider.notifier).state = false;
+    // Deferred out of the teardown so the bar's listeners aren't rebuilt
+    // mid-dispose; a synchronous write here can fail and leave the flag stuck.
+    final onScreen = _onScreen;
+    Future.microtask(() => onScreen.state = false);
     super.dispose();
   }
 

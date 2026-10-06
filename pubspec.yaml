@@ -87,6 +87,7 @@ flutter:
   assets:
     - assets/data/exercises.json
     - assets/images/exercises/
+    - assets/images/health/
     - assets/sounds/
     - assets/branding/logo.svg
     - assets/branding/logo_mark.svg

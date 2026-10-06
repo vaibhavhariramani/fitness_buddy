@@ -1,11 +1,13 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:shimmer/shimmer.dart';
 
 import '../../core/design_system/app_colors.dart';
+import '../../core/design_system/app_radius.dart';
 import '../../core/design_system/app_spacing.dart';
 import '../../core/design_system/app_text_styles.dart';
 import '../../core/providers.dart';
@@ -1013,26 +1015,56 @@ class _HealthStepsSection extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final summary = ref.watch(healthSummaryProvider).valueOrNull;
     if (summary == null) return const SizedBox.shrink();
+    final scheme = Theme.of(context).colorScheme;
     final sleep = summary.sleep;
-    final sleepLabel =
-        sleep == null ? '—' : '${sleep.inHours}h ${sleep.inMinutes.remainder(60)}m';
+    const stepGoal = 10000;
+    const sleepGoalHours = 8.0;
+    final sleepHours = (sleep?.inMinutes ?? 0) / 60;
+    final stepPercent = (summary.steps / stepGoal * 100).round();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const SectionHeader(title: 'Today'),
-        AppCard(
-          accentColor: AppColors.recovery,
+        Container(
+          padding: const EdgeInsets.all(AppSpacing.md),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                AppColors.workout.withValues(alpha: 0.16),
+                AppColors.recovery.withValues(alpha: 0.16),
+              ],
+            ),
+            borderRadius: AppRadius.cardRadius,
+            border: Border.all(color: scheme.outlineVariant),
+          ),
           child: Row(
             children: [
               Expanded(
-                child: _HealthStat(
-                  label: 'Steps today',
+                child: _HealthTile(
+                  icon: 'assets/images/health/footsteps.svg',
+                  color: AppColors.workout,
+                  progress: summary.steps / stepGoal,
                   value: NumberFormat.decimalPattern().format(summary.steps),
+                  label: 'Steps today',
+                  caption: '$stepPercent% of 10,000',
                 ),
               ),
+              const SizedBox(width: AppSpacing.md),
               Expanded(
-                child: _HealthStat(label: 'Sleep last night', value: sleepLabel),
+                child: _HealthTile(
+                  icon: 'assets/images/health/sleep.svg',
+                  color: AppColors.recovery,
+                  progress: sleepHours / sleepGoalHours,
+                  value:
+                      sleep == null
+                          ? '—'
+                          : '${sleep.inHours}h ${sleep.inMinutes.remainder(60)}m',
+                  label: 'Sleep last night',
+                  caption: sleep == null ? 'No sleep recorded' : 'Goal 8h',
+                ),
               ),
             ],
           ),
@@ -1043,11 +1075,22 @@ class _HealthStepsSection extends ConsumerWidget {
   }
 }
 
-class _HealthStat extends StatelessWidget {
-  final String label;
+class _HealthTile extends StatelessWidget {
+  final String icon;
+  final Color color;
+  final double progress;
   final String value;
+  final String label;
+  final String caption;
 
-  const _HealthStat({required this.label, required this.value});
+  const _HealthTile({
+    required this.icon,
+    required this.color,
+    required this.progress,
+    required this.value,
+    required this.label,
+    required this.caption,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -1055,6 +1098,20 @@ class _HealthStat extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        ProgressRing(
+          progress: progress.clamp(0.0, 1.0),
+          size: 64,
+          strokeWidth: 5,
+          color: color,
+          trackColor: color.withValues(alpha: 0.2),
+          child: SvgPicture.asset(
+            icon,
+            width: 26,
+            height: 26,
+            colorFilter: ColorFilter.mode(color, BlendMode.srcIn),
+          ),
+        ),
+        const SizedBox(height: AppSpacing.sm),
         Text(value, style: AppTextStyles.statMedium(scheme.onSurface)),
         const SizedBox(height: AppSpacing.xxs),
         Text(
@@ -1062,6 +1119,11 @@ class _HealthStat extends StatelessWidget {
           style: Theme.of(
             context,
           ).textTheme.bodySmall?.copyWith(color: scheme.onSurfaceVariant),
+        ),
+        const SizedBox(height: 2),
+        Text(
+          caption,
+          style: Theme.of(context).textTheme.labelSmall?.copyWith(color: color),
         ),
       ],
     );

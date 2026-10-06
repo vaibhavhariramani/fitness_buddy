@@ -48,7 +48,8 @@ android {
         // mobile_scanner requires minSdk 23+ (Android 6.0, 2015) -- Flutter's
         // own default (flutter.minSdkVersion) is 21; API 21/22 share is
         // negligible at this point.
-        minSdk = 23
+        // Health Connect (health plugin) requires API 26+ (Android 8.0).
+        minSdk = 26
         // Play Console now requires targetSdk 36+ (Flutter's own default,
         // flutter.targetSdkVersion, is still 35).
         targetSdk = 36

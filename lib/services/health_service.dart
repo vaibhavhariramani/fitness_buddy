@@ -17,16 +17,31 @@ class HealthService {
 
   final Health _health = Health();
 
+  /// On by default — a fresh install reads as connected until the user turns
+  /// it off in Settings.
   Future<bool> isConnected() async {
     final prefs = await SharedPreferences.getInstance();
-    return prefs.getBool(_connectedKey) ?? false;
+    return prefs.getBool(_connectedKey) ?? true;
+  }
+
+  /// Asks for access the first time only, so the permission sheet appears
+  /// once on a fresh install instead of on every dashboard visit.
+  Future<void> ensureAuthorized() async {
+    final prefs = await SharedPreferences.getInstance();
+    if (prefs.containsKey(_connectedKey)) return;
+    await connect();
   }
 
   Future<bool> connect() async {
-    final granted = await _health.requestAuthorization(
-      const [HealthDataType.STEPS, HealthDataType.SLEEP_ASLEEP],
-      permissions: const [HealthDataAccess.READ, HealthDataAccess.READ],
-    );
+    var granted = false;
+    try {
+      granted = await _health.requestAuthorization(
+        const [HealthDataType.STEPS, HealthDataType.SLEEP_ASLEEP],
+        permissions: const [HealthDataAccess.READ, HealthDataAccess.READ],
+      );
+    } catch (_) {
+      // Health Connect not installed on Android, or Health unavailable.
+    }
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool(_connectedKey, granted);
     return granted;
@@ -74,5 +89,11 @@ final healthSummaryProvider = FutureProvider.autoDispose<HealthSummary?>((
 ) async {
   final service = ref.watch(healthServiceProvider);
   if (!await service.isConnected()) return null;
-  return service.today();
+  await service.ensureAuthorized();
+  if (!await service.isConnected()) return null;
+  try {
+    return await service.today();
+  } catch (_) {
+    return null;
+  }
 });

@@ -168,6 +168,10 @@ final activeWorkoutSessionProvider =
       (ref) => ActiveWorkoutSessionNotifier(),
     );
 
+/// True while `ActiveWorkoutPage` is the screen on top — lets the "workout in
+/// progress" bar's Continue action no-op instead of stacking a second copy.
+final activeWorkoutOnScreenProvider = StateProvider<bool>((ref) => false);
+
 class ActiveWorkoutSessionNotifier extends StateNotifier<WorkoutDraft?> {
   ActiveWorkoutSessionNotifier() : super(null) {
     loadActiveWorkoutDraft().then((loaded) {

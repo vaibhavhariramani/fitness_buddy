@@ -2,6 +2,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 import 'package:shimmer/shimmer.dart';
 
 import '../../core/design_system/app_colors.dart';
@@ -19,6 +20,7 @@ import '../../shared/widgets/fade_slide_in.dart';
 import '../../shared/widgets/muscle_body_diagram.dart';
 import '../../shared/widgets/progress_ring.dart';
 import '../../shared/widgets/section_header.dart';
+import '../../services/health_service.dart';
 import '../nutrition/providers/nutrition_providers.dart';
 import '../exercises/exercises_tab_provider.dart';
 import '../exercises/pages/weekly_plan/weekly_plan_providers.dart';
@@ -82,6 +84,7 @@ class AnalyticsScreen extends ConsumerWidget {
             // their actual numbers immediately, not an empty "today" ring.
             FadeSlideIn(child: _StreakSection(streak: displayStreak)),
             const SizedBox(height: AppSpacing.xl),
+            const FadeSlideIn(child: _HealthStepsSection()),
             FadeSlideIn(
               delay: stagger,
               child: _BodySection(profile: profile, weightLogs: weightLogs),
@@ -994,6 +997,71 @@ class _BodySectionState extends ConsumerState<_BodySection> {
               ),
             ],
           ),
+        ),
+      ],
+    );
+  }
+}
+
+/// Today's steps and last night's sleep from Apple Health. Renders nothing
+/// until the user connects Apple Health in Settings, so it never shows
+/// zeros that look like real data.
+class _HealthStepsSection extends ConsumerWidget {
+  const _HealthStepsSection();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final summary = ref.watch(healthSummaryProvider).valueOrNull;
+    if (summary == null) return const SizedBox.shrink();
+    final sleep = summary.sleep;
+    final sleepLabel =
+        sleep == null ? '—' : '${sleep.inHours}h ${sleep.inMinutes.remainder(60)}m';
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SectionHeader(title: 'Today'),
+        AppCard(
+          accentColor: AppColors.recovery,
+          child: Row(
+            children: [
+              Expanded(
+                child: _HealthStat(
+                  label: 'Steps today',
+                  value: NumberFormat.decimalPattern().format(summary.steps),
+                ),
+              ),
+              Expanded(
+                child: _HealthStat(label: 'Sleep last night', value: sleepLabel),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: AppSpacing.xl),
+      ],
+    );
+  }
+}
+
+class _HealthStat extends StatelessWidget {
+  final String label;
+  final String value;
+
+  const _HealthStat({required this.label, required this.value});
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(value, style: AppTextStyles.statMedium(scheme.onSurface)),
+        const SizedBox(height: AppSpacing.xxs),
+        Text(
+          label,
+          style: Theme.of(
+            context,
+          ).textTheme.bodySmall?.copyWith(color: scheme.onSurfaceVariant),
         ),
       ],
     );

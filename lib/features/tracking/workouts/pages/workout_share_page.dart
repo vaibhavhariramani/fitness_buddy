@@ -143,6 +143,20 @@ class _ShareCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Scoped color overrides so the body diagram reads clearly on the dark
+    // card regardless of the app's own light/dark theme — MuscleBodyDiagram
+    // always paints from the ambient ColorScheme.
+    final diagram = Theme(
+      data: ThemeData(
+        colorScheme: const ColorScheme.dark(
+          surfaceContainerHighest: Color(0x33FFFFFF),
+          outlineVariant: Color(0x66FFFFFF),
+          primary: Color(0xFFFFC107),
+        ),
+      ),
+      child: MuscleBodyDiagram(trainedSets: setsByGroup, height: 220),
+    );
+
     return ClipRRect(
       borderRadius: BorderRadius.circular(28),
       child: Container(
@@ -156,6 +170,17 @@ class _ShareCard extends StatelessWidget {
         ),
         child: Stack(
           children: [
+            if (photoBytes != null) ...[
+              Positioned.fill(
+                child: Image.memory(photoBytes!, fit: BoxFit.cover),
+              ),
+              Positioned.fill(
+                child: ColoredBox(color: Colors.black.withValues(alpha: 0.55)),
+              ),
+              Positioned.fill(
+                child: Center(child: Opacity(opacity: 0.3, child: diagram)),
+              ),
+            ],
             const AppWatermark(),
             Padding(
               padding: const EdgeInsets.all(24),
@@ -163,18 +188,6 @@ class _ShareCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  if (photoBytes != null) ...[
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(18),
-                      child: Image.memory(
-                        photoBytes!,
-                        height: 200,
-                        width: double.infinity,
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                  ],
                   if (prExercises.isNotEmpty) ...[
                     Container(
                       padding: const EdgeInsets.symmetric(
@@ -210,27 +223,12 @@ class _ShareCard extends StatelessWidget {
                     '${entry.exercises.length} exercises · $totalSets sets',
                     style: const TextStyle(color: Colors.white70, fontSize: 15),
                   ),
-                  const SizedBox(height: 20),
-                  Center(
-                    // Scoped color overrides so the body diagram reads
-                    // clearly on a dark gradient regardless of the app's own
-                    // light/dark theme — MuscleBodyDiagram always paints
-                    // from the ambient ColorScheme.
-                    child: Theme(
-                      data: ThemeData(
-                        colorScheme: const ColorScheme.dark(
-                          surfaceContainerHighest: Color(0x33FFFFFF),
-                          outlineVariant: Color(0x66FFFFFF),
-                          primary: Color(0xFFFFC107),
-                        ),
-                      ),
-                      child: MuscleBodyDiagram(
-                        trainedSets: setsByGroup,
-                        height: 220,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
+                  if (photoBytes == null) ...[
+                    const SizedBox(height: 20),
+                    Center(child: diagram),
+                    const SizedBox(height: 16),
+                  ] else
+                    const SizedBox(height: 24),
                   Column(
                     children: [
                       for (final e in entry.exercises.take(6))

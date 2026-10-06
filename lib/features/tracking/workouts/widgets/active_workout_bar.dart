@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/design_system/app_colors.dart';
@@ -11,16 +12,16 @@ import '../active_workout_draft.dart';
 /// finishing. Ticks its own clock from [draft]'s `startedAt` — recomputed
 /// each second rather than incremented, so it stays correct regardless of
 /// how long this widget itself has been alive.
-class ActiveWorkoutBar extends StatefulWidget {
+class ActiveWorkoutBar extends ConsumerStatefulWidget {
   final WorkoutDraft draft;
 
   const ActiveWorkoutBar({required this.draft, super.key});
 
   @override
-  State<ActiveWorkoutBar> createState() => _ActiveWorkoutBarState();
+  ConsumerState<ActiveWorkoutBar> createState() => _ActiveWorkoutBarState();
 }
 
-class _ActiveWorkoutBarState extends State<ActiveWorkoutBar> {
+class _ActiveWorkoutBarState extends ConsumerState<ActiveWorkoutBar> {
   Timer? _timer;
   Duration _elapsed = Duration.zero;
 
@@ -49,7 +50,10 @@ class _ActiveWorkoutBarState extends State<ActiveWorkoutBar> {
     return h > 0 ? '$h:$m:$s' : '$m:$s';
   }
 
-  void _resume(BuildContext context) => context.push('/active-workout');
+  void _resume(BuildContext context) {
+    if (ref.read(activeWorkoutOnScreenProvider)) return;
+    context.push('/active-workout');
+  }
 
   @override
   Widget build(BuildContext context) {

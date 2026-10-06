@@ -43,6 +43,10 @@
 	<true/>
 	<key>NSCameraUsageDescription</key>
 	<string>Fitness Buddy uses your camera to scan food barcodes and to take photos when logging meals, weight, and workouts.</string>
+	<key>NSHealthShareUsageDescription</key>
+	<string>Fitness Buddy reads your steps and sleep from Apple Health to show your daily activity on the dashboard. Nothing is uploaded to our servers.</string>
+	<key>NSHealthUpdateUsageDescription</key>
+	<string>Fitness Buddy does not write to Apple Health, but iOS requires this description to be present.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Fitness Buddy needs access to your photos so you can attach a picture when logging a meal, weight check-in, or workout.</string>
 	<key>UIApplicationSceneManifest</key>

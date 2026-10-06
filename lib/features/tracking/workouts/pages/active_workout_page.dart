@@ -154,6 +154,10 @@ class _ActiveWorkoutPageState extends ConsumerState<ActiveWorkoutPage> {
       _persistDraft();
     });
 
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) ref.read(draft.activeWorkoutOnScreenProvider.notifier).state = true;
+    });
+
     if (widget.restoreDraft) {
       _seeded = true; // widget.seeds is empty for a resumed session anyway.
       _loadDraft();
@@ -161,6 +165,7 @@ class _ActiveWorkoutPageState extends ConsumerState<ActiveWorkoutPage> {
       draft.clearActiveWorkoutDraft();
       ref.read(draft.activeWorkoutSessionProvider.notifier).clear();
       ref.read(notificationServiceProvider).showWorkoutInProgress(widget.title);
+      _persistDraft();
     }
   }
 
@@ -209,7 +214,6 @@ class _ActiveWorkoutPageState extends ConsumerState<ActiveWorkoutPage> {
   }
 
   void _persistDraft() {
-    if (_exercises.isEmpty) return;
     final snapshot = draft.WorkoutDraft(
       title: _displayTitle,
       date: _date,
@@ -249,6 +253,7 @@ class _ActiveWorkoutPageState extends ConsumerState<ActiveWorkoutPage> {
   void dispose() {
     _elapsedTimer?.cancel();
     WakelockPlus.disable();
+    ref.read(draft.activeWorkoutOnScreenProvider.notifier).state = false;
     super.dispose();
   }
 

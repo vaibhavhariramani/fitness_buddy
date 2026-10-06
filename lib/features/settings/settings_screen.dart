@@ -9,6 +9,7 @@ import '../../core/providers.dart';
 import '../../core/utils/calculations.dart';
 import '../../models/user_profile.dart';
 import '../auth/providers/auth_controller.dart';
+import '../../services/health_service.dart';
 import '../tracking/workouts/rest_timer_default_controller.dart';
 
 class SettingsScreen extends ConsumerStatefulWidget {
@@ -279,6 +280,26 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             value: ref.watch(restTimerDefaultProvider),
             onChanged:
                 (v) => ref.read(restTimerDefaultProvider.notifier).setEnabled(v),
+          ),
+          const SizedBox(height: 32),
+          Text('Health', style: Theme.of(context).textTheme.titleMedium),
+          SwitchListTile(
+            title: const Text('Apple Health'),
+            subtitle: const Text(
+              'Show today\'s steps and last night\'s sleep on your dashboard. '
+              'Read on this device only — never uploaded.',
+            ),
+            value: ref.watch(healthConnectedProvider).valueOrNull ?? false,
+            onChanged: (v) async {
+              final service = ref.read(healthServiceProvider);
+              if (v) {
+                await service.connect();
+              } else {
+                await service.disconnect();
+              }
+              ref.invalidate(healthConnectedProvider);
+              ref.invalidate(healthSummaryProvider);
+            },
           ),
           const SizedBox(height: 32),
           Text(
